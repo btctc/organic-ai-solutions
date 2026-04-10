@@ -89,9 +89,9 @@ export async function POST(request: Request) {
   });
 
   const ownerEmail =
-    process.env.BUSINESS_OWNER_EMAIL ?? "tc@overtimerealestate.com";
+    process.env.BUSINESS_OWNER_EMAIL ?? "overtimeincorporated@gmail.com";
   const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL ?? "https://organicaisolutions.com";
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://organic-ai-solutions.vercel.app";
   const physicalAddress =
     process.env.PHYSICAL_ADDRESS ?? "Organic AI Solutions, Texas, USA";
   const fromEmail =
