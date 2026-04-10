@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { sendEmailWithTestingFallback } from "@/lib/resend-delivery";
 
 function escapeHtml(value: unknown) {
   return String(value ?? "—")
@@ -35,7 +36,8 @@ export async function POST(request: Request) {
     const { Resend } = await import("resend");
     const resend = new Resend(process.env.RESEND_API_KEY);
 
-    const { error: emailError } = await resend.emails.send({
+    const delivery = await sendEmailWithTestingFallback({
+      resend,
       from: "onboarding@resend.dev",
       to: process.env.NOTIFICATION_EMAIL || "overtimeincorporated@gmail.com",
       subject: `New AI Audit Request: ${data.company} — ${data.name}`,
@@ -63,8 +65,8 @@ export async function POST(request: Request) {
       `,
     });
 
-    if (emailError) {
-      console.error("Email send failed:", emailError);
+    if (!delivery.success) {
+      console.error("Email send failed:", delivery.error);
       return NextResponse.json(
         { error: "Email delivery failed" },
         { status: 500 },

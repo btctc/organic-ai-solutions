@@ -4,6 +4,7 @@ import { rateLimit } from "@/lib/rate-limit";
 import { sanitizeText, sanitizeEmail, sanitizePhone } from "@/lib/sanitize";
 import { buildAutoResponseEmail, buildInternalEmail } from "@/lib/email-templates";
 import { prisma } from "@/lib/prisma";
+import { sendEmailWithTestingFallback } from "@/lib/resend-delivery";
 
 interface ChatMessage {
   role: string;
@@ -134,20 +135,34 @@ export async function POST(request: Request) {
 
   const resend = new Resend(apiKey);
 
-  await Promise.allSettled([
-    resend.emails.send({
+  const [ownerDelivery, autoResponseDelivery] = await Promise.allSettled([
+    sendEmailWithTestingFallback({
+      resend,
       from: fromEmail,
       to: ownerEmail,
       subject: `New Chatbot Lead — ${firstName} ${lastName}`,
       html: internalHtml,
     }),
-    resend.emails.send({
+    sendEmailWithTestingFallback({
+      resend,
       from: fromEmail,
       to: email,
       subject: "Your Free AI Audit is Being Reviewed — Organic AI Solutions",
       html: autoResponseHtml,
     }),
   ]);
+
+  if (ownerDelivery.status === "rejected") {
+    console.error("Owner notification send failed:", ownerDelivery.reason);
+  } else if (!ownerDelivery.value.success) {
+    console.error("Owner notification send failed:", ownerDelivery.value.error);
+  }
+
+  if (autoResponseDelivery.status === "rejected") {
+    console.error("Chatbot auto-response send failed:", autoResponseDelivery.reason);
+  } else if (!autoResponseDelivery.value.success) {
+    console.error("Chatbot auto-response send failed:", autoResponseDelivery.value.error);
+  }
 
   return NextResponse.json({ success: true, leadId: lead.id });
 }
