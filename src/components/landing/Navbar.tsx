@@ -7,11 +7,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 
 const links = [
-  { label: "Services", href: "#services", type: "scroll" },
-  { label: "About", href: "/about", type: "link" },
-  { label: "How It Works", href: "#how-it-works", type: "scroll" },
-  { label: "Get Started", href: "#intake", type: "scroll" },
-  { label: "Contact", href: "#contact", type: "scroll" },
+  { label: "Services", href: "/#services" },
+  { label: "About", href: "/about" },
+  { label: "How It Works", href: "/#how-it-works" },
+  { label: "Get Started", href: "/#intake" },
+  { label: "Contact", href: "/#contact" },
 ];
 
 export default function Navbar() {
@@ -24,11 +24,6 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const handleNav = (href: string) => {
-    setMenuOpen(false);
-    document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
-  };
-
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 bg-white transition-shadow duration-300 ${
@@ -37,7 +32,7 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-10 flex items-center justify-between h-16 lg:h-18">
         {/* Logo */}
-        <a href="/" style={{ background: "transparent" }} className="shrink-0 flex items-center">
+        <Link href="/" style={{ background: "transparent" }} className="shrink-0 flex items-center">
           <Image
             src="/logo.png"
             alt="Organic AI Solutions"
@@ -46,35 +41,25 @@ export default function Navbar() {
             priority
             style={{ background: "transparent" }}
           />
-        </a>
+        </Link>
 
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-8">
-          {links.map((l) =>
-            l.type === "link" ? (
-              <Link
-                key={l.href}
-                href={l.href}
-                className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-neutral-600 hover:text-neutral-900 transition-colors"
-              >
-                {l.label}
-              </Link>
-            ) : (
-              <button
-                key={l.href}
-                onClick={() => handleNav(l.href)}
-                className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-neutral-600 hover:text-neutral-900 transition-colors"
-              >
-                {l.label}
-              </button>
-            )
-          )}
-          <button
-            onClick={() => handleNav("#intake")}
+          {links.map((l) => (
+            <Link
+              key={l.href}
+              href={l.href}
+              className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-neutral-600 hover:text-neutral-900 transition-colors"
+            >
+              {l.label}
+            </Link>
+          ))}
+          <Link
+            href="/#intake"
             className="ml-2 px-5 py-2 rounded-lg bg-[#E8420A] text-white text-sm font-semibold font-[family-name:var(--font-montserrat)] hover:bg-[#c93508] transition-colors"
           >
             Free AI Audit
-          </button>
+          </Link>
         </nav>
 
         {/* Mobile hamburger */}
@@ -98,32 +83,23 @@ export default function Navbar() {
             className="md:hidden bg-white border-t border-neutral-100"
           >
             <div className="flex flex-col px-6 py-5 gap-4">
-              {links.map((l) =>
-                l.type === "link" ? (
-                  <Link
-                    key={l.href}
-                    href={l.href}
-                    onClick={() => setMenuOpen(false)}
-                    className="text-left font-[family-name:var(--font-dm-sans)] text-neutral-700 font-medium hover:text-neutral-900 transition-colors"
-                  >
-                    {l.label}
-                  </Link>
-                ) : (
-                  <button
-                    key={l.href}
-                    onClick={() => handleNav(l.href)}
-                    className="text-left font-[family-name:var(--font-dm-sans)] text-neutral-700 font-medium hover:text-neutral-900 transition-colors"
-                  >
-                    {l.label}
-                  </button>
-                )
-              )}
-              <button
-                onClick={() => handleNav("#intake")}
+              {links.map((l) => (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  onClick={() => setMenuOpen(false)}
+                  className="text-left font-[family-name:var(--font-dm-sans)] text-neutral-700 font-medium hover:text-neutral-900 transition-colors"
+                >
+                  {l.label}
+                </Link>
+              ))}
+              <Link
+                href="/#intake"
+                onClick={() => setMenuOpen(false)}
                 className="mt-1 w-full px-5 py-3 rounded-lg bg-[#E8420A] text-white font-semibold font-[family-name:var(--font-montserrat)] text-sm hover:bg-[#c93508] transition-colors"
               >
                 Free AI Audit
-              </button>
+              </Link>
             </div>
           </motion.div>
         )}
