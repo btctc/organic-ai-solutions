@@ -1,131 +1,353 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { motion, useInView, AnimatePresence } from "framer-motion";
-import { CheckCircle, Loader2 } from "lucide-react";
+import { useRef, useState } from "react";
+import { AnimatePresence, motion, useInView } from "framer-motion";
+import { CheckCircle, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 
-interface FormData {
+interface IntakeFormData {
   name: string;
   email: string;
   company: string;
   role: string;
-  industry: string;
+  website: string;
   teamSize: string;
+  revenue: string;
   painPoints: string[];
-  currentTools: string;
-  budget: string;
+  painDetail: string;
+  currentAiTools: string[];
+  currentAiToolsOther: string;
+  websiteStatus: string;
+  websiteIssues: string;
+  packageInterest: string;
   timeline: string;
   goals: string;
+  additionalContext: string;
 }
 
-const initialFormData: FormData = {
+const initialFormData: IntakeFormData = {
   name: "",
   email: "",
   company: "",
   role: "",
-  industry: "",
+  website: "",
   teamSize: "",
+  revenue: "",
   painPoints: [],
-  currentTools: "",
-  budget: "",
+  painDetail: "",
+  currentAiTools: [],
+  currentAiToolsOther: "",
+  websiteStatus: "",
+  websiteIssues: "",
+  packageInterest: "",
   timeline: "",
   goals: "",
+  additionalContext: "",
 };
 
-const painPointOptions = [
-  "Manual data entry & repetitive tasks",
-  "Customer service / response time",
-  "Lead generation & follow-up",
-  "Scheduling & calendar management",
-  "Inventory / supply chain",
-  "Reporting & analytics",
-  "Content creation & marketing",
-  "Employee onboarding & training",
+const stepTitles = [
+  "About You",
+  "Operational Challenges",
+  "Current AI Tools",
+  "Website Snapshot",
+  "Goals & Timing",
 ];
 
-const teamSizeOptions = ["1-5", "6-15", "16-50", "51-100", "100+"];
-const budgetOptions = ["Under $1K/mo", "$1K-$3K/mo", "$3K-$5K/mo", "$5K+/mo", "Not sure yet"];
-const timelineOptions = ["ASAP", "1-2 months", "3-6 months", "Just exploring"];
+const painPointOptions = [
+  "Manual repetitive work",
+  "Website is outdated or underperforming",
+  "Lead management is inconsistent",
+  "Customer response times are too slow",
+  "Scheduling or booking is disorganized",
+  "Content creation takes too much time",
+  "Data is spread across too many tools",
+  "Unsure where AI would create the most value",
+  "Reporting and operations tracking are unclear",
+  "No consistent online lead flow",
+];
 
+const aiToolOptions = [
+  "ChatGPT",
+  "Claude",
+  "Gemini",
+  "Microsoft Copilot",
+  "Zapier",
+  "HubSpot AI",
+  "Salesforce Einstein",
+  "Notion AI",
+  "Canva AI",
+  "Jasper",
+  "Perplexity",
+  "None currently",
+  "Other",
+];
+
+const websiteOptions = [
+  {
+    label: "We have a website and it is performing well",
+    description: "We are primarily looking to layer AI into the business.",
+  },
+  {
+    label: "We have a website, but it needs improvement",
+    description: "We likely need design, messaging, conversion, or performance updates.",
+  },
+  {
+    label: "We need a website built",
+    description: "We need a professional site created from the ground up.",
+  },
+  {
+    label: "We are not sure how well the website is performing",
+    description: "We need an honest assessment before deciding on next steps.",
+  },
+];
+
+const packageOptions = [
+  {
+    label: "One-Time Project",
+    price: "$500+",
+    description: "Best for a focused deliverable or a specific business problem.",
+  },
+  {
+    label: "Starter Engagement",
+    price: "$750 + $250/mo",
+    description: "Ideal for an AI audit, light automation, and website improvements.",
+  },
+  {
+    label: "Growth Partnership",
+    price: "$2,500 + $750/mo",
+    description: "Best for deeper automation, AI agents, redesign, and ongoing support.",
+  },
+  {
+    label: "Need Guidance",
+    price: "TBD",
+    description: "We would like help identifying the right scope and budget.",
+  },
+];
+
+const timelineOptions = [
+  {
+    label: "As soon as possible",
+    description: "This is an immediate priority.",
+  },
+  {
+    label: "Within 2 weeks",
+    description: "We are ready to move soon.",
+  },
+  {
+    label: "This month",
+    description: "We are planning actively.",
+  },
+  {
+    label: "Exploring options",
+    description: "We are gathering information before deciding.",
+  },
+];
+
+const sectionLabelClass =
+  "mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500 font-[family-name:var(--font-montserrat)]";
 const inputClass =
-  "w-full px-4 py-3 rounded-lg border border-neutral-200 bg-white font-[family-name:var(--font-dm-sans)] text-neutral-900 text-sm placeholder-neutral-400 focus:outline-none focus:border-[#E8420A] focus:ring-2 focus:ring-[#E8420A]/10 transition-all";
+  "w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition focus:border-[#E8420A] focus:ring-4 focus:ring-[#E8420A]/10 placeholder:text-neutral-400";
+const textareaClass = `${inputClass} min-h-[112px] resize-y`;
 
-export default function IntakeForm() {
+function StepDot({
+  active,
+  complete,
+  onClick,
+}: {
+  active: boolean;
+  complete: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`h-2.5 rounded-full transition-all duration-300 ${
+        active ? "w-8 bg-[#E8420A]" : complete ? "w-3 bg-[#F26A3D]" : "w-3 bg-neutral-200"
+      }`}
+      aria-label="Go to step"
+    />
+  );
+}
+
+function ChoiceChip({
+  label,
+  selected,
+  onClick,
+}: {
+  label: string;
+  selected: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`rounded-xl border px-4 py-3 text-left text-sm transition ${
+        selected
+          ? "border-[#E8420A]/30 bg-orange-50 text-[#A93A10] shadow-sm"
+          : "border-neutral-200 bg-white text-neutral-700 hover:border-neutral-300"
+      }`}
+    >
+      <span className="flex items-center gap-3">
+        <span
+          className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border text-[10px] font-bold ${
+            selected
+              ? "border-[#E8420A] bg-[#E8420A] text-white"
+              : "border-neutral-300 text-transparent"
+          }`}
+        >
+          ✓
+        </span>
+        <span>{label}</span>
+      </span>
+    </button>
+  );
+}
+
+function SelectCard({
+  label,
+  description,
+  selected,
+  onClick,
+}: {
+  label: string;
+  description: string;
+  selected: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`w-full rounded-2xl border p-5 text-left transition ${
+        selected
+          ? "border-[#E8420A]/30 bg-orange-50 shadow-sm"
+          : "border-neutral-200 bg-white hover:border-neutral-300"
+      }`}
+    >
+      <div className="flex items-start gap-4">
+        <div
+          className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${
+            selected ? "border-[#E8420A]" : "border-neutral-300"
+          }`}
+        >
+          <div
+            className={`h-2.5 w-2.5 rounded-full ${
+              selected ? "bg-[#E8420A]" : "bg-transparent"
+            }`}
+          />
+        </div>
+        <div>
+          <p className="font-[family-name:var(--font-montserrat)] text-sm font-semibold text-neutral-900">
+            {label}
+          </p>
+          <p className="mt-1 text-sm leading-relaxed text-neutral-500">{description}</p>
+        </div>
+      </div>
+    </button>
+  );
+}
+
+interface IntakeFormProps {
+  onSubmitted?: () => void;
+}
+
+export default function IntakeForm({ onSubmitted }: IntakeFormProps) {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
-  const [formData, setFormData] = useState<FormData>(initialFormData);
   const [step, setStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const [formData, setFormData] = useState<IntakeFormData>(initialFormData);
 
-  const updateField = (field: keyof FormData, value: string | string[]) => {
+  const totalSteps = stepTitles.length;
+
+  const updateField = (
+    field: keyof IntakeFormData,
+    value: IntakeFormData[keyof IntakeFormData],
+  ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const togglePainPoint = (point: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      painPoints: prev.painPoints.includes(point)
-        ? prev.painPoints.filter((p) => p !== point)
-        : [...prev.painPoints, point],
-    }));
+  const toggleArrayValue = (
+    field: "painPoints" | "currentAiTools",
+    value: string,
+  ) => {
+    setFormData((prev) => {
+      const currentValues = prev[field];
+      return {
+        ...prev,
+        [field]: currentValues.includes(value)
+          ? currentValues.filter((item) => item !== value)
+          : [...currentValues, value],
+      };
+    });
+  };
+
+  const canAdvance = () => {
+    if (step === 0) {
+      return Boolean(formData.name && formData.email && formData.company);
+    }
+
+    return true;
+  };
+
+  const goToStep = (nextStep: number) => {
+    if (nextStep <= step || canAdvance()) {
+      setStep(nextStep);
+    }
   };
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
+    setSubmitError("");
+
     try {
-      const res = await fetch("/api/intake", {
+      const response = await fetch("/api/intake", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-      if (res.ok) {
-        setIsSubmitted(true);
+
+      if (!response.ok) {
+        throw new Error("Submission failed");
       }
-    } catch {
+
       setIsSubmitted(true);
+      onSubmitted?.();
+    } catch {
+      setSubmitError(
+        "We could not submit your intake just yet. Please try again in a moment.",
+      );
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const canAdvance = () => {
-    switch (step) {
-      case 0:
-        return formData.name && formData.email && formData.company;
-      case 1:
-        return formData.industry && formData.teamSize;
-      case 2:
-        return formData.painPoints.length > 0;
-      case 3:
-        return true;
-      default:
-        return false;
-    }
-  };
-
-  const totalSteps = 4;
-
   if (isSubmitted) {
     return (
-      <section id="intake" className="bg-white py-28 px-6 lg:px-10">
-        <div className="max-w-2xl mx-auto text-center">
+      <section id="intake" className="bg-neutral-50 px-6 py-28 lg:px-10">
+        <div className="mx-auto max-w-3xl">
           <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.5, type: "spring" }}
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="rounded-[28px] border border-neutral-200 bg-white px-8 py-14 text-center shadow-[0_24px_80px_rgba(23,23,23,0.08)] md:px-14"
           >
-            <div className="w-16 h-16 rounded-full bg-orange-50 flex items-center justify-center mx-auto mb-6">
+            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-orange-50">
               <CheckCircle className="text-[#E8420A]" size={32} />
             </div>
-            <h2 className="font-[family-name:var(--font-montserrat)] text-3xl md:text-4xl font-bold text-neutral-900 mb-4">
-              You&apos;re all set, {formData.name.split(" ")[0]}!
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-[#E8420A] font-[family-name:var(--font-montserrat)]">
+              Intake Received
+            </p>
+            <h2 className="font-[family-name:var(--font-montserrat)] text-3xl font-bold text-neutral-900 md:text-4xl">
+              Thank you, {formData.name.split(" ")[0]}.
             </h2>
-            <p className="font-[family-name:var(--font-dm-sans)] text-neutral-500 text-sm leading-relaxed">
-              We&apos;ll review your information and send your personalized AI
-              audit within 48 hours. Check your email at{" "}
-              <span className="text-[#E8420A] font-medium">{formData.email}</span>{" "}
-              for next steps.
+            <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-neutral-600 md:text-base">
+              We have received your intake details and will review them carefully.
+              A member of the Organic AI Solutions team will follow up using{" "}
+              <span className="font-semibold text-neutral-900">{formData.email}</span>{" "}
+              within one business day with recommended next steps.
             </p>
           </motion.div>
         </div>
@@ -134,16 +356,15 @@ export default function IntakeForm() {
   }
 
   return (
-    <section className="bg-white py-28 px-6 lg:px-10" id="intake">
-      <div className="max-w-7xl mx-auto" ref={ref}>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start">
-          {/* Left copy */}
-          <div className="lg:pt-2">
+    <section id="intake" className="bg-neutral-50 px-6 py-28 lg:px-10">
+      <div className="mx-auto max-w-7xl" ref={ref}>
+        <div className="grid grid-cols-1 gap-14 lg:grid-cols-[0.92fr_1.08fr] lg:gap-20">
+          <div className="lg:pt-3">
             <motion.p
               initial={{ opacity: 0, y: 16 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.45 }}
-              className="font-[family-name:var(--font-montserrat)] text-[#E8420A] text-xs font-semibold tracking-widest uppercase mb-4"
+              className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-[#E8420A] font-[family-name:var(--font-montserrat)]"
             >
               Free AI Audit
             </motion.p>
@@ -151,58 +372,77 @@ export default function IntakeForm() {
               initial={{ opacity: 0, y: 16 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.45, delay: 0.08 }}
-              className="font-[family-name:var(--font-montserrat)] text-4xl md:text-5xl font-bold text-neutral-900 leading-tight mb-6"
-              style={{ fontWeight: 700 }}
+              className="max-w-xl font-[family-name:var(--font-montserrat)] text-4xl font-bold leading-tight text-neutral-900 md:text-5xl"
             >
-              Tell Us About Your Business
+              Share how your business operates today.
             </motion.h2>
             <motion.p
               initial={{ opacity: 0, y: 16 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.45, delay: 0.14 }}
-              className="font-[family-name:var(--font-dm-sans)] text-neutral-500 leading-relaxed mb-10 text-sm"
+              className="mt-6 max-w-lg text-sm leading-7 text-neutral-600 md:text-base"
             >
-              Takes about 2 minutes. We&apos;ll use this to build a custom AI
-              roadmap showing you exactly where to start and what ROI to expect.
+              This intake helps us understand your current workflows, website
+              position, and where AI can create the fastest measurable value. It
+              takes about two minutes, and only the first step is required.
             </motion.p>
 
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.45, delay: 0.2 }}
-              className="space-y-3.5"
+              transition={{ duration: 0.45, delay: 0.22 }}
+              className="mt-10 rounded-[28px] border border-neutral-200 bg-white p-7 shadow-sm"
             >
-              {[
-                "Free — no credit card, no commitment",
-                "Custom AI audit delivered in 48 hours",
-                "Actionable roadmap, not a sales pitch",
-              ].map((item) => (
-                <div key={item} className="flex items-center gap-3">
-                  <div className="w-5 h-5 rounded-full bg-orange-50 border border-orange-100 flex items-center justify-center shrink-0">
-                    <CheckCircle className="text-[#E8420A]" size={12} />
+              <p className="font-[family-name:var(--font-montserrat)] text-sm font-semibold uppercase tracking-[0.14em] text-neutral-900">
+                What you can expect
+              </p>
+              <div className="mt-6 space-y-4">
+                {[
+                  "A tailored review of your website, workflows, and AI opportunities.",
+                  "Recommendations grounded in the tools your team already uses today.",
+                  "Clear next-step guidance, not a generic sales pitch.",
+                ].map((item) => (
+                  <div key={item} className="flex items-start gap-3">
+                    <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-orange-50">
+                      <CheckCircle className="text-[#E8420A]" size={13} />
+                    </div>
+                    <p className="text-sm leading-6 text-neutral-600">{item}</p>
                   </div>
-                  <span className="font-[family-name:var(--font-dm-sans)] text-neutral-600 text-sm">
-                    {item}
-                  </span>
-                </div>
-              ))}
+                ))}
+              </div>
             </motion.div>
           </div>
 
-          {/* Right form */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 24 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5, delay: 0.18 }}
-            className="bg-white rounded-2xl p-8 lg:p-10 border border-neutral-100 shadow-sm"
+            className="rounded-[28px] border border-neutral-200 bg-white p-6 shadow-[0_24px_80px_rgba(23,23,23,0.08)] md:p-8"
           >
-            {/* Progress */}
-            <div className="flex items-center gap-2 mb-8">
-              {Array.from({ length: totalSteps }).map((_, i) => (
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-neutral-500 font-[family-name:var(--font-montserrat)]">
+                  Client Intake
+                </p>
+                <h3 className="mt-2 font-[family-name:var(--font-montserrat)] text-2xl font-bold text-neutral-900">
+                  {stepTitles[step]}
+                </h3>
+              </div>
+              <div className="rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-2 text-sm font-medium text-neutral-600">
+                {step + 1} / {totalSteps}
+              </div>
+            </div>
+
+            <div className="mt-7 flex gap-2">
+              {Array.from({ length: totalSteps }).map((_, index) => (
                 <div
-                  key={i}
+                  key={stepTitles[index]}
                   className={`h-1.5 flex-1 rounded-full transition-colors duration-300 ${
-                    i <= step ? "bg-[#E8420A]" : "bg-neutral-100"
+                    index < step
+                      ? "bg-[#F26A3D]"
+                      : index === step
+                        ? "bg-[#E8420A]"
+                        : "bg-neutral-200"
                   }`}
                 />
               ))}
@@ -211,120 +451,124 @@ export default function IntakeForm() {
             <AnimatePresence mode="wait">
               {step === 0 && (
                 <motion.div
-                  key="step0"
-                  initial={{ opacity: 0, x: 20 }}
+                  key="about"
+                  initial={{ opacity: 0, x: 16 }}
                   animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  className="space-y-5"
+                  exit={{ opacity: 0, x: -16 }}
+                  className="mt-8 space-y-5"
                 >
-                  <h3 className="font-[family-name:var(--font-montserrat)] text-base font-bold text-neutral-900 mb-1">
-                    Let&apos;s start with the basics
-                  </h3>
+                  <p className="text-sm leading-7 text-neutral-600">
+                    Please share your contact details and a little context about the
+                    business. Only name, email, and company are required.
+                  </p>
                   <div>
-                    <label className="block font-[family-name:var(--font-dm-sans)] text-xs font-medium text-neutral-500 mb-1.5">
-                      Full Name *
-                    </label>
+                    <label className={sectionLabelClass}>Full Name *</label>
                     <input
                       type="text"
                       value={formData.name}
-                      onChange={(e) => updateField("name", e.target.value)}
-                      placeholder="Your name"
+                      onChange={(event) => updateField("name", event.target.value)}
+                      placeholder="Your full name"
                       className={inputClass}
                     />
                   </div>
                   <div>
-                    <label className="block font-[family-name:var(--font-dm-sans)] text-xs font-medium text-neutral-500 mb-1.5">
-                      Email *
-                    </label>
+                    <label className={sectionLabelClass}>Email Address *</label>
                     <input
                       type="email"
                       value={formData.email}
-                      onChange={(e) => updateField("email", e.target.value)}
+                      onChange={(event) => updateField("email", event.target.value)}
                       placeholder="you@company.com"
                       className={inputClass}
                     />
                   </div>
                   <div>
-                    <label className="block font-[family-name:var(--font-dm-sans)] text-xs font-medium text-neutral-500 mb-1.5">
-                      Company *
-                    </label>
+                    <label className={sectionLabelClass}>Business Name *</label>
                     <input
                       type="text"
                       value={formData.company}
-                      onChange={(e) => updateField("company", e.target.value)}
-                      placeholder="Company name"
+                      onChange={(event) => updateField("company", event.target.value)}
+                      placeholder="Your business name"
                       className={inputClass}
                     />
                   </div>
-                  <div>
-                    <label className="block font-[family-name:var(--font-dm-sans)] text-xs font-medium text-neutral-500 mb-1.5">
-                      Your Role
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.role}
-                      onChange={(e) => updateField("role", e.target.value)}
-                      placeholder="e.g. CEO, Operations Manager"
-                      className={inputClass}
-                    />
+                  <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                    <div>
+                      <label className={sectionLabelClass}>Your Role</label>
+                      <input
+                        type="text"
+                        value={formData.role}
+                        onChange={(event) => updateField("role", event.target.value)}
+                        placeholder="Founder, CEO, Operations Manager"
+                        className={inputClass}
+                      />
+                    </div>
+                    <div>
+                      <label className={sectionLabelClass}>Current Website</label>
+                      <input
+                        type="text"
+                        value={formData.website}
+                        onChange={(event) => updateField("website", event.target.value)}
+                        placeholder="https://yourbusiness.com"
+                        className={inputClass}
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                    <div>
+                      <label className={sectionLabelClass}>Team Size</label>
+                      <input
+                        type="text"
+                        value={formData.teamSize}
+                        onChange={(event) => updateField("teamSize", event.target.value)}
+                        placeholder="For example: 5 or 11-25"
+                        className={inputClass}
+                      />
+                    </div>
+                    <div>
+                      <label className={sectionLabelClass}>Annual Revenue</label>
+                      <input
+                        type="text"
+                        value={formData.revenue}
+                        onChange={(event) => updateField("revenue", event.target.value)}
+                        placeholder="For example: $500K or $2M-$5M"
+                        className={inputClass}
+                      />
+                    </div>
                   </div>
                 </motion.div>
               )}
 
               {step === 1 && (
                 <motion.div
-                  key="step1"
-                  initial={{ opacity: 0, x: 20 }}
+                  key="challenges"
+                  initial={{ opacity: 0, x: 16 }}
                   animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  className="space-y-5"
+                  exit={{ opacity: 0, x: -16 }}
+                  className="mt-8"
                 >
-                  <h3 className="font-[family-name:var(--font-montserrat)] text-base font-bold text-neutral-900 mb-1">
-                    About your business
-                  </h3>
-                  <div>
-                    <label className="block font-[family-name:var(--font-dm-sans)] text-xs font-medium text-neutral-500 mb-1.5">
-                      Industry *
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.industry}
-                      onChange={(e) => updateField("industry", e.target.value)}
-                      placeholder="e.g. Real estate, Healthcare, E-commerce"
-                      className={inputClass}
-                    />
+                  <p className="text-sm leading-7 text-neutral-600">
+                    Select any challenges that apply. This helps us understand where
+                    to focus first.
+                  </p>
+                  <div className="mt-6 grid grid-cols-1 gap-3 md:grid-cols-2">
+                    {painPointOptions.map((option) => (
+                      <ChoiceChip
+                        key={option}
+                        label={option}
+                        selected={formData.painPoints.includes(option)}
+                        onClick={() => toggleArrayValue("painPoints", option)}
+                      />
+                    ))}
                   </div>
-                  <div>
-                    <label className="block font-[family-name:var(--font-dm-sans)] text-xs font-medium text-neutral-500 mb-3">
-                      Team Size *
+                  <div className="mt-6">
+                    <label className={sectionLabelClass}>
+                      Additional Detail
                     </label>
-                    <div className="flex flex-wrap gap-2">
-                      {teamSizeOptions.map((size) => (
-                        <button
-                          key={size}
-                          type="button"
-                          onClick={() => updateField("teamSize", size)}
-                          className={`px-4 py-2.5 rounded-lg text-sm font-medium border transition-all ${
-                            formData.teamSize === size
-                              ? "bg-[#E8420A] border-[#E8420A] text-white"
-                              : "bg-white border-neutral-200 text-neutral-600 hover:border-neutral-300"
-                          }`}
-                        >
-                          {size}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block font-[family-name:var(--font-dm-sans)] text-xs font-medium text-neutral-500 mb-1.5">
-                      Current AI / Automation Tools
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.currentTools}
-                      onChange={(e) => updateField("currentTools", e.target.value)}
-                      placeholder="e.g. ChatGPT, Zapier, HubSpot, None"
-                      className={inputClass}
+                    <textarea
+                      value={formData.painDetail}
+                      onChange={(event) => updateField("painDetail", event.target.value)}
+                      placeholder="Describe any bottlenecks, frustrations, or operational issues you want us to understand."
+                      className={textareaClass}
                     />
                   </div>
                 </motion.div>
@@ -332,156 +576,206 @@ export default function IntakeForm() {
 
               {step === 2 && (
                 <motion.div
-                  key="step2"
-                  initial={{ opacity: 0, x: 20 }}
+                  key="tools"
+                  initial={{ opacity: 0, x: 16 }}
                   animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  className="space-y-5"
+                  exit={{ opacity: 0, x: -16 }}
+                  className="mt-8"
                 >
-                  <h3 className="font-[family-name:var(--font-montserrat)] text-base font-bold text-neutral-900 mb-1">
-                    Where does it hurt?
-                  </h3>
-                  <p className="font-[family-name:var(--font-dm-sans)] text-xs text-neutral-500">
-                    Select all that apply *
+                  <p className="text-sm leading-7 text-neutral-600">
+                    Tell us which AI tools or platforms your team already uses, if any.
+                    We will use this to recommend realistic next steps.
                   </p>
-                  <div className="grid grid-cols-1 gap-2.5">
-                    {painPointOptions.map((point) => (
-                      <button
-                        key={point}
-                        type="button"
-                        onClick={() => togglePainPoint(point)}
-                        className={`text-left px-4 py-3 rounded-lg text-sm border transition-all ${
-                          formData.painPoints.includes(point)
-                            ? "bg-orange-50 border-[#E8420A]/30 text-[#E8420A]"
-                            : "bg-white border-neutral-200 text-neutral-600 hover:border-neutral-300"
-                        }`}
-                      >
-                        <span className="flex items-center gap-3">
-                          <span
-                            className={`w-5 h-5 rounded-md border flex items-center justify-center text-xs ${
-                              formData.painPoints.includes(point)
-                                ? "bg-[#E8420A] border-[#E8420A] text-white"
-                                : "border-neutral-300"
-                            }`}
-                          >
-                            {formData.painPoints.includes(point) && "✓"}
-                          </span>
-                          {point}
-                        </span>
-                      </button>
+                  <div className="mt-6 grid grid-cols-1 gap-3 md:grid-cols-2">
+                    {aiToolOptions.map((option) => (
+                      <ChoiceChip
+                        key={option}
+                        label={option}
+                        selected={formData.currentAiTools.includes(option)}
+                        onClick={() => toggleArrayValue("currentAiTools", option)}
+                      />
                     ))}
                   </div>
+                  {formData.currentAiTools.includes("Other") && (
+                    <div className="mt-6">
+                      <label className={sectionLabelClass}>Other Tools</label>
+                      <input
+                        type="text"
+                        value={formData.currentAiToolsOther}
+                        onChange={(event) =>
+                          updateField("currentAiToolsOther", event.target.value)
+                        }
+                        placeholder="List any additional AI or automation tools"
+                        className={inputClass}
+                      />
+                    </div>
+                  )}
                 </motion.div>
               )}
 
               {step === 3 && (
                 <motion.div
-                  key="step3"
-                  initial={{ opacity: 0, x: 20 }}
+                  key="website"
+                  initial={{ opacity: 0, x: 16 }}
                   animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  className="space-y-5"
+                  exit={{ opacity: 0, x: -16 }}
+                  className="mt-8"
                 >
-                  <h3 className="font-[family-name:var(--font-montserrat)] text-base font-bold text-neutral-900 mb-1">
-                    Almost there — goals & timing
-                  </h3>
-                  <div>
-                    <label className="block font-[family-name:var(--font-dm-sans)] text-xs font-medium text-neutral-500 mb-3">
-                      Monthly Budget Range
+                  <p className="text-sm leading-7 text-neutral-600">
+                    This gives us a clearer picture of your website needs alongside any
+                    AI and automation opportunities.
+                  </p>
+                  <div className="mt-6 space-y-3">
+                    {websiteOptions.map((option) => (
+                      <SelectCard
+                        key={option.label}
+                        label={option.label}
+                        description={option.description}
+                        selected={formData.websiteStatus === option.label}
+                        onClick={() => updateField("websiteStatus", option.label)}
+                      />
+                    ))}
+                  </div>
+                  <div className="mt-6">
+                    <label className={sectionLabelClass}>
+                      Website Notes
                     </label>
-                    <div className="flex flex-wrap gap-2">
-                      {budgetOptions.map((b) => (
-                        <button
-                          key={b}
-                          type="button"
-                          onClick={() => updateField("budget", b)}
-                          className={`px-4 py-2.5 rounded-lg text-sm font-medium border transition-all ${
-                            formData.budget === b
-                              ? "bg-[#E8420A] border-[#E8420A] text-white"
-                              : "bg-white border-neutral-200 text-neutral-600 hover:border-neutral-300"
-                          }`}
-                        >
-                          {b}
-                        </button>
+                    <textarea
+                      value={formData.websiteIssues}
+                      onChange={(event) => updateField("websiteIssues", event.target.value)}
+                      placeholder="Share anything relevant about performance, messaging, lead flow, mobile usability, or design."
+                      className={textareaClass}
+                    />
+                  </div>
+                </motion.div>
+              )}
+
+              {step === 4 && (
+                <motion.div
+                  key="goals"
+                  initial={{ opacity: 0, x: 16 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -16 }}
+                  className="mt-8 space-y-7"
+                >
+                  <p className="text-sm leading-7 text-neutral-600">
+                    Help us understand your priorities so we can recommend the right
+                    path forward.
+                  </p>
+                  <div>
+                    <label className={sectionLabelClass}>Level of Engagement</label>
+                    <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                      {packageOptions.map((option) => (
+                        <SelectCard
+                          key={option.label}
+                          label={`${option.label} (${option.price})`}
+                          description={option.description}
+                          selected={formData.packageInterest === option.label}
+                          onClick={() => updateField("packageInterest", option.label)}
+                        />
                       ))}
                     </div>
                   </div>
                   <div>
-                    <label className="block font-[family-name:var(--font-dm-sans)] text-xs font-medium text-neutral-500 mb-3">
-                      Timeline
-                    </label>
-                    <div className="flex flex-wrap gap-2">
-                      {timelineOptions.map((t) => (
-                        <button
-                          key={t}
-                          type="button"
-                          onClick={() => updateField("timeline", t)}
-                          className={`px-4 py-2.5 rounded-lg text-sm font-medium border transition-all ${
-                            formData.timeline === t
-                              ? "bg-[#E8420A] border-[#E8420A] text-white"
-                              : "bg-white border-neutral-200 text-neutral-600 hover:border-neutral-300"
-                          }`}
-                        >
-                          {t}
-                        </button>
+                    <label className={sectionLabelClass}>Desired Timeline</label>
+                    <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                      {timelineOptions.map((option) => (
+                        <SelectCard
+                          key={option.label}
+                          label={option.label}
+                          description={option.description}
+                          selected={formData.timeline === option.label}
+                          onClick={() => updateField("timeline", option.label)}
+                        />
                       ))}
                     </div>
                   </div>
                   <div>
-                    <label className="block font-[family-name:var(--font-dm-sans)] text-xs font-medium text-neutral-500 mb-1.5">
-                      What would success look like in 6 months?
+                    <label className={sectionLabelClass}>
+                      What would success look like in the next 90 days?
                     </label>
                     <textarea
                       value={formData.goals}
-                      onChange={(e) => updateField("goals", e.target.value)}
-                      placeholder="e.g. Cut admin time by 50%, automate lead follow-up, better reporting..."
-                      rows={3}
-                      className={`${inputClass} resize-none`}
+                      onChange={(event) => updateField("goals", event.target.value)}
+                      placeholder="For example: increase qualified leads, reduce administrative work, improve response speed, or modernize the website."
+                      className={textareaClass}
+                    />
+                  </div>
+                  <div>
+                    <label className={sectionLabelClass}>
+                      Anything Else We Should Know
+                    </label>
+                    <textarea
+                      value={formData.additionalContext}
+                      onChange={(event) =>
+                        updateField("additionalContext", event.target.value)
+                      }
+                      placeholder="Share any context, concerns, or goals that would help us prepare a stronger recommendation."
+                      className={textareaClass}
                     />
                   </div>
                 </motion.div>
               )}
             </AnimatePresence>
 
-            {/* Navigation */}
-            <div className="flex items-center justify-between mt-8">
-              {step > 0 ? (
-                <button
-                  type="button"
-                  onClick={() => setStep((s) => s - 1)}
-                  className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-neutral-400 hover:text-neutral-900 transition-colors"
-                >
-                  ← Back
-                </button>
-              ) : (
-                <div />
-              )}
+            <div className="mt-8 flex flex-col gap-5 border-t border-neutral-200 pt-6 sm:flex-row sm:items-center sm:justify-between">
+              <button
+                type="button"
+                onClick={() => step > 0 && setStep((currentStep) => currentStep - 1)}
+                disabled={step === 0}
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-neutral-200 px-5 py-3 text-sm font-semibold text-neutral-500 transition hover:border-neutral-300 hover:text-neutral-900 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                <ChevronLeft size={16} />
+                Back
+              </button>
+
+              <div className="flex items-center justify-center gap-2">
+                {Array.from({ length: totalSteps }).map((_, index) => (
+                  <StepDot
+                    key={stepTitles[index]}
+                    active={index === step}
+                    complete={index < step}
+                    onClick={() => goToStep(index)}
+                  />
+                ))}
+              </div>
 
               {step < totalSteps - 1 ? (
                 <button
                   type="button"
-                  onClick={() => setStep((s) => s + 1)}
+                  onClick={() => canAdvance() && setStep((currentStep) => currentStep + 1)}
                   disabled={!canAdvance()}
-                  className="px-6 py-3 bg-[#E8420A] text-white rounded-lg font-semibold font-[family-name:var(--font-montserrat)] text-sm hover:bg-[#c93508] transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-md shadow-orange-100"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#E8420A] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#c93508] disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                  Next →
+                  Continue
+                  <ChevronRight size={16} />
                 </button>
               ) : (
-                <button
-                  type="button"
-                  onClick={handleSubmit}
-                  disabled={isSubmitting}
-                  className="flex items-center gap-2 px-8 py-3 bg-[#E8420A] text-white rounded-lg font-semibold font-[family-name:var(--font-montserrat)] text-sm hover:bg-[#c93508] transition-all disabled:opacity-60 shadow-md shadow-orange-100"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 size={16} className="animate-spin" />
-                      Submitting...
-                    </>
-                  ) : (
-                    "Get My Free AI Audit"
-                  )}
-                </button>
+                <div className="flex flex-col items-end gap-3">
+                  {submitError ? (
+                    <p className="max-w-xs text-right text-sm text-red-600">
+                      {submitError}
+                    </p>
+                  ) : null}
+                  <button
+                    type="button"
+                    onClick={handleSubmit}
+                    disabled={isSubmitting}
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#E8420A] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#c93508] disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 size={16} className="animate-spin" />
+                        Submitting
+                      </>
+                    ) : (
+                      <>
+                        Submit Intake
+                        <ChevronRight size={16} />
+                      </>
+                    )}
+                  </button>
+                </div>
               )}
             </div>
           </motion.div>

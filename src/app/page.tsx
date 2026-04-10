@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Navbar from "@/components/landing/Navbar";
 import Hero from "@/components/landing/Hero";
 import Problem from "@/components/landing/Problem";
@@ -8,6 +11,8 @@ import ContactForm from "@/components/landing/ContactForm";
 import Footer from "@/components/landing/Footer";
 
 export default function Home() {
+  const [intakeSubmitted, setIntakeSubmitted] = useState(false);
+
   return (
     <main className="overflow-x-hidden">
       <Navbar />
@@ -15,8 +20,8 @@ export default function Home() {
       <Problem />
       <Services />
       <HowItWorks />
-      <IntakeForm />
-      <ContactForm />
+      <IntakeForm onSubmitted={() => setIntakeSubmitted(true)} />
+      {!intakeSubmitted && <ContactForm />}
       <Footer />
     </main>
   );
