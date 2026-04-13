@@ -30,9 +30,9 @@ export const metadata: Metadata = {
     siteName: "Organic AI Solutions",
     images: [
       {
-        url: "/logo.png",
-        width: 620,
-        height: 260,
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
         alt: "Organic AI Solutions",
       },
     ],
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     title: "Organic AI Solutions — AI Optimization for Real Businesses",
     description:
       "We help small and mid-sized businesses harness AI automation, workflow optimization, and data insights to grow faster and work smarter.",
-    images: ["/logo.png"],
+    images: ["/og-image.png"],
   },
 };
 
