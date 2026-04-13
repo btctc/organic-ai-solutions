@@ -15,10 +15,36 @@ const dmSans = DM_Sans({
   weight: ["400", "500", "600"],
 });
 
+const siteUrl = "https://www.organicaisolutions.ai";
+
 export const metadata: Metadata = {
   title: "Organic AI Solutions — AI Optimization for Real Businesses",
   description:
     "We help small and mid-sized businesses harness AI automation, workflow optimization, and data insights to grow faster and work smarter.",
+  metadataBase: new URL(siteUrl),
+  openGraph: {
+    title: "Organic AI Solutions — AI Optimization for Real Businesses",
+    description:
+      "We help small and mid-sized businesses harness AI automation, workflow optimization, and data insights to grow faster and work smarter.",
+    url: siteUrl,
+    siteName: "Organic AI Solutions",
+    images: [
+      {
+        url: "/logo.png",
+        width: 620,
+        height: 260,
+        alt: "Organic AI Solutions",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Organic AI Solutions — AI Optimization for Real Businesses",
+    description:
+      "We help small and mid-sized businesses harness AI automation, workflow optimization, and data insights to grow faster and work smarter.",
+    images: ["/logo.png"],
+  },
 };
 
 export default function RootLayout({
