@@ -96,7 +96,7 @@ export async function POST(request: Request) {
   const physicalAddress =
     process.env.PHYSICAL_ADDRESS ?? "Organic AI Solutions, Texas, USA";
   const fromEmail =
-    process.env.FROM_EMAIL ?? "Organic AI Solutions <onboarding@resend.dev>";
+    process.env.FROM_EMAIL ?? "Organic AI Solutions <hello@organicaisolutions.ai>";
 
   const unsubToken = Buffer.from(email).toString("base64url");
   const unsubUrl = `${siteUrl}/unsubscribe?token=${unsubToken}`;

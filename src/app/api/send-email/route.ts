@@ -10,7 +10,7 @@ export async function POST(request: Request) {
 
   const delivery = await sendEmailWithTestingFallback({
     resend,
-    from: "onboarding@resend.dev",
+    from: "Organic AI Solutions <hello@organicaisolutions.ai>",
     to: "overtimeincorporated@gmail.com",
     subject: subject ?? "No Subject",
     html: html ?? "",
