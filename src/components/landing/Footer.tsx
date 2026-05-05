@@ -76,6 +76,9 @@ export default function Footer() {
             Built with purpose. Powered by AI.
           </p>
         </div>
+        <p className="text-xs text-white/40">
+          Built with Claude. Deployed by OAS.
+        </p>
       </div>
     </footer>
   );
