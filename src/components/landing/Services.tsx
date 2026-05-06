@@ -10,36 +10,48 @@ const services = [
     title: "AI Automation",
     description:
       "Eliminate repetitive manual work with intelligent automation pipelines that handle data entry, reporting, and scheduling.",
+    useCase:
+      "A dump truck operator stops re-typing job requests from Gmail into their dispatch board — saves 8 hours a week.",
   },
   {
     icon: GitBranch,
     title: "Workflow Optimization",
     description:
       "Audit your current processes, identify bottlenecks, and redesign them with AI-enhanced workflows that cut costs and scale.",
+    useCase:
+      "A dental practice cuts no-shows 40% by mapping the booking-to-confirmation flow and adding AI follow-up.",
   },
   {
     icon: Lightbulb,
     title: "AI Consulting",
     description:
       "Our consultants assess your business, identify the highest-ROI AI opportunities, and build a clear roadmap for your goals.",
+    useCase:
+      "A 12-person home services company gets a 90-day roadmap with three scoped builds, ranked by ROI.",
   },
   {
     icon: BarChart3,
     title: "Data Insights",
     description:
       "Turn raw business data into actionable intelligence with AI-driven analytics that surface trends and guide smarter decisions.",
+    useCase:
+      "A specialty contractor sees which job types actually make money — margin per crew-hour, not just gross revenue.",
   },
   {
     icon: Map,
     title: "Process Mapping",
     description:
       "Document and visualize your end-to-end operations — creating a shared language for your team and a blueprint for transformation.",
+    useCase:
+      "A growing restaurant group documents every step from order to delivery — onboarding new managers in days, not months.",
   },
   {
     icon: GraduationCap,
     title: "AI Training",
     description:
       "Hands-on training programs designed for non-technical staff — practical, jargon-free, and immediately applicable.",
+    useCase:
+      "A real estate brokerage's 30 agents learn to write listings, follow up with leads, and respond to inquiries with AI in two half-day sessions.",
   },
 ];
 
@@ -89,7 +101,7 @@ export default function Services() {
                 initial={{ opacity: 0, y: 28 }}
                 animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.45, delay: 0.08 + i * 0.06 }}
-                className="group rounded-2xl border border-neutral-100 p-7 hover:border-orange-100 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 bg-white"
+                className="group relative rounded-2xl border border-neutral-100 p-7 hover:border-[#E8420A]/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-white overflow-hidden"
               >
                 <div className="w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center mb-5 group-hover:bg-[#E8420A] transition-colors duration-200">
                   <Icon className="text-[#E8420A] group-hover:text-white transition-colors duration-200" size={19} />
@@ -100,6 +112,19 @@ export default function Services() {
                 <p className="font-[family-name:var(--font-dm-sans)] text-neutral-500 text-sm leading-relaxed">
                   {svc.description}
                 </p>
+
+                <div className="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-out">
+                  <div className="overflow-hidden">
+                    <div className="mt-4 pt-4 border-t border-neutral-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
+                      <p className="font-[family-name:var(--font-montserrat)] text-[10px] font-semibold tracking-widest uppercase text-[#E8420A] mb-2">
+                        For example
+                      </p>
+                      <p className="font-[family-name:var(--font-dm-sans)] text-neutral-700 text-sm leading-relaxed italic">
+                        {svc.useCase}
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </motion.div>
             );
           })}
