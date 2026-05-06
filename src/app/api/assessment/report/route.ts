@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { resend } from '@/lib/resend';
 import { supabaseAdmin } from '@/lib/supabase-admin';
+import { OAS_AGENT_CATALOG, pickTopAgentsForLead, type OASAgent } from '@/lib/agentCatalog';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -32,6 +33,18 @@ export async function POST(req: NextRequest) {
   const conversationText = conversationJson
     .map((m) => `${m.role.toUpperCase()}: ${m.content}`)
     .join('\n\n');
+
+  const firstUserMessage = conversationJson.find((m) => m.role === 'user');
+  const firstUserContent = firstUserMessage?.content || '';
+  const industryMatch = firstUserContent.match(/Industry:\s*(.+?)(?:\n|$)/i);
+  const painMatch = firstUserContent.match(/Top friction:\s*(.+?)(?:\n|$)/i);
+  const leadIndustry = industryMatch ? industryMatch[1].trim() : null;
+  const leadPainPoints = painMatch
+    ? painMatch[1].split(',').map((p) => p.trim()).filter((p) => p.length > 0)
+    : [];
+  const recommendedAgents = pickTopAgentsForLead(leadIndustry, leadPainPoints, 3);
+  const recommendedIds = new Set(recommendedAgents.map((a) => a.id));
+  const agentTableRows = OAS_AGENT_CATALOG.map((a) => renderAgentRow(a, recommendedIds.has(a.id))).join('');
 
   const firstName = typeof name === 'string' && name.trim() ? name.trim().split(/\s+/)[0] : 'there';
 
@@ -166,6 +179,21 @@ export async function POST(req: NextRequest) {
                       </tr>
                     </table>
 
+                    <h3 style="margin:24px 0 8px;font-size:14px;color:#1a1a1a;">Agent catalog — recommended 3 marked ★</h3>
+                    <p style="margin:0 0 12px;color:#555;font-size:13px;line-height:1.5;">When you tap the magic link above, the 3 agents marked ★ get auto-emailed to the prospect. The other 7 are your held-back upsells for the call.</p>
+                    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:0 0 24px;font-size:12px;">
+                      <thead>
+                        <tr style="background:#f0f0f0;">
+                          <th align="left" style="padding:8px 10px;border:1px solid #ddd;">★</th>
+                          <th align="left" style="padding:8px 10px;border:1px solid #ddd;">Agent</th>
+                          <th align="left" style="padding:8px 10px;border:1px solid #ddd;">Margin</th>
+                          <th align="left" style="padding:8px 10px;border:1px solid #ddd;">Setup</th>
+                          <th align="left" style="padding:8px 10px;border:1px solid #ddd;">Tiers</th>
+                        </tr>
+                      </thead>
+                      <tbody>${agentTableRows}</tbody>
+                    </table>
+
                     <h3 style="margin:24px 0 8px;font-size:14px;color:#1a1a1a;">Conversation transcript</h3>
                     <pre style="background:#f5f5f5;padding:16px;white-space:pre-wrap;font-family:'SF Mono',Monaco,monospace;font-size:12px;line-height:1.5;border-radius:4px;color:#333;">${conversationText}</pre>
                   </td>
@@ -187,4 +215,23 @@ export async function POST(req: NextRequest) {
   }
 
   return NextResponse.json({ success: true, status: 'awaiting_trigger' });
+}
+
+function renderAgentRow(a: OASAgent, isRecommended: boolean): string {
+  const star = isRecommended ? '★' : '';
+  const tierBadge =
+    a.marginTier === 'A' ? 'A — high margin' :
+    a.marginTier === 'B' ? 'B — solid margin' :
+    'C — premium tier';
+  const tiersStr = a.pricingTiers.join(', ');
+  const rowBg = isRecommended ? '#FFF7F0' : '#FFFFFF';
+  return `
+    <tr style="background:${rowBg};">
+      <td align="center" style="padding:8px 10px;border:1px solid #ddd;font-weight:700;color:#E25822;font-size:14px;">${star}</td>
+      <td style="padding:8px 10px;border:1px solid #ddd;"><strong>${a.name}</strong><br/><span style="color:#777;font-size:11px;">${a.tagline}</span></td>
+      <td style="padding:8px 10px;border:1px solid #ddd;font-size:11px;">${tierBadge}</td>
+      <td style="padding:8px 10px;border:1px solid #ddd;font-size:11px;">${a.setupHours}h</td>
+      <td style="padding:8px 10px;border:1px solid #ddd;font-size:11px;">${tiersStr}</td>
+    </tr>
+  `;
 }
