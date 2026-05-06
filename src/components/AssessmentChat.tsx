@@ -84,7 +84,7 @@ export default function AssessmentChat() {
       const res = await fetch('/api/assessment/report', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ conversationId, email, name }),
+        body: JSON.stringify({ conversationId, email, name, messages }),
       });
       if (!res.ok) {
         const err = await res.json().catch(() => ({ error: 'Something went wrong.' }));

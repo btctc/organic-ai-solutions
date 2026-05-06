@@ -30,7 +30,7 @@ Constraints:
 CONVERSATION:`;
 
 export async function POST(req: NextRequest) {
-  const { conversationId, email, name } = await req.json();
+  const { conversationId, email, name, messages } = await req.json();
 
   const { data: convo, error } = await supabaseAdmin
     .from('assessment_conversations')
@@ -38,11 +38,13 @@ export async function POST(req: NextRequest) {
     .eq('id', conversationId)
     .single();
 
-  if (error || !convo) {
+  const fallbackMessages = Array.isArray(messages) ? messages : null;
+  if ((error || !convo) && !fallbackMessages) {
     return NextResponse.json({ error: 'Conversation not found' }, { status: 404 });
   }
 
-  const conversationText = (convo.conversation_json as any[])
+  const conversationJson = (convo?.conversation_json as any[]) || fallbackMessages;
+  const conversationText = conversationJson
     .map((m) => `${m.role.toUpperCase()}: ${m.content}`)
     .join('\n\n');
 
@@ -57,13 +59,14 @@ export async function POST(req: NextRequest) {
 
   await supabaseAdmin
     .from('assessment_conversations')
-    .update({
+    .upsert({
+      id: conversationId,
+      conversation_json: conversationJson,
       prospect_email: email,
       prospect_name: name,
       report_html: reportHtml,
       status: 'completed',
-    })
-    .eq('id', conversationId);
+    });
 
   // Update budget tracker for the report call (Sonnet 4: $3/M input, $15/M output)
   const inputTokens = reportResponse.usage?.input_tokens || 0;

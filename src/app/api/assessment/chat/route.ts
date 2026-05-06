@@ -40,7 +40,8 @@ const RATE_LIMIT_PER_DAY = 3;
 
 export async function POST(req: NextRequest) {
   const { messages, conversationId } = await req.json();
-  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || '0.0.0.0';
+  const ipAddress = ip;
 
   // Budget kill switch
   const limit = Number(process.env.ASSESSMENT_BUDGET_LIMIT_USD || 25);
@@ -100,6 +101,20 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  const { error: initialPersistError } = await supabaseAdmin.from('assessment_conversations').upsert({
+    id: conversationId,
+    conversation_json: messages,
+    ip_address: ipAddress,
+    updated_at: new Date().toISOString(),
+  });
+  if (initialPersistError) {
+    console.error({
+      stage: 'assessment_conversation_persist_failed',
+      error: initialPersistError.message,
+      conversationId,
+    });
+  }
+
   // Stream from Haiku
   const stream = await anthropic.messages.stream({
     model: 'claude-haiku-4-5-20251001',
@@ -130,12 +145,19 @@ export async function POST(req: NextRequest) {
 
       // Persist conversation
       const updated = [...messages, { role: 'assistant', content: fullText }];
-      await supabaseAdmin.from('assessment_conversations').upsert({
+      const { error: finalPersistError } = await supabaseAdmin.from('assessment_conversations').upsert({
         id: conversationId,
         conversation_json: updated,
-        ip_address: ip,
+        ip_address: ipAddress,
         updated_at: new Date().toISOString(),
       });
+      if (finalPersistError) {
+        console.error({
+          stage: 'assessment_conversation_persist_failed',
+          error: finalPersistError.message,
+          conversationId,
+        });
+      }
 
       // Increment rate limit
       await supabaseAdmin.rpc('increment_rate_limit', { ip: ip }).then(

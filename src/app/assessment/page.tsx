@@ -10,7 +10,7 @@ export const metadata = {
 export default function AssessmentPage() {
   return (
     <main className="min-h-screen py-16 md:py-24">
-      <div className="mx-auto max-w-2xl px-6">
+      <div className="mx-auto max-w-4xl px-6">
         <RevealOnScroll>
           <div className="mb-10 text-center">
             <h1 className="font-display text-4xl md:text-5xl leading-[1.05]">
