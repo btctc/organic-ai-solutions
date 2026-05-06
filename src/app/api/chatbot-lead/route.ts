@@ -147,7 +147,7 @@ export async function POST(request: Request) {
       resend,
       from: fromEmail,
       to: email,
-      subject: "Your Free AI Audit is Being Reviewed — Organic AI Solutions",
+      subject: "Your Free AI Assessment is Being Reviewed — Organic AI Solutions",
       html: autoResponseHtml,
     }),
   ]);

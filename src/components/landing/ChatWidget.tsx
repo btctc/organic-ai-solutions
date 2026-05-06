@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import Logo from "@/components/Logo";
 import Link from "next/link";
+import { usePathname as useCurrentPathname } from "next/navigation";
 import { X, Send, Loader2, CheckCircle, ExternalLink, MessageSquare } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { trackEvent } from "@/lib/analytics";
@@ -74,6 +75,9 @@ function TypingIndicator() {
 }
 
 function ChatWidgetInner() {
+  const pathname = useCurrentPathname();
+  if (pathname?.startsWith("/assessment")) return null;
+
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([WELCOME_MESSAGE]);
   const [input, setInput] = useState("");
@@ -305,18 +309,24 @@ function ChatWidgetInner() {
 
               <button
                 ref={openButtonRef}
-                onClick={() => setOpen(true)}
+                onClick={() => {
+                  try { trackEvent("quick_contact_clicked"); } catch { /* silent */ }
+                  if (pathname === "/") {
+                    document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
+                  } else {
+                    window.location.href = "/#contact";
+                  }
+                }}
                 className="flex items-center gap-2 pl-4 pr-5 h-[60px] rounded-full bg-[#C73D09] text-white shadow-lg shadow-orange-300/40 hover:bg-[#a32d07] transition-colors"
-                aria-label="Open AI chat assistant"
-                aria-haspopup="dialog"
+                aria-label="Open quick contact"
                 aria-expanded={false}
               >
                 <MessageSquare size={24} aria-hidden="true" />
                 <span className="hidden sm:block font-[family-name:var(--font-montserrat)] font-semibold text-sm">
-                  Chat with us
+                  Quick contact
                 </span>
                 <span className="sm:hidden font-[family-name:var(--font-montserrat)] font-semibold text-sm">
-                  Chat
+                  Contact
                 </span>
               </button>
             </motion.div>
@@ -401,16 +411,16 @@ function ChatWidgetInner() {
                   Want personalized recommendations?
                 </p>
                 <p className="font-[family-name:var(--font-dm-sans)] text-neutral-700 text-xs mb-3 leading-snug">
-                  Get your free AI Audit or connect with a specialist.
+                  Get your free AI Assessment or connect with a specialist.
                 </p>
                 <div className="flex flex-wrap gap-2">
                   <Link
-                    href="/audit"
+                    href="/assessment"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-1 px-3 py-2 rounded-lg bg-[#C73D09] text-white text-xs font-semibold font-[family-name:var(--font-montserrat)] hover:bg-[#a32d07] transition-colors min-h-[36px]"
                   >
-                    Get Free Audit
+                    Get Free Assessment
                     <ExternalLink size={10} aria-hidden="true" />
                   </Link>
                   <button

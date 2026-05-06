@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { Montserrat, DM_Sans } from "next/font/google";
+import { Montserrat, DM_Sans, Fraunces } from "next/font/google";
 import "./globals.css";
-
 import ChatWidget from "@/components/landing/ChatWidget";
+
 const montserrat = Montserrat({
   variable: "--font-montserrat",
   subsets: ["latin"],
@@ -15,34 +15,37 @@ const dmSans = DM_Sans({
   weight: ["400", "500", "600"],
 });
 
-const siteUrl = "https://www.organicaisolutions.ai";
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
+  subsets: ["latin"],
+  weight: ["500"],
+  display: "swap",
+});
 
 export const metadata: Metadata = {
-  title: "Organic AI Solutions — AI Optimization for Real Businesses",
+  metadataBase: new URL("https://organicaisolutions.ai"),
+  title: {
+    default: "Organic AI Solutions — AI Agents Your Business Can Run On",
+    template: "%s | Organic AI Solutions",
+  },
   description:
-    "We help small and mid-sized businesses harness AI automation, workflow optimization, and data insights to grow faster and work smarter.",
-  metadataBase: new URL(siteUrl),
+    "Organic AI Solutions is a Dallas-based AI consulting firm that deploys production AI agents and AI-native websites for small and mid-sized businesses. Built by operators with enterprise-grade experience.",
+  keywords: ["AI consulting", "AI agents", "Dallas AI", "AI deployment", "small business AI"],
+  authors: [{ name: "Terrence Crawford" }, { name: "Diego Kennedy Templeton" }],
   openGraph: {
-    title: "Organic AI Solutions — AI Optimization for Real Businesses",
-    description:
-      "We help small and mid-sized businesses harness AI automation, workflow optimization, and data insights to grow faster and work smarter.",
-    url: siteUrl,
-    siteName: "Organic AI Solutions",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Organic AI Solutions",
-      },
-    ],
     type: "website",
+    locale: "en_US",
+    url: "https://organicaisolutions.ai",
+    siteName: "Organic AI Solutions",
+    title: "AI Agents Your Business Can Run On",
+    description:
+      "Production AI agent deployments and AI-native websites for small and mid-sized businesses.",
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Organic AI Solutions" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Organic AI Solutions — AI Optimization for Real Businesses",
-    description:
-      "We help small and mid-sized businesses harness AI automation, workflow optimization, and data insights to grow faster and work smarter.",
+    title: "Organic AI Solutions",
+    description: "AI agents your business can actually run on.",
     images: ["/og-image.png"],
   },
 };
@@ -54,7 +57,57 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${montserrat.variable} ${dmSans.variable} antialiased`}>
+      <body
+        className={`${montserrat.variable} ${dmSans.variable} ${fraunces.variable} antialiased`}
+      >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "Organization",
+                  "@id": "https://organicaisolutions.ai/#organization",
+                  name: "Organic AI Solutions",
+                  url: "https://organicaisolutions.ai",
+                  description:
+                    "Dallas-based AI consulting firm that deploys production AI agents and AI-native websites for small and mid-sized businesses.",
+                  founder: [
+                    { "@type": "Person", name: "Terrence Crawford", jobTitle: "CEO & Co-founder" },
+                    {
+                      "@type": "Person",
+                      name: "Diego Kennedy Templeton",
+                      jobTitle: "CTO & Co-founder",
+                    },
+                  ],
+                  areaServed: { "@type": "Place", name: "United States" },
+                  address: {
+                    "@type": "PostalAddress",
+                    addressLocality: "Dallas",
+                    addressRegion: "TX",
+                    addressCountry: "US",
+                  },
+                },
+                {
+                  "@type": "ProfessionalService",
+                  "@id": "https://organicaisolutions.ai/#service",
+                  name: "AI Consulting and Agent Deployment",
+                  provider: { "@id": "https://organicaisolutions.ai/#organization" },
+                  serviceType: "AI Consulting",
+                  areaServed: "United States",
+                },
+                {
+                  "@type": "WebSite",
+                  "@id": "https://organicaisolutions.ai/#website",
+                  url: "https://organicaisolutions.ai",
+                  name: "Organic AI Solutions",
+                  publisher: { "@id": "https://organicaisolutions.ai/#organization" },
+                },
+              ],
+            }),
+          }}
+        />
         {children}
         <ChatWidget />
       </body>

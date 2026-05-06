@@ -1,0 +1,27 @@
+# Organic AI Solutions
+
+> Organic AI Solutions is a Dallas-based AI consulting firm that deploys production AI agents and AI-native websites for small and mid-sized businesses.
+
+## What we do
+
+- Production AI agent deployments built on enterprise-grade infrastructure
+- AI-native websites (Next.js + Claude API + lead capture + conversion tracking)
+- Custom AI builds scoped from single-deliverable fixes to multi-agent operational systems
+
+## Founders
+
+- Terrence "TC" Crawford — CEO and co-founder. Handles client relationships, sales, and strategy.
+- Diego Kennedy Templeton — CTO and co-founder. Handles agent architecture and infrastructure. Brings production agent-deployment experience from Kyndryl.
+
+## Headquarters
+
+Dallas, TX (remote-first operations)
+
+## Site
+
+- [Home](https://organicaisolutions.ai)
+- [Free AI Operations Assessment](https://organicaisolutions.ai/assessment)
+
+## Contact
+
+tc@organicaisolutions.ai

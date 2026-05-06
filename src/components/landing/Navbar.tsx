@@ -55,10 +55,10 @@ export default function Navbar() {
             </Link>
           ))}
           <Link
-            href="/#intake"
+            href="/assessment"
             className="ml-2 px-5 py-2 rounded-lg bg-[#E8420A] text-white text-sm font-semibold font-[family-name:var(--font-montserrat)] hover:bg-[#c93508] transition-colors"
           >
-            Free AI Audit
+            Free AI Assessment
           </Link>
         </nav>
 
@@ -94,11 +94,11 @@ export default function Navbar() {
                 </Link>
               ))}
               <Link
-                href="/#intake"
+                href="/assessment"
                 onClick={() => setMenuOpen(false)}
                 className="mt-1 w-full px-5 py-3 rounded-lg bg-[#E8420A] text-white font-semibold font-[family-name:var(--font-montserrat)] text-sm hover:bg-[#c93508] transition-colors"
               >
-                Free AI Audit
+                Free AI Assessment
               </Link>
             </div>
           </motion.div>
