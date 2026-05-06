@@ -12,6 +12,13 @@ const INITIAL_MESSAGE: Message = {
     "Hey — I'm the OAS Assessor. Quick way to start: walk me through a typical Monday at your business. What's the first thing you do, and where does the friction usually show up?",
 };
 
+const REPORT_STAGES = [
+  'Saving your responses...',
+  'Generating your AI Opportunity Report...',
+  'Sending to your inbox...',
+  'Almost ready...',
+];
+
 export default function AssessmentChat() {
   const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE]);
   const [input, setInput] = useState('');
@@ -22,8 +29,11 @@ export default function AssessmentChat() {
   const [name, setName] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState('');
+  const [isSubmittingReport, setIsSubmittingReport] = useState(false);
+  const [reportStage, setReportStage] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const reportTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
@@ -34,6 +44,14 @@ export default function AssessmentChat() {
       inputRef.current?.focus();
     }
   }, [messages, thinking, showEmailCapture]);
+
+  useEffect(() => {
+    return () => {
+      if (reportTimerRef.current) {
+        clearInterval(reportTimerRef.current);
+      }
+    };
+  }, []);
 
   async function send() {
     if (!input.trim() || thinking) return;
@@ -66,9 +84,17 @@ export default function AssessmentChat() {
   }
 
   async function submitReport() {
-    if (!email.trim()) return;
+    if (!email.trim() || isSubmittingReport) return;
     setThinking(true);
+    setIsSubmittingReport(true);
+    setReportStage(0);
     setSubmitError('');
+    if (reportTimerRef.current) {
+      clearInterval(reportTimerRef.current);
+    }
+    reportTimerRef.current = setInterval(() => {
+      setReportStage((stage) => Math.min(stage + 1, REPORT_STAGES.length - 1));
+    }, 3500);
     try {
       const res = await fetch('/api/assessment/report', {
         method: 'POST',
@@ -84,6 +110,11 @@ export default function AssessmentChat() {
     } catch {
       setSubmitError('Something went wrong. Please try again.');
     } finally {
+      if (reportTimerRef.current) {
+        clearInterval(reportTimerRef.current);
+        reportTimerRef.current = null;
+      }
+      setIsSubmittingReport(false);
       setThinking(false);
     }
   }
@@ -155,30 +186,39 @@ export default function AssessmentChat() {
             animate={{ opacity: 1, y: 0 }}
             className="border-t border-on-surface/10 p-6 space-y-3"
           >
-            <p className="text-sm text-on-surface-muted">Where should I send your report?</p>
-            {submitError && <p className="text-sm text-red-600">{submitError}</p>}
-            <div className="flex flex-col gap-2 sm:flex-row">
-              <input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Your name"
-                className="flex-1 rounded-lg border border-on-surface/20 bg-neutral px-4 py-2 text-sm"
-              />
-              <input
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@business.com"
-                type="email"
-                className="flex-[1.5] rounded-lg border border-on-surface/20 bg-neutral px-4 py-2 text-sm"
-              />
-              <button
-                onClick={submitReport}
-                disabled={thinking || !email.trim()}
-                className="rounded-lg bg-tertiary px-5 py-2 text-sm font-medium text-on-tertiary disabled:opacity-50"
-              >
-                {thinking ? 'Sending...' : 'Send my report'}
-              </button>
-            </div>
+            {isSubmittingReport ? (
+              <div className="flex flex-col items-center justify-center py-8 text-center">
+                <div className="h-10 w-10 animate-spin rounded-full border-2 border-on-surface/10 border-t-[#E25822]" />
+                <p className="mt-4 text-sm font-medium text-[#333]">{REPORT_STAGES[reportStage]}</p>
+              </div>
+            ) : (
+              <>
+                <p className="text-sm text-on-surface-muted">Where should I send your report?</p>
+                {submitError && <p className="text-sm text-red-600">{submitError}</p>}
+                <div className="flex flex-col gap-2 sm:flex-row">
+                  <input
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Your name"
+                    className="flex-1 rounded-lg border border-on-surface/20 bg-neutral px-4 py-2 text-sm"
+                  />
+                  <input
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@business.com"
+                    type="email"
+                    className="flex-[1.5] rounded-lg border border-on-surface/20 bg-neutral px-4 py-2 text-sm"
+                  />
+                  <button
+                    onClick={submitReport}
+                    disabled={thinking || isSubmittingReport || !email.trim()}
+                    className="rounded-lg bg-tertiary px-5 py-2 text-sm font-medium text-on-tertiary disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    Send my report
+                  </button>
+                </div>
+              </>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
