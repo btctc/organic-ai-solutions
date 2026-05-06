@@ -8,6 +8,7 @@ colors:
   primary: "#0F1310"           # Deep ink — primary text, headlines, dark surfaces
   secondary: "#5C6661"         # Slate green — borders, captions, metadata
   tertiary: "#B5421B"          # Burnt clay — single interaction accent, primary CTAs only
+  on-tertiary: "#F5F2ED"       # Bone text on burnt-clay surfaces (button-primary-hover state)
   neutral: "#F5F2ED"           # Warm bone — page background, organic foundation
   surface: "#FFFFFF"           # Pure white — content cards, modals
   on-surface: "#0F1310"        # Text on white surfaces
@@ -251,6 +252,38 @@ The shape language is **architectural minimalism** — corners are sharp-to-soft
 - **Divider:** 1px slate green hairline, never thicker, never colored.
 - **Chatbot panel:** White surface, 4px radius on the container, 1px slate-green-at-20% hairline border, **no shadow**. Powered by Claude Haiku, system prompt scoped to the site's actual content.
 
+## Brand Voice & Positioning
+
+Organic AI Solutions is positioned as **builder-led AI consulting**, not strategy-deck consulting. The voice across all surfaces
+— homepage copy, agent prompts, email briefs, case studies, bio copy — follows one operating principle:
+
+**Lead with business outcomes. AI is the differentiator, never the headline pitch.**
+
+The thesis in plain operator's voice:
+
+> "Take their business problems and turn them into a technical solution. Owners don't need to understand the technology
+> end-to-end — they need to see more time and more money. We get our foot in the door (often with a website), build trust
+> through visible results, then layer in agent work as the upsell. The differentiator is real production agent deployment.
+> We just don't lead with it."
+
+What this means concretely:
+
+- **Lead copy with outcomes** (more revenue, more time saved, fewer mistakes), not capabilities or vendor names. Capabilities can appear
+  as supporting evidence — never as the headline.
+- **Websites are a major engagement path, not the only one.** Some clients start with an audit, some with a small automation, some with a website.
+  The site should make multiple entry points visible without making the visitor pick a tier.
+- **The agent on the homepage is the work itself.** The agent visitors meet on the site is built the same way Organic AI Solutions builds for clients.
+  Real work, not a demo — interact with it before you commit to anything. Site copy should point at that as evidence, plainly.
+- **Enterprise credibility is encoded, not named.** Organic AI Solutions leadership has deployed production agents at enterprise scale.
+  That credibility appears as "operators with enterprise-grade experience" or similar — never as named-employer references.
+- **Founder bio copy can reference range.** TC's background as a builder spans websites, games, audio/music, AI agents, and business audits — that range
+  belongs in About/Bio sections to signal "maker who ships across mediums, not strategy-deck consultant." Internal AI tooling (built but unnamed)
+  supports the credibility but stays unnamed in public copy.
+- **The agent capability is the upsell, not the cold-start offer.** First engagement might be a website. Trust is earned through delivered results.
+  Agent work is offered after — when the client has seen Organic AI Solutions execute and is asking "what else can you automate?"
+- **Agent and chatbot voice never refers to the company as "OAS."** The brand name in prospect-facing speech is always "Organic AI Solutions."
+  Internal docs and rules can use OAS as shorthand; the public surface cannot.
+
 ## Do's and Don'ts
 
 - **Do** use the burnt clay accent only on the single most important action per screen. One per screen. Never two.
@@ -265,3 +298,28 @@ The shape language is **architectural minimalism** — corners are sharp-to-soft
 - **Don't** use Inter, Geist, or any geometric sans as a body face. They flatten the brand.
 - **Don't** use stock photography of people at laptops, handshakes, smiling teams, code-on-screen, or blue circuit-board "tech" imagery. Forbidden categories per the OAS image discipline rules.
 - **Don't** auto-place an OAS footer credit on this site — self-credit is incorrect on TC's own properties.
+- **Don't** advertise pricing publicly anywhere on organicaisolutions.ai. No tier names, no dollar amounts, no "Plans" page, no "starting at" copy.
+  Internal pricing stays fluid and lives behind the discovery call. Public pricing turns conversations into shopping checklists and breaks land-and-expand.
+- **Don't** lead any marketing surface headline with the AI stack. Vendor names (Claude, Gemini, Codex, and other tools Organic AI Solutions uses)
+  belong in supporting credibility lines like "built on best-in-class AI infrastructure," not in headlines. The reader's first impression should be what the work delivers
+  — time, money, fewer mistakes — not which model powered it.
+- **Do** treat the footer credit string `"Built with Claude. Deployed by OAS."` as immutable on every client site Organic AI Solutions deploys.
+  Exact string, exact capitalization, exact punctuation. Removal or modification is a paid line item. (Note: this string is under review pending Diego's input
+  on whether the multi-vendor stack should be reflected in the credit. Until that review concludes, the existing string ships unchanged.)
+
+## Stack Notes (May 2026)
+
+The Organic AI Solutions site runs on **Next.js 15.5 App Router with Tailwind v4**. Tailwind v4 uses CSS-based configuration
+— design tokens live in the `@theme {}` block inside `src/app/globals.css`, not in a `tailwind.config.ts` file.
+This project has no `tailwind.config.ts` and shouldn't have one.
+
+Note for future agents using the elite-website-builder skill: that skill's "Wiring it into the build" step references exporting tokens to `tailwind.config.ts`.
+That instruction is stale for this project. When updating tokens here, edit the `@theme {}` block in `globals.css` directly.
+The skill itself should be updated to reflect Tailwind v4 conventions — flag for follow-up.
+
+The live `globals.css` currently contains TWO `@theme` blocks: an upper `@theme inline` block carrying shadcn/ui defaults
+(sidebar, chart, card, popover tokens, plus Geist Sans/Mono fonts), and a lower custom `@theme` block carrying the brand tokens
+(tertiary, on-tertiary, neutral, surface, on-surface, surface-muted, on-surface-muted, font-display Fraunces).
+The shadcn defaults are coexisting with the brand tokens — they don't conflict at the CSS level, but body text is currently inheriting
+`--font-geist-sans` from the shadcn block instead of Switzer per this brand contract. Wiring Switzer into `--font-sans`
+and removing Geist as the default body face is a known follow-up task, scheduled for a future round.
