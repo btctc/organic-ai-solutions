@@ -166,7 +166,7 @@ export async function POST(req: NextRequest) {
     );
   } catch (error) {
     if (typeof error === 'object' && error !== null) {
-      logPersistenceFailure(requestId, error as { code?: string; status?: number });
+      logPersistenceFailure(requestId, error as SupabasePersistenceError);
     }
   }
 
@@ -200,10 +200,20 @@ function isReadyForEmail(messages: { role: string; content: string }[], assistan
   return userTurns >= 8 || messages.length >= MAX_EXCHANGES * 2 || assistantText.toLowerCase().includes('i have what i need');
 }
 
-function logPersistenceFailure(requestId: string, error: { code?: string; status?: number }) {
+type SupabasePersistenceError = {
+  code?: string | null;
+  message?: string | null;
+  hint?: string | null;
+  details?: string | null;
+};
+
+function logPersistenceFailure(requestId: string, error: SupabasePersistenceError) {
   console.error({
-    status: 'persistence_failed',
+    stage: 'assessment_conversation_persist_failed',
     requestId,
-    errorCode: error.code || String(error.status || 'unknown'),
+    supabaseCode: error?.code ?? null,
+    supabaseMessage: error?.message ?? null,
+    supabaseHint: error?.hint ?? null,
+    supabaseDetails: error?.details ?? null,
   });
 }
