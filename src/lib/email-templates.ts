@@ -38,7 +38,7 @@ export function buildAutoResponseEmail({
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <meta name="color-scheme" content="light"/>
-<title>Your Free AI Audit is Being Reviewed — Organic AI Solutions</title>
+<title>Your Free AI Assessment is Being Reviewed — Organic AI Solutions</title>
 </head>
 <body style="margin:0;padding:0;background:#f3f4f6;font-family:Arial,Helvetica,sans-serif;-webkit-font-smoothing:antialiased;">
 <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background:#f3f4f6;">
@@ -56,7 +56,7 @@ export function buildAutoResponseEmail({
   <!-- Orange header bar -->
   <tr>
     <td style="background:#E8420A;padding:28px 40px;">
-      <h1 style="color:#ffffff;margin:0;font-size:22px;font-weight:700;line-height:1.3;">Your AI Audit is Being Reviewed</h1>
+      <h1 style="color:#ffffff;margin:0;font-size:22px;font-weight:700;line-height:1.3;">Your AI Assessment is Being Reviewed</h1>
     </td>
   </tr>
 
@@ -65,7 +65,7 @@ export function buildAutoResponseEmail({
     <td style="padding:36px 40px;background:#ffffff;">
       <p style="color:#2B2B2B;font-size:16px;margin:0 0 20px;line-height:1.7;font-weight:600;">Hi ${firstName},</p>
       <p style="color:#374151;font-size:15px;line-height:1.7;margin:0 0 28px;">
-        Thank you for completing your AI Audit. Our team is reviewing your responses and building your personalized recommendations. Expect to hear from us within 24 hours.
+        Thank you for completing your AI Assessment. Our team is reviewing your responses and building your personalized recommendations. Expect to hear from us within 24 hours.
       </p>
 
       <!-- What to Expect -->
@@ -142,7 +142,7 @@ export function buildAutoResponseEmail({
   <tr>
     <td style="background:#f9fafb;padding:20px 40px;border-top:1px solid #e5e7eb;">
       <p style="color:#9ca3af;font-size:11px;line-height:1.7;margin:0 0 6px;text-align:center;">
-        You are receiving this because you requested a Free AI Audit at organicaisolutions.com
+        You are receiving this because you requested a Free AI Assessment at organicaisolutions.com
       </p>
       <p style="color:#9ca3af;font-size:11px;text-align:center;margin:0 0 8px;">${physicalAddress}</p>
       <p style="text-align:center;margin:0;">
@@ -188,7 +188,7 @@ export function buildInternalEmail({
     ["Employees", lead.employeeCount || "—"],
     ["Industry", lead.industry || "—"],
     ["Current Tools", lead.currentTools || "—"],
-    ["Source", lead.source === "chatbot" ? "AI Chatbot" : "Free AI Audit Form"],
+    ["Source", lead.source === "chatbot" ? "AI Chatbot" : "Free AI Assessment Form"],
     ["Submitted", `${submittedAt} CT`],
   ];
 
@@ -225,7 +225,7 @@ export function buildInternalEmail({
   <!-- Header -->
   <tr>
     <td style="background:#E8420A;padding:20px 28px;">
-      <h1 style="color:#ffffff;margin:0;font-size:20px;font-weight:700;">New Lead — ${lead.source === "chatbot" ? "AI Chatbot" : "Free AI Audit"}</h1>
+      <h1 style="color:#ffffff;margin:0;font-size:20px;font-weight:700;">New Lead — ${lead.source === "chatbot" ? "AI Chatbot" : "Free AI Assessment"}</h1>
       <p style="color:rgba(255,255,255,0.88);margin:5px 0 0;font-size:13px;">&#9200; Follow up within 24 hours for best results</p>
     </td>
   </tr>

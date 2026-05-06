@@ -39,7 +39,7 @@ export async function POST(request: Request) {
     const delivery = await sendEmailWithTestingFallback({
       resend,
       from: "Organic AI Solutions <hello@organicaisolutions.ai>",
-      to: process.env.NOTIFICATION_EMAIL || "overtimeincorporated@gmail.com",
+      to: process.env.NOTIFICATION_EMAIL || "tc@overtimerealestate.com",
       subject: `New AI Audit Request: ${data.company} — ${data.name}`,
       html: `
         <h2>New Intake Form Submission</h2>

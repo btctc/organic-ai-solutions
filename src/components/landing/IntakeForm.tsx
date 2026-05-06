@@ -366,7 +366,7 @@ export default function IntakeForm({ onSubmitted }: IntakeFormProps) {
               transition={{ duration: 0.45 }}
               className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-[#E8420A] font-[family-name:var(--font-montserrat)]"
             >
-              Free AI Audit
+              Free AI Assessment
             </motion.p>
             <motion.h2
               initial={{ opacity: 0, y: 16 }}
