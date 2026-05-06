@@ -237,12 +237,12 @@ export default function AssessmentChat() {
             <div className="rounded-2xl bg-on-surface/5 px-4 py-3 text-sm leading-relaxed text-on-surface max-w-[80%]">
               Hey — I&apos;m the OAS Assessor. To get you a tailored report fast, what kind of business do you run?
             </div>
-            <div className="flex flex-wrap gap-2 pt-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2">
               {INDUSTRIES.map((ind) => (
                 <button
                   key={ind}
                   onClick={() => selectIndustry(ind)}
-                  className="rounded-full border border-on-surface/20 px-4 py-2 text-sm font-medium hover:border-tertiary hover:bg-tertiary/10 transition-colors"
+                  className="w-full rounded-xl border border-on-surface/20 px-4 py-3 text-sm font-medium text-left hover:border-tertiary hover:bg-tertiary/10 transition-colors"
                 >
                   {ind}
                 </button>
@@ -261,14 +261,14 @@ export default function AssessmentChat() {
             <div className="rounded-2xl bg-on-surface/5 px-4 py-3 text-sm leading-relaxed text-on-surface max-w-[80%]">
               Got it. Where does friction usually show up? Pick the ones that apply — you can pick more than one.
             </div>
-            <div className="flex flex-wrap gap-2 pt-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2">
               {PAIN_POINTS_BY_INDUSTRY[industry].map((point) => {
                 const selected = painPoints.includes(point);
                 return (
                   <button
                     key={point}
                     onClick={() => togglePainPoint(point)}
-                    className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
+                    className={`w-full rounded-xl border px-4 py-3 text-sm font-medium text-left transition-colors ${
                       selected
                         ? 'border-tertiary bg-tertiary text-on-tertiary'
                         : 'border-on-surface/20 hover:border-tertiary hover:bg-tertiary/10'
