@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
     .join('\n\n');
 
   const reportResponse = await anthropic.messages.create({
-    model: 'claude-sonnet-4',
+    model: 'claude-sonnet-4-5',
     max_tokens: 2000,
     messages: [{ role: 'user', content: `${REPORT_PROMPT}\n\n${conversationText}` }],
   });
