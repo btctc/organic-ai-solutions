@@ -125,6 +125,8 @@ export default function AssessmentChat() {
   const [customPainPoints, setCustomPainPoints] = useState<string[]>([]);
   const [customInput, setCustomInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
+  const [chatError, setChatError] = useState<string | null>(null);
+  const [lastFailedUserText, setLastFailedUserText] = useState<string | null>(null);
   const [input, setInput] = useState('');
   const [thinking, setThinking] = useState(false);
   const [conversationId] = useState(() => crypto.randomUUID());
@@ -194,59 +196,67 @@ export default function AssessmentChat() {
     const initialMessages = [firstUserMessage];
     setMessages(initialMessages);
     setStage('chat');
+    await callChatApi(initialMessages, firstUserMessage.content);
+  }
+
+  async function callChatApi(messageList: Message[], userTextForRetry: string) {
     setThinking(true);
+    setChatError(null);
 
-    const res = await fetch('/api/assessment/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: initialMessages, conversationId }),
-    });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
 
-    if (!res.ok) {
+    try {
+      const res = await fetch('/api/assessment/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: messageList, conversationId }),
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        const err = (await res.json().catch(() => ({ error: 'Something went wrong.' }))) as ChatResponse;
+        const detail = err.requestId ? ` Reference: ${err.requestId}` : '';
+        setChatError(`${err.error || 'Hit a snag — please try again.'}${detail}`);
+        setLastFailedUserText(userTextForRetry);
+        setThinking(false);
+        return;
+      }
+
+      const data = (await res.json()) as ChatResponse;
+      setMessages([...messageList, { role: 'assistant', content: data.message || 'Hit a snag — please try again in a moment.' }]);
+      if (data.readyForEmail) {
+        setShowEmailCapture(true);
+      }
+      setLastFailedUserText(null);
+    } catch (err) {
+      clearTimeout(timeoutId);
+      const isAbort = err instanceof Error && err.name === 'AbortError';
+      setChatError(
+        isAbort
+          ? 'That took longer than expected. Tap retry to try again.'
+          : 'Connection hiccup. Tap retry to try again.'
+      );
+      setLastFailedUserText(userTextForRetry);
+    } finally {
       setThinking(false);
-      const err = (await res.json().catch(() => ({ error: 'Something went wrong.' }))) as ChatResponse;
-      const detail = err.requestId ? ` Reference: ${err.requestId}` : '';
-      setMessages([
-        ...initialMessages,
-        { role: 'assistant', content: `${err.error || 'Hit a snag — please try again in a moment.'}${detail}` },
-      ]);
-      return;
     }
-
-    const data = (await res.json()) as ChatResponse;
-    setMessages([
-      ...initialMessages,
-      { role: 'assistant', content: data.message || 'Hit a snag — please try again in a moment.' },
-    ]);
-    if (data.readyForEmail) setShowEmailCapture(true);
-    setThinking(false);
   }
 
   async function send() {
     if (!input.trim() || thinking) return;
-    const next = [...messages, { role: 'user' as const, content: input }];
+    const userText = input.trim();
+    const next = [...messages, { role: 'user' as const, content: userText }];
     setMessages(next);
     setInput('');
-    setThinking(true);
+    await callChatApi(next, userText);
+  }
 
-    const res = await fetch('/api/assessment/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: next, conversationId }),
-    });
-
-    if (!res.ok) {
-      setThinking(false);
-      const err = (await res.json().catch(() => ({ error: 'Something went wrong.' }))) as ChatResponse;
-      const detail = err.requestId ? ` Reference: ${err.requestId}` : '';
-      setMessages([...next, { role: 'assistant', content: `${err.error || 'Hit a snag — please try again in a moment.'}${detail}` }]);
-      return;
-    }
-
-    const data = (await res.json()) as ChatResponse;
-    setMessages([...next, { role: 'assistant', content: data.message || 'Hit a snag — please try again in a moment.' }]);
-    if (data.readyForEmail) setShowEmailCapture(true);
-    setThinking(false);
+  async function retryLast() {
+    if (!lastFailedUserText || thinking) return;
+    await callChatApi(messages, lastFailedUserText);
   }
 
   async function submitReport() {
@@ -429,6 +439,23 @@ export default function AssessmentChat() {
           <div className="flex justify-start">
             <div className="max-w-[80%] rounded-2xl bg-on-surface/5 px-4 py-3 text-sm">
               <ThinkingDots />
+            </div>
+          </div>
+        )}
+
+        {stage === 'chat' && chatError && !thinking && (
+          <div className="flex justify-start">
+            <div
+              data-chat-error={Boolean(chatError)}
+              className="max-w-[85%] rounded-2xl border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-900 space-y-2"
+            >
+              <p className="leading-relaxed">{chatError}</p>
+              <button
+                onClick={() => void retryLast()}
+                className="rounded-lg bg-red-600 px-4 py-1.5 text-xs font-medium text-white hover:bg-red-700 transition-colors"
+              >
+                Retry
+              </button>
             </div>
           </div>
         )}
