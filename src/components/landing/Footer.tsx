@@ -60,17 +60,17 @@ export default function Footer() {
               Ready to unlock your business potential with AI?
             </p>
             <Link
-              href="/#intake"
+              href="/assessment"
               className="px-5 py-2.5 rounded-lg bg-[#E8420A] text-white text-sm font-semibold font-[family-name:var(--font-montserrat)] hover:bg-[#c93508] transition-colors"
             >
-              Get Your Free AI Audit
+              Get Your Free AI Assessment
             </Link>
           </div>
         </div>
 
         <div className="border-t border-white/5 pt-8 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="font-[family-name:var(--font-dm-sans)] text-neutral-600 text-sm">
-            &copy; 2025 Organic AI Solutions. All rights reserved.
+            &copy; 2026 Organic AI Solutions. All rights reserved.
           </p>
           <p className="font-[family-name:var(--font-dm-sans)] text-neutral-700 text-xs">
             Built with purpose. Powered by AI.
