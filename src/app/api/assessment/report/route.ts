@@ -138,11 +138,13 @@ export async function POST(req: NextRequest) {
                         <p style="margin:0 0 4px;color:#1A1A1A;font-size:15px;font-weight:700;line-height:1.5;">Terrence Crawford</p>
                         <p style="margin:0 0 6px;color:#555;font-size:14px;line-height:1.5;">Co-Founder &amp; CEO, Organic AI Solutions</p>
                         <a href="mailto:tc@organicaisolutions.ai" style="color:#E25822;font-size:14px;font-weight:600;text-decoration:none;">tc@organicaisolutions.ai</a>
+                        <br/>
+                        <a href="https://organicaisolutions.ai" style="color: #E25822; font-size:14px; font-weight: 600; text-decoration: none;">organicaisolutions.ai</a>
                       </td>
                     </tr>
                     <tr>
                       <td align="center" style="background:#F8F8F8;padding:24px 32px;color:#888;font-size:12px;line-height:1.6;text-align:center;">
-                        <p style="margin:0 0 8px;">You received this because you requested an AI Opportunity Assessment at <a href="https://organicaisolutions.ai" style="color:#888;text-decoration:underline;">organicaisolutions.ai</a></p>
+                        <p style="margin:0 0 8px;">You received this because you requested an AI Opportunity Assessment at <a href="https://organicaisolutions.ai" style="color: #888;">organicaisolutions.ai</a></p>
                         <p style="margin:0 0 8px;">Organic AI Solutions &middot; Dallas, Texas</p>
                         <p style="margin:0;"><a href="https://organicaisolutions.ai/privacy" style="color:#888;text-decoration:underline;">Privacy</a> &middot; <a href="https://organicaisolutions.ai/terms" style="color:#888;text-decoration:underline;">Terms</a></p>
                       </td>
