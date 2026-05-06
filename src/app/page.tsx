@@ -67,7 +67,9 @@ export default function Home() {
           <HowItWorks />
         </RevealOnScroll>
         <RevealOnScroll>
-          <IntakeForm onSubmitted={() => setIntakeSubmitted(true)} />
+          <div id="contact" className="scroll-mt-24">
+            <IntakeForm onSubmitted={() => setIntakeSubmitted(true)} />
+          </div>
         </RevealOnScroll>
         {!intakeSubmitted && (
           <RevealOnScroll>
