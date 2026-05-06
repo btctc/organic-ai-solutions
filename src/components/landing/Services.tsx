@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { useRef, useState } from "react";
+import { motion, useInView, AnimatePresence } from "framer-motion";
 import { Zap, GitBranch, Lightbulb, BarChart3, Map, GraduationCap } from "lucide-react";
 
 const services = [
@@ -96,40 +96,71 @@ export default function Services() {
           {services.map((svc, i) => {
             const Icon = svc.icon;
             return (
-              <motion.div
+              <ServiceCard
                 key={svc.title}
-                initial={{ opacity: 0, y: 28 }}
-                animate={inView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.45, delay: 0.08 + i * 0.06 }}
-                className="group relative rounded-2xl border border-neutral-100 p-7 hover:border-[#E8420A]/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-white overflow-hidden"
-              >
-                <div className="w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center mb-5 group-hover:bg-[#E8420A] transition-colors duration-200">
-                  <Icon className="text-[#E8420A] group-hover:text-white transition-colors duration-200" size={19} />
-                </div>
-                <h3 className="font-[family-name:var(--font-montserrat)] text-base font-bold text-neutral-900 mb-2.5">
-                  {svc.title}
-                </h3>
-                <p className="font-[family-name:var(--font-dm-sans)] text-neutral-500 text-sm leading-relaxed">
-                  {svc.description}
-                </p>
-
-                <div className="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-out">
-                  <div className="overflow-hidden">
-                    <div className="mt-4 pt-4 border-t border-neutral-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
-                      <p className="font-[family-name:var(--font-montserrat)] text-[10px] font-semibold tracking-widest uppercase text-[#E8420A] mb-2">
-                        For example
-                      </p>
-                      <p className="font-[family-name:var(--font-dm-sans)] text-neutral-700 text-sm leading-relaxed italic">
-                        {svc.useCase}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
+                svc={svc}
+                Icon={Icon}
+                inView={inView}
+                index={i}
+              />
             );
           })}
         </div>
       </div>
     </section>
+  );
+}
+
+interface ServiceCardProps {
+  svc: { title: string; description: string; useCase: string; icon: typeof Zap };
+  Icon: typeof Zap;
+  inView: boolean;
+  index: number;
+}
+
+function ServiceCard({ svc, Icon, inView, index }: ServiceCardProps) {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 28 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.45, delay: 0.08 + index * 0.06 }}
+      onHoverStart={() => setHovered(true)}
+      onHoverEnd={() => setHovered(false)}
+      className="group relative rounded-2xl border border-neutral-100 p-7 hover:border-[#E8420A]/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-white"
+    >
+      <div className="w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center mb-5 group-hover:bg-[#E8420A] transition-colors duration-200">
+        <Icon className="text-[#E8420A] group-hover:text-white transition-colors duration-200" size={19} />
+      </div>
+      <h3 className="font-[family-name:var(--font-montserrat)] text-base font-bold text-neutral-900 mb-2.5">
+        {svc.title}
+      </h3>
+      <p className="font-[family-name:var(--font-dm-sans)] text-neutral-500 text-sm leading-relaxed">
+        {svc.description}
+      </p>
+
+      <AnimatePresence initial={false}>
+        {hovered && (
+          <motion.div
+            key="usecase"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            className="overflow-hidden"
+          >
+            <div className="mt-4 pt-4 border-t border-neutral-100">
+              <p className="font-[family-name:var(--font-montserrat)] text-[10px] font-semibold tracking-widest uppercase text-[#E8420A] mb-2">
+                For example
+              </p>
+              <p className="font-[family-name:var(--font-dm-sans)] text-neutral-700 text-sm leading-relaxed italic">
+                {svc.useCase}
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }
