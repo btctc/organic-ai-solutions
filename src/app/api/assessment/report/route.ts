@@ -6,6 +6,9 @@ import { supabaseAdmin } from '@/lib/supabase-admin';
 export const runtime = 'nodejs';
 export const maxDuration = 60;
 
+const PROSPECT_FROM_ADDRESS = 'Organic AI Solutions <noreply@organicaisolutions.ai>';
+const STAFF_FROM_ADDRESS = 'OAS Assessor <noreply@organicaisolutions.ai>';
+
 const REPORT_PROMPT = `You are writing a personalized AI Opportunity Report for a prospect of Organic AI Solutions.
 
 Below is the discovery conversation. Generate a tailored report in clean HTML (no markdown, no code fences) with these sections:
@@ -13,7 +16,7 @@ Below is the discovery conversation. Generate a tailored report in clean HTML (n
 1. Snapshot — One paragraph summarizing what you learned about their business.
 2. Top 3 AI Opportunities — The three highest-leverage places AI agents would help, specific to what they told you. Each includes: opportunity name, what it does, why it matters for them.
 3. Recommended Package — One of: Starter, Pro, All-Star, Enterprise, or Custom. Explain why this fits.
-4. What Happens Next — Brief: TC will reach out within one business day to schedule a no-pressure conversation.
+4. What Happens Next — Brief: Someone from Organic AI Solutions will reach out within one business day to schedule a no-pressure conversation.
 
 Tone: senior operator, not salesy. Specific to their answers — no generic AI consulting fluff.
 
@@ -78,39 +81,107 @@ export async function POST(req: NextRequest) {
       .eq('id', 1);
   }
 
-  // Email prospect
-  await resend.emails.send({
-    from: 'TC at Organic AI Solutions <tc@organicaisolutions.ai>',
-    to: email,
-    subject: 'Your AI Opportunity Report is here',
-    html: `
-      <div style="font-family: Georgia, serif; max-width: 640px; margin: 0 auto; color: #1a1a1a;">
-        <p>Hi ${name || 'there'},</p>
-        <p>Thanks for taking the time to walk me through your business. Here's your personalized AI Opportunity Report:</p>
-        <hr style="margin: 24px 0; border: none; border-top: 1px solid #e5e5e5;" />
-        ${reportHtml}
-        <hr style="margin: 24px 0; border: none; border-top: 1px solid #e5e5e5;" />
-        <p>I'll be in touch within one business day to schedule a quick call.</p>
-        <p>— TC<br/>CEO, Organic AI Solutions<br/>organicaisolutions.ai</p>
-      </div>
-    `,
-  });
+  try {
+    // Email prospect
+    await sendAssessmentEmail({
+      from: PROSPECT_FROM_ADDRESS,
+      to: email,
+      subject: 'Your AI Opportunity Report is here',
+      html: `
+        <div style="font-family: Georgia, serif; max-width: 640px; margin: 0 auto; color: #1a1a1a;">
+          <p>Hi ${name || 'there'},</p>
+          <p>Thanks for taking the time to walk me through your business. Here's your personalized AI Opportunity Report:</p>
+          <hr style="margin: 24px 0; border: none; border-top: 1px solid #e5e5e5;" />
+          ${reportHtml}
+          <hr style="margin: 24px 0; border: none; border-top: 1px solid #e5e5e5;" />
+          <p>Someone from Organic AI Solutions will be in touch within one business day to schedule a quick call.</p>
+          <p>Organic AI Solutions<br/>organicaisolutions.ai</p>
+        </div>
+      `,
+      conversationId,
+      recipientType: 'prospect',
+    });
 
-  // Brief to TC + Diego
-  await resend.emails.send({
-    from: 'OAS Assessor <noreply@organicaisolutions.ai>',
-    to: [process.env.ASSESSMENT_NOTIFY_EMAIL!, process.env.ASSESSMENT_NOTIFY_EMAIL_DIEGO!],
-    subject: `New OAS Assessment: ${name || email}`,
-    html: `
-      <p><strong>Email:</strong> ${email}<br/>
-      <strong>Name:</strong> ${name || '(not provided)'}<br/>
-      <strong>Conversation ID:</strong> ${conversationId}</p>
-      <h3>Conversation</h3>
-      <pre style="background: #f5f5f5; padding: 16px; white-space: pre-wrap; font-family: monospace; font-size: 13px;">${conversationText}</pre>
-      <h3>Generated Report</h3>
-      <div style="border-left: 3px solid #d4a574; padding-left: 16px;">${reportHtml}</div>
-    `,
-  });
+    // Brief to TC + Diego
+    const notifyEmail = process.env.ASSESSMENT_NOTIFY_EMAIL;
+    const notifyEmailDiego = process.env.ASSESSMENT_NOTIFY_EMAIL_DIEGO;
+    if (!notifyEmail || !notifyEmailDiego) {
+      console.error({
+        stage: 'email_send_failed',
+        error: 'Assessment notification email environment variables are missing.',
+        errorName: 'MissingEmailConfig',
+        statusCode: undefined,
+        conversationId,
+      });
+      return NextResponse.json({ error: 'Email configuration missing' }, { status: 500 });
+    }
+
+    await sendAssessmentEmail({
+      from: STAFF_FROM_ADDRESS,
+      to: [notifyEmail, notifyEmailDiego],
+      subject: `New OAS Assessment: ${name || email}`,
+      html: `
+        <p><strong>Email:</strong> ${email}<br/>
+        <strong>Name:</strong> ${name || '(not provided)'}<br/>
+        <strong>Conversation ID:</strong> ${conversationId}</p>
+        <h3>Conversation</h3>
+        <pre style="background: #f5f5f5; padding: 16px; white-space: pre-wrap; font-family: monospace; font-size: 13px;">${conversationText}</pre>
+        <h3>Generated Report</h3>
+        <div style="border-left: 3px solid #d4a574; padding-left: 16px;">${reportHtml}</div>
+      `,
+      conversationId,
+      recipientType: 'staff',
+      notifyEmail,
+    });
+  } catch {
+    return NextResponse.json({ error: 'Email send failed' }, { status: 502 });
+  }
 
   return NextResponse.json({ success: true, report: reportHtml });
+}
+
+async function sendAssessmentEmail({
+  from,
+  to,
+  subject,
+  html,
+  conversationId,
+  recipientType,
+  notifyEmail,
+}: {
+  from: string;
+  to: string | string[];
+  subject: string;
+  html: string;
+  conversationId: string;
+  recipientType: 'prospect' | 'staff';
+  notifyEmail?: string;
+}) {
+  try {
+    console.log({
+      stage: 'email_send_start',
+      to: recipientType === 'staff' ? notifyEmail : 'prospect',
+      from,
+      conversationId,
+    });
+    const result = await resend.emails.send({ from, to, subject, html });
+    if (result.error) {
+      throw result.error;
+    }
+    console.log({
+      stage: 'email_send_success',
+      messageId: result.data?.id,
+      conversationId,
+    });
+  } catch (error) {
+    const err = error as Error & { statusCode?: number };
+    console.error({
+      stage: 'email_send_failed',
+      error: err.message,
+      errorName: err.name,
+      statusCode: err.statusCode,
+      conversationId,
+    });
+    throw error;
+  }
 }

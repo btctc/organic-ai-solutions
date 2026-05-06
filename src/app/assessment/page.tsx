@@ -18,7 +18,7 @@ export default function AssessmentPage() {
             </h1>
             <p className="mt-4 text-lg text-on-surface-muted">
               Talk through a typical day at your business. In 5 minutes you&apos;ll get a
-              personalized AI Opportunity Report — written by an OAS agent, reviewed by TC.
+              personalized AI Opportunity Report — written by an OAS agent, reviewed by Organic AI Solutions staff.
             </p>
           </div>
         </RevealOnScroll>

@@ -20,7 +20,9 @@ export default function AssessmentChat() {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
@@ -32,6 +34,12 @@ export default function AssessmentChat() {
       setShowEmailCapture(true);
     }
   }, [messages]);
+
+  useEffect(() => {
+    if (!showEmailCapture && !thinking) {
+      inputRef.current?.focus();
+    }
+  }, [messages, thinking, showEmailCapture]);
 
   async function send() {
     if (!input.trim() || thinking) return;
@@ -71,13 +79,24 @@ export default function AssessmentChat() {
   async function submitReport() {
     if (!email.trim()) return;
     setThinking(true);
-    await fetch('/api/assessment/report', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ conversationId, email, name }),
-    });
-    setSubmitted(true);
-    setThinking(false);
+    setSubmitError('');
+    try {
+      const res = await fetch('/api/assessment/report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ conversationId, email, name }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: 'Something went wrong.' }));
+        setSubmitError(err.error || 'Something went wrong. Please try again.');
+        return;
+      }
+      setSubmitted(true);
+    } catch {
+      setSubmitError('Something went wrong. Please try again.');
+    } finally {
+      setThinking(false);
+    }
   }
 
   if (submitted) {
@@ -92,7 +111,7 @@ export default function AssessmentChat() {
         </div>
         <h2 className="font-display text-3xl">Report on the way.</h2>
         <p className="mt-3 text-on-surface-muted">
-          Check your inbox in about 60 seconds. TC will follow up within one business day.
+          Check your inbox in about 60 seconds. Someone from Organic AI Solutions will follow up within one business day.
         </p>
       </motion.div>
     );
@@ -121,6 +140,7 @@ export default function AssessmentChat() {
           <motion.div key="input" exit={{ opacity: 0 }} className="border-t border-on-surface/10 p-4">
             <div className="flex gap-2">
               <input
+                ref={inputRef}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && send()}
@@ -147,6 +167,7 @@ export default function AssessmentChat() {
             className="border-t border-on-surface/10 p-6 space-y-3"
           >
             <p className="text-sm text-on-surface-muted">Where should I send your report?</p>
+            {submitError && <p className="text-sm text-red-600">{submitError}</p>}
             <div className="flex flex-col gap-2 sm:flex-row">
               <input
                 value={name}
