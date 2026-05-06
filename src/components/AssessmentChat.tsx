@@ -3,6 +3,18 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+function stripMarkdown(text: string): string {
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '$1')
+    .replace(/\*(.*?)\*/g, '$1')
+    .replace(/__(.*?)__/g, '$1')
+    .replace(/_(.*?)_/g, '$1')
+    .replace(/#{1,6}\s/g, '')
+    .replace(/^\d+\.\s/gm, '')
+    .replace(/^[-•]\s/gm, '')
+    .trim();
+}
+
 type Message = { role: 'user' | 'assistant'; content: string };
 type ChatResponse = { message?: string; readyForEmail?: boolean; error?: string; requestId?: string };
 type Stage = 'industry' | 'painPoints' | 'chat';
@@ -406,7 +418,9 @@ export default function AssessmentChat() {
                   : 'bg-on-surface/5 text-on-surface'
               }`}
             >
-              {m.content || (thinking && i === messages.length - 1 ? <ThinkingDots /> : '')}
+              {m.content
+                ? (m.role === 'assistant' ? stripMarkdown(m.content) : m.content)
+                : (thinking && i === messages.length - 1 ? <ThinkingDots /> : '')}
             </div>
           </div>
         ))}
