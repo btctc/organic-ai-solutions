@@ -15,15 +15,49 @@ const REPORT_STAGES = [
 ];
 
 const INDUSTRIES = [
-  'Healthcare / Dental',
+  'Healthcare & Dental',
   'Home Services',
   'Professional Services',
-  'Retail / Hospitality',
-  'Other',
+  'Real Estate & Property Management',
+  'Restaurants & Hospitality',
+  'Retail & E-commerce',
+  'Construction & Trades',
+  'Fitness, Wellness & Beauty',
+  'Automotive & Transportation',
+  'Financial Services & Insurance',
+  'Education & Coaching',
+  'Other / Not listed',
+];
+
+const HOME_SERVICES_PAIN: string[] = [
+  'Lead response time',
+  'Quoting and estimates',
+  'Scheduling and dispatch',
+  'Follow-up after the job',
+  'Reviews and referrals',
+  'Recurring service reminders',
+];
+
+const PROFESSIONAL_SERVICES_PAIN: string[] = [
+  'Lead qualification',
+  'Proposal and contract drafting',
+  'Onboarding new clients',
+  'Internal knowledge and SOPs',
+  'Billing and collections',
+  'Reporting and dashboards',
+];
+
+const RETAIL_HOSPITALITY_PAIN: string[] = [
+  'Customer service and FAQs',
+  'Inventory and reordering',
+  'Marketing and promotions',
+  'Reviews and reputation',
+  'Scheduling staff',
+  'Loyalty and retention',
 ];
 
 const PAIN_POINTS_BY_INDUSTRY: Record<string, string[]> = {
-  'Healthcare / Dental': [
+  'Healthcare & Dental': [
     'Scheduling and no-shows',
     'Insurance verification',
     'Patient communication and follow-up',
@@ -31,31 +65,38 @@ const PAIN_POINTS_BY_INDUSTRY: Record<string, string[]> = {
     'Reviews and reputation',
     'Staffing and front desk load',
   ],
-  'Home Services': [
+  'Home Services': HOME_SERVICES_PAIN,
+  'Professional Services': PROFESSIONAL_SERVICES_PAIN,
+  'Real Estate & Property Management': [
     'Lead response time',
-    'Quoting and estimates',
-    'Scheduling and dispatch',
-    'Follow-up after the job',
-    'Reviews and referrals',
-    'Recurring service reminders',
+    'Showings and scheduling',
+    'Tenant communication',
+    'Vendor and maintenance coordination',
+    'Reviews and reputation',
+    'Listing management',
   ],
-  'Professional Services': [
-    'Lead qualification',
-    'Proposal and contract drafting',
-    'Onboarding new clients',
-    'Internal knowledge and SOPs',
-    'Billing and collections',
-    'Reporting and dashboards',
+  'Restaurants & Hospitality': [
+    'Reservations and bookings',
+    'Customer service and FAQs',
+    'Reviews and reputation',
+    'Staff scheduling',
+    'Marketing and promotions',
+    'Loyalty and repeat customers',
   ],
-  'Retail / Hospitality': [
+  'Retail & E-commerce': [
     'Customer service and FAQs',
     'Inventory and reordering',
+    'Order tracking and fulfillment',
     'Marketing and promotions',
     'Reviews and reputation',
-    'Scheduling staff',
     'Loyalty and retention',
   ],
-  Other: [
+  'Construction & Trades': HOME_SERVICES_PAIN,
+  'Fitness, Wellness & Beauty': RETAIL_HOSPITALITY_PAIN,
+  'Automotive & Transportation': HOME_SERVICES_PAIN,
+  'Financial Services & Insurance': PROFESSIONAL_SERVICES_PAIN,
+  'Education & Coaching': PROFESSIONAL_SERVICES_PAIN,
+  'Other / Not listed': [
     'Customer communication',
     'Scheduling and operations',
     'Lead qualification and intake',
@@ -69,6 +110,8 @@ export default function AssessmentChat() {
   const [stage, setStage] = useState<Stage>('industry');
   const [industry, setIndustry] = useState<string | null>(null);
   const [painPoints, setPainPoints] = useState<string[]>([]);
+  const [customPainPoints, setCustomPainPoints] = useState<string[]>([]);
+  const [customInput, setCustomInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [thinking, setThinking] = useState(false);
@@ -113,11 +156,28 @@ export default function AssessmentChat() {
     );
   }
 
+  function addCustomPainPoint() {
+    const trimmed = customInput.trim();
+    if (!trimmed) return;
+    if (customPainPoints.includes(trimmed) || painPoints.includes(trimmed)) {
+      setCustomInput('');
+      return;
+    }
+    setCustomPainPoints((prev) => [...prev, trimmed]);
+    setCustomInput('');
+  }
+
+  function removeCustomPainPoint(point: string) {
+    setCustomPainPoints((prev) => prev.filter((p) => p !== point));
+  }
+
   async function submitPainPoints() {
-    if (!industry || painPoints.length === 0 || thinking) return;
+    if (!industry || thinking) return;
+    const allSelected = [...painPoints, ...customPainPoints];
+    if (allSelected.length === 0) return;
     const firstUserMessage: Message = {
       role: 'user',
-      content: `Industry: ${industry}\nTop friction: ${painPoints.join(', ')}`,
+      content: `Industry: ${industry}\nTop friction: ${allSelected.join(', ')}`,
     };
     const initialMessages = [firstUserMessage];
     setMessages(initialMessages);
@@ -279,14 +339,58 @@ export default function AssessmentChat() {
                 );
               })}
             </div>
-            {painPoints.length > 0 && (
+            <div className="pt-2 space-y-3">
+              <div className="flex gap-2">
+                <input
+                  value={customInput}
+                  onChange={(e) => setCustomInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      addCustomPainPoint();
+                    }
+                  }}
+                  placeholder="+ Add your own"
+                  className="flex-1 rounded-lg border border-on-surface/20 bg-neutral px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-tertiary"
+                />
+                <button
+                  onClick={addCustomPainPoint}
+                  disabled={!customInput.trim()}
+                  className="rounded-lg border border-on-surface/20 px-4 py-2 text-sm font-medium hover:border-tertiary hover:bg-tertiary/10 transition-colors disabled:opacity-40"
+                >
+                  Add
+                </button>
+              </div>
+
+              {customPainPoints.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {customPainPoints.map((point) => (
+                    <span
+                      key={point}
+                      className="inline-flex items-center gap-1.5 rounded-full bg-tertiary text-on-tertiary px-3 py-1.5 text-sm font-medium"
+                    >
+                      {point}
+                      <button
+                        onClick={() => removeCustomPainPoint(point)}
+                        className="opacity-80 hover:opacity-100 transition-opacity"
+                        aria-label={`Remove ${point}`}
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {(painPoints.length > 0 || customPainPoints.length > 0) && (
               <div className="pt-3">
                 <button
                   onClick={submitPainPoints}
                   disabled={thinking}
                   className="rounded-lg bg-tertiary px-5 py-2 text-sm font-medium text-on-tertiary disabled:opacity-50"
                 >
-                  Continue ({painPoints.length} selected)
+                  Continue ({painPoints.length + customPainPoints.length} selected)
                 </button>
               </div>
             )}
