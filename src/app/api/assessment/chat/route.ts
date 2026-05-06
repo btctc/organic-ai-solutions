@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { anthropic } from '@/lib/anthropic';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 
@@ -39,6 +39,7 @@ const MAX_EXCHANGES = 12;
 const RATE_LIMIT_PER_DAY = 3;
 
 export async function POST(req: NextRequest) {
+  const requestId = crypto.randomUUID();
   const { messages, conversationId } = await req.json();
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || '0.0.0.0';
   const ipAddress = ip;
@@ -90,7 +91,13 @@ export async function POST(req: NextRequest) {
         .eq('ip_address', ip);
     }
   } else {
-    await supabaseAdmin.from('assessment_rate_limits').insert({ ip_address: ip, count: 0 });
+    const { error: rateLimitInsertError } = await supabaseAdmin
+      .from('assessment_rate_limits')
+      .insert({ ip_address: ip, count: 0 });
+    if (rateLimitInsertError) {
+      logPersistenceFailure(requestId, rateLimitInsertError);
+      return NextResponse.json({ error: 'persistence_failed', requestId }, { status: 500 });
+    }
   }
 
   // Conversation length cap
@@ -108,99 +115,95 @@ export async function POST(req: NextRequest) {
     updated_at: new Date().toISOString(),
   });
   if (initialPersistError) {
-    console.error({
-      stage: 'assessment_conversation_persist_failed',
-      error: initialPersistError.message,
-      conversationId,
-    });
+    logPersistenceFailure(requestId, initialPersistError);
+    return NextResponse.json({ error: 'persistence_failed', requestId }, { status: 500 });
   }
 
-  // Stream from Haiku
-  const stream = await anthropic.messages.stream({
+  const response = await anthropic.messages.create({
     model: 'claude-haiku-4-5-20251001',
     max_tokens: 500,
     system: SYSTEM_PROMPT,
     messages,
   });
 
-  const encoder = new TextEncoder();
-  const readable = new ReadableStream({
-    async start(controller) {
-      let fullText = '';
-      let inputTokens = 0;
-      let outputTokens = 0;
+  const block = response.content[0];
+  let assistantText = block.type === 'text' ? block.text : '';
+  const readyForEmail = isReadyForEmail(messages, assistantText);
+  if (readyForEmail && !assistantText.toLowerCase().includes('i have what i need')) {
+    assistantText =
+      "I have what I need. Drop your email and I'll have your personalized AI Opportunity Report sent over in about 60 seconds.";
+  }
 
-      for await (const chunk of stream) {
-        if (chunk.type === 'content_block_delta' && chunk.delta.type === 'text_delta') {
-          fullText += chunk.delta.text;
-          controller.enqueue(encoder.encode(chunk.delta.text));
-        }
-        if (chunk.type === 'message_delta' && chunk.usage) {
-          outputTokens = chunk.usage.output_tokens;
-        }
-        if (chunk.type === 'message_start' && chunk.message.usage) {
-          inputTokens = chunk.message.usage.input_tokens;
-        }
-      }
-
-      // Persist conversation
-      const updated = [...messages, { role: 'assistant', content: fullText }];
-      const { error: finalPersistError } = await supabaseAdmin.from('assessment_conversations').upsert({
-        id: conversationId,
-        conversation_json: updated,
-        ip_address: ipAddress,
-        updated_at: new Date().toISOString(),
-      });
-      if (finalPersistError) {
-        console.error({
-          stage: 'assessment_conversation_persist_failed',
-          error: finalPersistError.message,
-          conversationId,
-        });
-      }
-
-      // Increment rate limit
-      await supabaseAdmin.rpc('increment_rate_limit', { ip: ip }).then(
-        () => {},
-        async () => {
-          const { data: rl } = await supabaseAdmin
-            .from('assessment_rate_limits')
-            .select('count')
-            .eq('ip_address', ip)
-            .single();
-          await supabaseAdmin
-            .from('assessment_rate_limits')
-            .update({ count: (rl?.count || 0) + 1 })
-            .eq('ip_address', ip);
-        }
-      );
-
-      // Update budget tracker (Haiku 4.5: $1/M input, $5/M output)
-      const cost = (inputTokens / 1_000_000) * 1.0 + (outputTokens / 1_000_000) * 5.0;
-      if (cost > 0) {
-        await supabaseAdmin.rpc('increment_budget', { amount: cost }).then(
-          () => {},
-          async () => {
-            const { data: b } = await supabaseAdmin
-              .from('assessment_budget')
-              .select('estimated_cost_usd')
-              .eq('id', 1)
-              .single();
-            await supabaseAdmin
-              .from('assessment_budget')
-              .update({
-                estimated_cost_usd: Number(b?.estimated_cost_usd || 0) + cost,
-              })
-              .eq('id', 1);
-          }
-        );
-      }
-
-      controller.close();
-    },
+  const updated = [...messages, { role: 'assistant', content: assistantText }];
+  const { error: finalPersistError } = await supabaseAdmin.from('assessment_conversations').upsert({
+    id: conversationId,
+    conversation_json: updated,
+    ip_address: ipAddress,
+    updated_at: new Date().toISOString(),
   });
+  if (finalPersistError) {
+    logPersistenceFailure(requestId, finalPersistError);
+    return NextResponse.json({ error: 'persistence_failed', requestId }, { status: 500 });
+  }
 
-  return new Response(readable, {
-    headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+  try {
+    await supabaseAdmin.rpc('increment_rate_limit', { ip: ip }).then(
+      () => {},
+      async () => {
+        const { data: rl } = await supabaseAdmin
+          .from('assessment_rate_limits')
+          .select('count')
+          .eq('ip_address', ip)
+          .single();
+        const { error: rateLimitUpdateError } = await supabaseAdmin
+          .from('assessment_rate_limits')
+          .update({ count: (rl?.count || 0) + 1 })
+          .eq('ip_address', ip);
+        if (rateLimitUpdateError) {
+          throw rateLimitUpdateError;
+        }
+      }
+    );
+  } catch (error) {
+    if (typeof error === 'object' && error !== null) {
+      logPersistenceFailure(requestId, error as { code?: string; status?: number });
+    }
+  }
+
+  const inputTokens = response.usage?.input_tokens || 0;
+  const outputTokens = response.usage?.output_tokens || 0;
+  const cost = (inputTokens / 1_000_000) * 1.0 + (outputTokens / 1_000_000) * 5.0;
+  if (cost > 0) {
+    await supabaseAdmin.rpc('increment_budget', { amount: cost }).then(
+      () => {},
+      async () => {
+        const { data: b } = await supabaseAdmin
+          .from('assessment_budget')
+          .select('estimated_cost_usd')
+          .eq('id', 1)
+          .single();
+        await supabaseAdmin
+          .from('assessment_budget')
+          .update({
+            estimated_cost_usd: Number(b?.estimated_cost_usd || 0) + cost,
+          })
+          .eq('id', 1);
+      }
+    );
+  }
+
+  return NextResponse.json({ message: assistantText, readyForEmail });
+}
+
+function isReadyForEmail(messages: { role: string; content: string }[], assistantText: string) {
+  const userTurns = messages.filter((message) => message.role === 'user').length;
+  return userTurns >= 8 || messages.length >= MAX_EXCHANGES * 2 || assistantText.toLowerCase().includes('i have what i need');
+}
+
+function logPersistenceFailure(requestId: string, error: { code?: string; status?: number }) {
+  console.error({
+    status: 'persistence_failed',
+    requestId,
+    errorCode: error.code || String(error.status || 'unknown'),
   });
 }

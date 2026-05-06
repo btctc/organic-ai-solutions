@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 type Message = { role: 'user' | 'assistant'; content: string };
+type ChatResponse = { message?: string; readyForEmail?: boolean; error?: string; requestId?: string };
 
 const INITIAL_MESSAGE: Message = {
   role: 'assistant',
@@ -29,13 +30,6 @@ export default function AssessmentChat() {
   }, [messages, thinking]);
 
   useEffect(() => {
-    const last = messages[messages.length - 1];
-    if (last?.role === 'assistant' && last.content.toLowerCase().includes('i have what i need')) {
-      setShowEmailCapture(true);
-    }
-  }, [messages]);
-
-  useEffect(() => {
     if (!showEmailCapture && !thinking) {
       inputRef.current?.focus();
     }
@@ -56,21 +50,16 @@ export default function AssessmentChat() {
 
     if (!res.ok) {
       setThinking(false);
-      const err = await res.json().catch(() => ({ error: 'Something went wrong.' }));
-      setMessages([...next, { role: 'assistant', content: err.error || 'Hit a snag — please try again in a moment.' }]);
+      const err = (await res.json().catch(() => ({ error: 'Something went wrong.' }))) as ChatResponse;
+      const detail = err.requestId ? ` Reference: ${err.requestId}` : '';
+      setMessages([...next, { role: 'assistant', content: `${err.error || 'Hit a snag — please try again in a moment.'}${detail}` }]);
       return;
     }
 
-    const reader = res.body!.getReader();
-    const decoder = new TextDecoder();
-    let assistantText = '';
-    setMessages([...next, { role: 'assistant', content: '' }]);
-
-    while (true) {
-      const { value, done } = await reader.read();
-      if (done) break;
-      assistantText += decoder.decode(value);
-      setMessages([...next, { role: 'assistant', content: assistantText }]);
+    const data = (await res.json()) as ChatResponse;
+    setMessages([...next, { role: 'assistant', content: data.message || 'Hit a snag — please try again in a moment.' }]);
+    if (data.readyForEmail) {
+      setShowEmailCapture(true);
     }
 
     setThinking(false);
