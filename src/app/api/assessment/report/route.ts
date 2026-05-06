@@ -8,6 +8,9 @@ export const maxDuration = 60;
 
 const PROSPECT_FROM_ADDRESS = 'Organic AI Solutions <noreply@organicaisolutions.ai>';
 const STAFF_FROM_ADDRESS = 'OAS Assessor <noreply@organicaisolutions.ai>';
+// Temp: Preview URL until site-upgrade-may-2026 merges to main
+const EMAIL_LOGO_URL =
+  'https://organic-ai-solutions-git-site-upgrade-may-2026-btctcs-projects.vercel.app/email-logo.png';
 
 const REPORT_PROMPT = `You are writing a personalized AI Opportunity Report for a prospect of Organic AI Solutions.
 
@@ -103,7 +106,7 @@ export async function POST(req: NextRequest) {
                   <table width="600" cellpadding="0" cellspacing="0" role="presentation" style="width:100%;max-width:600px;background:#FFFFFF;border-collapse:collapse;">
                     <tr>
                       <td align="center" style="background:#FFFFFF;padding:40px 32px 24px;">
-                        <img src="https://organicaisolutions.ai/email-logo.png" alt="Organic AI Solutions" width="200" style="display:block;max-width:200px;height:auto;margin:0 auto;" />
+                        <img src="${EMAIL_LOGO_URL}" alt="Organic AI Solutions" width="200" style="display:block;max-width:200px;height:auto;margin:0 auto;" />
                         <p style="margin:12px 0 0;color:#555;font-size:14px;font-style:italic;line-height:1.4;">Grow Organically. Scale Intelligently.</p>
                       </td>
                     </tr>
