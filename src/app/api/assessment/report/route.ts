@@ -98,7 +98,7 @@ export async function POST(req: NextRequest) {
           ${reportHtml}
           <hr style="margin: 24px 0; border: none; border-top: 1px solid #e5e5e5;" />
           <p>Someone from Organic AI Solutions will be in touch within one business day to schedule a quick call.</p>
-          <p>Organic AI Solutions<br/>organicaisolutions.ai</p>
+          <p>Organic AI Solutions<br/><a href="https://organicaisolutions.ai">organicaisolutions.ai</a></p>
         </div>
       `,
       conversationId,
