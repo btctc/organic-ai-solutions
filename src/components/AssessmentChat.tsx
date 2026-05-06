@@ -5,12 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 type Message = { role: 'user' | 'assistant'; content: string };
 type ChatResponse = { message?: string; readyForEmail?: boolean; error?: string; requestId?: string };
-
-const INITIAL_MESSAGE: Message = {
-  role: 'assistant',
-  content:
-    "Hey — I'm the OAS Assessor. Quick way to start: walk me through a typical Monday at your business. What's the first thing you do, and where does the friction usually show up?",
-};
+type Stage = 'industry' | 'painPoints' | 'chat';
 
 const REPORT_STAGES = [
   'Saving your responses...',
@@ -19,8 +14,62 @@ const REPORT_STAGES = [
   'Almost ready...',
 ];
 
+const INDUSTRIES = [
+  'Healthcare / Dental',
+  'Home Services',
+  'Professional Services',
+  'Retail / Hospitality',
+  'Other',
+];
+
+const PAIN_POINTS_BY_INDUSTRY: Record<string, string[]> = {
+  'Healthcare / Dental': [
+    'Scheduling and no-shows',
+    'Insurance verification',
+    'Patient communication and follow-up',
+    'Intake paperwork',
+    'Reviews and reputation',
+    'Staffing and front desk load',
+  ],
+  'Home Services': [
+    'Lead response time',
+    'Quoting and estimates',
+    'Scheduling and dispatch',
+    'Follow-up after the job',
+    'Reviews and referrals',
+    'Recurring service reminders',
+  ],
+  'Professional Services': [
+    'Lead qualification',
+    'Proposal and contract drafting',
+    'Onboarding new clients',
+    'Internal knowledge and SOPs',
+    'Billing and collections',
+    'Reporting and dashboards',
+  ],
+  'Retail / Hospitality': [
+    'Customer service and FAQs',
+    'Inventory and reordering',
+    'Marketing and promotions',
+    'Reviews and reputation',
+    'Scheduling staff',
+    'Loyalty and retention',
+  ],
+  Other: [
+    'Customer communication',
+    'Scheduling and operations',
+    'Lead qualification and intake',
+    'Internal knowledge and SOPs',
+    'Reporting and visibility',
+    'Marketing and follow-up',
+  ],
+};
+
 export default function AssessmentChat() {
-  const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE]);
+  const [stage, setStage] = useState<Stage>('industry');
+  const [industry, setIndustry] = useState<string | null>(null);
+  const [painPoints, setPainPoints] = useState<string[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [thinking, setThinking] = useState(false);
   const [conversationId] = useState(() => crypto.randomUUID());
@@ -37,13 +86,13 @@ export default function AssessmentChat() {
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
-  }, [messages, thinking]);
+  }, [messages, thinking, stage]);
 
   useEffect(() => {
-    if (!showEmailCapture && !thinking) {
+    if (stage === 'chat' && !showEmailCapture && !thinking) {
       inputRef.current?.focus();
     }
-  }, [messages, thinking, showEmailCapture]);
+  }, [messages, thinking, showEmailCapture, stage]);
 
   useEffect(() => {
     return () => {
@@ -52,6 +101,54 @@ export default function AssessmentChat() {
       }
     };
   }, []);
+
+  function selectIndustry(choice: string) {
+    setIndustry(choice);
+    setStage('painPoints');
+  }
+
+  function togglePainPoint(point: string) {
+    setPainPoints((prev) =>
+      prev.includes(point) ? prev.filter((p) => p !== point) : [...prev, point]
+    );
+  }
+
+  async function submitPainPoints() {
+    if (!industry || painPoints.length === 0 || thinking) return;
+    const firstUserMessage: Message = {
+      role: 'user',
+      content: `Industry: ${industry}\nTop friction: ${painPoints.join(', ')}`,
+    };
+    const initialMessages = [firstUserMessage];
+    setMessages(initialMessages);
+    setStage('chat');
+    setThinking(true);
+
+    const res = await fetch('/api/assessment/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: initialMessages, conversationId }),
+    });
+
+    if (!res.ok) {
+      setThinking(false);
+      const err = (await res.json().catch(() => ({ error: 'Something went wrong.' }))) as ChatResponse;
+      const detail = err.requestId ? ` Reference: ${err.requestId}` : '';
+      setMessages([
+        ...initialMessages,
+        { role: 'assistant', content: `${err.error || 'Hit a snag — please try again in a moment.'}${detail}` },
+      ]);
+      return;
+    }
+
+    const data = (await res.json()) as ChatResponse;
+    setMessages([
+      ...initialMessages,
+      { role: 'assistant', content: data.message || 'Hit a snag — please try again in a moment.' },
+    ]);
+    if (data.readyForEmail) setShowEmailCapture(true);
+    setThinking(false);
+  }
 
   async function send() {
     if (!input.trim() || thinking) return;
@@ -76,10 +173,7 @@ export default function AssessmentChat() {
 
     const data = (await res.json()) as ChatResponse;
     setMessages([...next, { role: 'assistant', content: data.message || 'Hit a snag — please try again in a moment.' }]);
-    if (data.readyForEmail) {
-      setShowEmailCapture(true);
-    }
-
+    if (data.readyForEmail) setShowEmailCapture(true);
     setThinking(false);
   }
 
@@ -89,11 +183,9 @@ export default function AssessmentChat() {
     setIsSubmittingReport(true);
     setReportStage(0);
     setSubmitError('');
-    if (reportTimerRef.current) {
-      clearInterval(reportTimerRef.current);
-    }
+    if (reportTimerRef.current) clearInterval(reportTimerRef.current);
     reportTimerRef.current = setInterval(() => {
-      setReportStage((stage) => Math.min(stage + 1, REPORT_STAGES.length - 1));
+      setReportStage((s) => Math.min(s + 1, REPORT_STAGES.length - 1));
     }, 3500);
     try {
       const res = await fetch('/api/assessment/report', {
@@ -140,10 +232,71 @@ export default function AssessmentChat() {
   return (
     <div className="rounded-2xl border border-on-surface/10 bg-surface overflow-hidden">
       <div ref={scrollRef} className="max-h-[60vh] min-h-[400px] overflow-y-auto p-6 space-y-4">
-        {messages.map((m, i) => (
+        {stage === 'industry' && (
+          <div className="space-y-4">
+            <div className="rounded-2xl bg-on-surface/5 px-4 py-3 text-sm leading-relaxed text-on-surface max-w-[80%]">
+              Hey — I&apos;m the OAS Assessor. To get you a tailored report fast, what kind of business do you run?
+            </div>
+            <div className="flex flex-wrap gap-2 pt-2">
+              {INDUSTRIES.map((ind) => (
+                <button
+                  key={ind}
+                  onClick={() => selectIndustry(ind)}
+                  className="rounded-full border border-on-surface/20 px-4 py-2 text-sm font-medium hover:border-tertiary hover:bg-tertiary/10 transition-colors"
+                >
+                  {ind}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {stage === 'painPoints' && industry && (
+          <div className="space-y-4">
+            <div className="flex justify-end">
+              <div className="rounded-2xl bg-tertiary px-4 py-3 text-sm text-on-tertiary max-w-[80%]">
+                {industry}
+              </div>
+            </div>
+            <div className="rounded-2xl bg-on-surface/5 px-4 py-3 text-sm leading-relaxed text-on-surface max-w-[80%]">
+              Got it. Where does friction usually show up? Pick the ones that apply — you can pick more than one.
+            </div>
+            <div className="flex flex-wrap gap-2 pt-2">
+              {PAIN_POINTS_BY_INDUSTRY[industry].map((point) => {
+                const selected = painPoints.includes(point);
+                return (
+                  <button
+                    key={point}
+                    onClick={() => togglePainPoint(point)}
+                    className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
+                      selected
+                        ? 'border-tertiary bg-tertiary text-on-tertiary'
+                        : 'border-on-surface/20 hover:border-tertiary hover:bg-tertiary/10'
+                    }`}
+                  >
+                    {selected ? '✓ ' : ''}{point}
+                  </button>
+                );
+              })}
+            </div>
+            {painPoints.length > 0 && (
+              <div className="pt-3">
+                <button
+                  onClick={submitPainPoints}
+                  disabled={thinking}
+                  className="rounded-lg bg-tertiary px-5 py-2 text-sm font-medium text-on-tertiary disabled:opacity-50"
+                >
+                  Continue ({painPoints.length} selected)
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {stage === 'chat' && messages.map((m, i) => (
           <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div
-              className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+              className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap ${
                 m.role === 'user'
                   ? 'bg-tertiary text-on-tertiary'
                   : 'bg-on-surface/5 text-on-surface'
@@ -153,10 +306,18 @@ export default function AssessmentChat() {
             </div>
           </div>
         ))}
+
+        {stage === 'chat' && thinking && messages[messages.length - 1]?.role !== 'assistant' && (
+          <div className="flex justify-start">
+            <div className="max-w-[80%] rounded-2xl bg-on-surface/5 px-4 py-3 text-sm">
+              <ThinkingDots />
+            </div>
+          </div>
+        )}
       </div>
 
       <AnimatePresence mode="wait">
-        {!showEmailCapture && (
+        {stage === 'chat' && !showEmailCapture && (
           <motion.div key="input" exit={{ opacity: 0 }} className="border-t border-on-surface/10 p-4">
             <div className="flex gap-2">
               <input

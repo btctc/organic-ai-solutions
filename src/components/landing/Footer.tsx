@@ -68,6 +68,10 @@ export default function Footer() {
           </div>
         </div>
 
+        <p className="mb-4 font-[family-name:var(--font-dm-sans)] text-neutral-600 text-xs">
+          Industries we serve: Healthcare & Dental · Home Services · Professional Services · Retail & Hospitality · and more
+        </p>
+
         <div className="border-t border-white/5 pt-8 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="font-[family-name:var(--font-dm-sans)] text-neutral-600 text-sm">
             &copy; 2026 Organic AI Solutions. All rights reserved.
