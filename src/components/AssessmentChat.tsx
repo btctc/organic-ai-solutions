@@ -221,9 +221,9 @@ export default function AssessmentChat() {
         <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-tertiary/20 flex items-center justify-center">
           <span className="text-2xl">✓</span>
         </div>
-        <h2 className="font-display text-3xl">Report on the way.</h2>
+        <h2 className="font-display text-3xl">We&apos;ve got your assessment.</h2>
         <p className="mt-3 text-on-surface-muted">
-          Check your inbox in about 60 seconds. Someone from Organic AI Solutions will follow up within one business day.
+          Your personalized AI Opportunity Report will arrive within 24 hours. Check your inbox for a confirmation email — and someone from Organic AI Solutions will follow up directly.
         </p>
       </motion.div>
     );
