@@ -26,9 +26,11 @@ export default function Footer() {
                 style={{ background: "transparent" }}
               />
             </Link>
+            <p className="mb-3 font-[family-name:var(--font-dm-sans)] text-neutral-400 text-base leading-snug max-w-xs">
+              Grow Organically. Scale Intelligently.
+            </p>
             <p className="font-[family-name:var(--font-dm-sans)] text-neutral-500 text-sm leading-relaxed max-w-xs">
-              AI optimization built for real businesses. We make artificial
-              intelligence practical, affordable, and impactful for SMBs.
+              AI infrastructure for operators. Built right. Deployed fast.
             </p>
           </div>
 

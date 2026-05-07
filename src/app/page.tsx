@@ -43,7 +43,7 @@ export default function Home() {
               <div className="grid gap-12 md:grid-cols-3 md:gap-8">
                 <Pillar
                   heading="Production agent deployments"
-                  body="Built on enterprise agent experience from Kyndryl. Real systems running in production — not strategy decks."
+                  body="Built by operators with production agent experience. Real systems running, not strategy decks."
                 />
                 <Pillar
                   heading="AI-native websites"

@@ -34,7 +34,7 @@ export default function Hero() {
             >
               <span className="w-1.5 h-1.5 rounded-full bg-[#E8420A]" />
               <span className="font-[family-name:var(--font-dm-sans)] text-xs text-[#E8420A] font-semibold tracking-wide uppercase">
-                AI for Small &amp; Mid-Sized Businesses
+                AI for operators
               </span>
             </motion.div>
 
@@ -48,20 +48,28 @@ export default function Hero() {
             </motion.h1>
 
             <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.55, ease: "easeOut", delay: 0.18 }}
+              className="mt-5 font-[family-name:var(--font-dm-sans)] text-xl md:text-2xl leading-snug text-neutral-400"
+            >
+              Grow Organically. Scale Intelligently.
+            </motion.p>
+
+            <motion.p
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: "easeOut", delay: 0.22 }}
-              className="mt-6 max-w-2xl text-lg md:text-xl leading-relaxed text-on-surface-muted"
+              transition={{ duration: 0.6, ease: "easeOut", delay: 0.28 }}
+              className="mt-4 max-w-2xl text-lg md:text-xl leading-relaxed text-on-surface-muted"
             >
-              Organic AI Solutions is a Dallas-based AI consulting firm that deploys production AI
-              agents and AI-native websites for small and mid-sized businesses. Built by operators
-              with enterprise-grade experience — not strategy decks.
+              We build AI agents that do the work that gets lost, misplaced, or never happens.
+              Working software, not strategy decks.
             </motion.p>
 
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, ease: "easeOut", delay: 0.34 }}
+              transition={{ duration: 0.5, ease: "easeOut", delay: 0.4 }}
               className="mt-10 flex flex-col sm:flex-row gap-4"
             >
               <a
