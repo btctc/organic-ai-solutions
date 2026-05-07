@@ -117,8 +117,6 @@ export default function ScrollDeviceShowcase() {
             <span className="text-xs font-medium uppercase tracking-wide text-emerald-400">
               Live · {industryMeta[activeIndustry].code}
             </span>
-            <span className="text-white/40">·</span>
-            <span className="text-white/70">{industryMeta[activeIndustry].label}</span>
           </div>
 
           <div className="w-full overflow-x-auto pb-1 md:w-auto md:pb-0">
@@ -200,7 +198,21 @@ function FindingsPanel({ data, industryLabel }: { data: LiveFindingsData; indust
       transition={{ duration: 0.4, ease: 'easeOut' }}
       className="mx-auto max-w-6xl"
     >
-      <div className="overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.04] p-4 shadow-2xl shadow-black/40 backdrop-blur md:p-5">
+      <motion.div
+        animate={
+          panelInView
+            ? {
+                boxShadow: [
+                  '0 24px 80px rgba(0,0,0,0.40), 0 0 28px rgba(16,185,129,0.10)',
+                  '0 24px 80px rgba(0,0,0,0.40), 0 0 46px rgba(16,185,129,0.20)',
+                  '0 24px 80px rgba(0,0,0,0.40), 0 0 28px rgba(16,185,129,0.10)',
+                ],
+              }
+            : { boxShadow: '0 24px 80px rgba(0,0,0,0.40), 0 0 18px rgba(16,185,129,0.08)' }
+        }
+        transition={{ boxShadow: { duration: 4, repeat: Infinity, ease: 'easeInOut' } }}
+        className="overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.04] p-4 backdrop-blur md:p-5"
+      >
         <HeadlineKpiTile kpi={data.headlineKpi} active={panelInView} industryLabel={industryLabel} />
 
         <div className="mt-4 grid gap-4 md:grid-cols-3">
@@ -236,7 +248,7 @@ function FindingsPanel({ data, industryLabel }: { data: LiveFindingsData; indust
             ))}
           </div>
         </div>
-      </div>
+      </motion.div>
     </motion.div>
   );
 }
@@ -274,6 +286,14 @@ function HeadlineKpiTile({
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
             Live Findings
           </span>
+        </div>
+        <div className="mb-4">
+          <p className="mb-2 text-[0.62rem] font-medium uppercase tracking-[0.2em] text-white/30">
+            Auto-cycle: Training → Dental → Homebuilder · Paused
+          </p>
+          <div className="h-0.5 w-full rounded-full bg-white/5">
+            <div className="h-0.5 w-0 rounded-full bg-emerald-500/40" />
+          </div>
         </div>
         <div className="flex items-baseline justify-center gap-1 text-center text-6xl leading-none md:text-8xl">
           {kpi.prefix && <span className="font-display text-4xl text-emerald-300 md:text-6xl">{kpi.prefix}</span>}
