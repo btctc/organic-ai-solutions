@@ -203,12 +203,12 @@ function FindingsPanel({ data, industryLabel }: { data: LiveFindingsData; indust
           panelInView
             ? {
                 boxShadow: [
-                  '0 24px 80px rgba(0,0,0,0.40), 0 0 28px rgba(16,185,129,0.10)',
-                  '0 24px 80px rgba(0,0,0,0.40), 0 0 46px rgba(16,185,129,0.20)',
-                  '0 24px 80px rgba(0,0,0,0.40), 0 0 28px rgba(16,185,129,0.10)',
+                  '0 24px 80px rgba(0,0,0,0.40), 0 0 40px 0 rgba(16,185,129,0.10)',
+                  '0 24px 80px rgba(0,0,0,0.40), 0 0 60px 0 rgba(16,185,129,0.20)',
+                  '0 24px 80px rgba(0,0,0,0.40), 0 0 40px 0 rgba(16,185,129,0.10)',
                 ],
               }
-            : { boxShadow: '0 24px 80px rgba(0,0,0,0.40), 0 0 18px rgba(16,185,129,0.08)' }
+            : { boxShadow: '0 24px 80px rgba(0,0,0,0.40), 0 0 40px 0 rgba(16,185,129,0.10)' }
         }
         transition={{ boxShadow: { duration: 4, repeat: Infinity, ease: 'easeInOut' } }}
         className="overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.04] p-4 backdrop-blur md:p-5"
@@ -227,8 +227,8 @@ function FindingsPanel({ data, industryLabel }: { data: LiveFindingsData; indust
           <div className="h-0.5 w-0 rounded-full bg-emerald-500/40" />
         </div>
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
-          <div className="lg:col-span-3">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,55fr)_minmax(0,45fr)]">
+          <div>
             <HeadlineKpiTile kpi={data.headlineKpi} active={panelInView} />
 
             <div className="mt-4 grid gap-4 md:grid-cols-3">
@@ -238,8 +238,11 @@ function FindingsPanel({ data, industryLabel }: { data: LiveFindingsData; indust
             </div>
           </div>
 
-          <div className="border-t border-white/10 pt-6 lg:col-span-2 lg:border-l lg:border-t-0 lg:border-white/5 lg:pl-6 lg:pt-0">
-            <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#11121A]/80">
+          <div className="border-t border-white/10 pt-6 lg:border-l lg:border-t-0 lg:border-white/5 lg:pl-6 lg:pt-0">
+            <p className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-white/40">
+              Recent
+            </p>
+            <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#11121A]/80 lg:max-h-[420px]">
               {data.findings.map((finding, index) => (
                 <motion.div
                   key={finding.id}
@@ -247,7 +250,9 @@ function FindingsPanel({ data, industryLabel }: { data: LiveFindingsData; indust
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: false, margin: '-100px' }}
                   transition={{ delay: index * 0.1, duration: 0.36, ease: 'easeOut' }}
-                  className="grid gap-2 border-b border-white/10 px-4 py-4 last:border-b-0 md:grid-cols-[120px_1fr] md:px-5 lg:grid-cols-1 lg:px-4"
+                  className={`grid gap-2 border-b border-white/10 px-4 py-4 last:border-b-0 md:grid-cols-[120px_1fr] md:px-5 lg:grid-cols-1 lg:px-4 lg:py-3 ${
+                    index >= 4 ? 'lg:hidden' : ''
+                  }`}
                 >
                   <div className="flex items-center gap-2 text-xs text-white/40">
                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
