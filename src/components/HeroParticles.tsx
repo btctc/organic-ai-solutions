@@ -152,6 +152,10 @@ export default function HeroParticles() {
         p.y += p.vy;
 
 
+        if (p.x < -5) p.x = 105;
+        if (p.x > 105) p.x = -5;
+        if (p.y < -5) p.y = 105;
+        if (p.y > 105) p.y = -5;
         dots[i].setAttribute("cx", p.x.toFixed(2));
         dots[i].setAttribute("cy", p.y.toFixed(2));
         glows[i].setAttribute("cx", p.x.toFixed(2));
