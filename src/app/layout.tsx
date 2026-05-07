@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     template: "%s | Organic AI Solutions",
   },
   description:
-    "Organic AI Solutions is a Dallas-based AI consulting firm that deploys production AI agents and AI-native websites for small and mid-sized businesses. Built by operators with enterprise-grade experience.",
+    "Production AI agents and AI-native websites for operators. Working software, not strategy decks.",
   keywords: ["AI consulting", "AI agents", "Dallas AI", "AI deployment", "small business AI"],
   authors: [{ name: "Terrence Crawford" }, { name: "Diego Kennedy Templeton" }],
   openGraph: {
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     siteName: "Organic AI Solutions",
     title: "AI Agents Your Business Can Run On",
     description:
-      "Production AI agent deployments and AI-native websites for small and mid-sized businesses.",
+      "Production AI agent deployments and AI-native websites for operators.",
     images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Organic AI Solutions" }],
   },
   twitter: {
@@ -72,7 +72,7 @@ export default function RootLayout({
                   name: "Organic AI Solutions",
                   url: "https://organicaisolutions.ai",
                   description:
-                    "Dallas-based AI consulting firm that deploys production AI agents and AI-native websites for small and mid-sized businesses.",
+                    "Dallas-based AI consulting firm that deploys production AI agents and AI-native websites for operators.",
                   founder: [
                     { "@type": "Person", name: "Terrence Crawford", jobTitle: "CEO & Co-founder" },
                     {
