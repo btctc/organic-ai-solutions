@@ -918,6 +918,7 @@ const CYCLE_INTERVAL_MS = 30000;
 const CYCLE_TICK_MS = 100;
 const TASK_TOOLTIP_WIDTH = 380;
 const TASK_TOOLTIP_HEIGHT = 190;
+const MOBILE_TOOLTIP_MARGIN = 16;
 
 const quickContactSelectors = [
   '[aria-label="Open quick contact"]',
@@ -1082,7 +1083,7 @@ export default function ScrollDeviceShowcase() {
   return (
     <section ref={sectionRef} id="proof" className="relative overflow-hidden bg-[#0A0A0F] py-12 text-white md:py-16">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(16,185,129,0.16),transparent_34%),radial-gradient(circle_at_85%_55%,rgba(167,139,250,0.12),transparent_28%)]" />
-      <div className="relative mx-auto max-w-[1440px] px-6">
+      <div className="relative mx-auto max-w-[1440px] px-4 sm:px-6">
         <div className="mb-4 text-center">
           <p className="mb-2 text-xs font-medium uppercase tracking-[0.2em] text-emerald-400">
             Three businesses · Same operating system · Different work
@@ -1196,7 +1197,7 @@ function PanelButton({
       aria-controls="dashboard-content"
       aria-label={`Show ${children}`}
       onClick={() => onClick(id)}
-      className={`relative cursor-pointer whitespace-nowrap rounded-full border-b px-4 py-3 text-base font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#11121A] ${
+      className={`relative cursor-pointer whitespace-nowrap rounded-full border-b px-3 py-2.5 text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#11121A] sm:px-4 sm:py-3 sm:text-base ${
         isActive
           ? 'border-transparent'
           : 'border-white/15 text-white/55 hover:-translate-y-0.5 hover:border-white/40 hover:bg-white/5 hover:text-white/90'
@@ -1307,7 +1308,7 @@ function IndustryButton({
       aria-controls="dashboard-content"
       onClick={() => onClick(index)}
       aria-label={ariaLabel}
-      className={`relative cursor-pointer whitespace-nowrap rounded-full border-b px-4 py-3 text-base font-medium text-white transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#11121A] ${
+      className={`relative cursor-pointer whitespace-nowrap rounded-full border-b px-3 py-2.5 text-sm font-medium text-white transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#11121A] sm:px-4 sm:py-3 sm:text-base ${
         isActive
           ? 'border-emerald-400 bg-emerald-400/12 text-emerald-300 shadow-[0_8px_24px_rgba(16,185,129,0.18),inset_0_0_16px_rgba(16,185,129,0.08)]'
           : 'border-white/10 text-white/55 hover:-translate-y-0.5 hover:border-white/40 hover:bg-white/5 hover:text-white/80'
@@ -1411,7 +1412,7 @@ function DashboardPanelShell({
     >
       <motion.div
         style={{ boxShadow: panelShadow }}
-        className="relative flex min-h-[640px] flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.04] p-4 backdrop-blur md:p-5"
+        className="relative flex min-h-[560px] flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.04] p-4 backdrop-blur md:min-h-[640px] md:p-5"
         onMouseEnter={() => onHoverPauseChange(true)}
         onMouseLeave={() => onHoverPauseChange(false)}
         onPointerDown={(event) => {
@@ -1434,12 +1435,12 @@ function DashboardPanelShell({
               Live · {industryCode}
             </span>
 
-            <div className="w-full overflow-x-auto pb-1 lg:w-auto lg:pb-0">
+            <div className="relative w-full overflow-x-auto pb-1 after:pointer-events-none after:absolute after:inset-y-0 after:right-0 after:w-10 after:bg-gradient-to-l after:from-[#11121A] after:to-transparent lg:w-auto lg:pb-0 lg:after:hidden">
               <PanelTabs activePanel={activePanel} onPanelChange={onPanelChange} tabPulseActive={tabPulseActive} />
             </div>
           </div>
 
-          <div className="w-full overflow-x-auto pb-1 lg:pb-0">
+          <div className="relative w-full overflow-x-auto pb-1 after:pointer-events-none after:absolute after:inset-y-0 after:right-0 after:w-10 after:bg-gradient-to-l after:from-[#11121A] after:to-transparent lg:pb-0 lg:after:hidden">
             <IndustryTabs
               industries={industries}
               activeIndustryIndex={activeIndustryIndex}
@@ -1505,7 +1506,7 @@ function FindingsPanel({
           <p className="mb-3 text-sm font-medium uppercase tracking-[0.2em] text-white/45">
             Recent
           </p>
-          <div aria-live="polite" aria-atomic="false" className="overflow-hidden rounded-2xl border border-white/10 bg-[#11121A]/80 lg:max-h-[420px]">
+          <div aria-live="polite" aria-atomic="false" className="max-h-[300px] overflow-hidden rounded-2xl border border-white/10 bg-[#11121A]/80 lg:max-h-[420px]">
             {data.findings.map((finding, index) => (
               <motion.div
                 key={finding.id}
@@ -1705,6 +1706,7 @@ function MobileTaskNodeChip({
 }) {
   const lane = getTaskLane(node.lane);
   const [tooltipOpen, setTooltipOpen] = useState(false);
+  const [tooltipAlign, setTooltipAlign] = useState<TooltipAlign>('center');
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -1725,13 +1727,20 @@ function MobileTaskNodeChip({
     return () => document.removeEventListener('pointerdown', onPointerDown);
   }, [tooltipOpen]);
 
+  const toggleTooltip = () => {
+    if (!tooltipOpen) {
+      setTooltipAlign(calculateViewportTooltipAlign(wrapperRef.current));
+    }
+    setTooltipOpen((open) => !open);
+  };
+
   return (
     <div ref={wrapperRef} className="relative">
       <button
         type="button"
         onClick={(event) => {
           event.stopPropagation();
-          setTooltipOpen((open) => !open);
+          toggleTooltip();
         }}
         onKeyDown={(event) => {
           if (event.key === 'Escape') setTooltipOpen(false);
@@ -1746,7 +1755,7 @@ function MobileTaskNodeChip({
         {node.tooltip.technical}. {node.tooltip.plain}
       </span>
       <AnimatePresence>
-        {tooltipOpen && <TaskNodeTooltip node={node} lane={lane} placement="bottom" />}
+        {tooltipOpen && <TaskNodeTooltip node={node} lane={lane} placement="bottom" align={tooltipAlign} />}
       </AnimatePresence>
     </div>
   );
@@ -2006,6 +2015,21 @@ function calculateTaskTooltipPosition(wrapper: HTMLDivElement | null): {
   return { placement, align };
 }
 
+function calculateViewportTooltipAlign(wrapper: HTMLDivElement | null): TooltipAlign {
+  if (!wrapper) return 'center';
+
+  const nodeRect = wrapper.getBoundingClientRect();
+  const viewportWidth = document.documentElement.clientWidth || window.innerWidth;
+  const tooltipWidth = Math.min(TASK_TOOLTIP_WIDTH, viewportWidth - MOBILE_TOOLTIP_MARGIN * 2);
+  const centerX = nodeRect.left + nodeRect.width / 2;
+  const centeredLeft = centerX - tooltipWidth / 2;
+  const centeredRight = centerX + tooltipWidth / 2;
+
+  if (centeredLeft < MOBILE_TOOLTIP_MARGIN) return 'left';
+  if (centeredRight > viewportWidth - MOBILE_TOOLTIP_MARGIN) return 'right';
+  return 'center';
+}
+
 const architectureActivityStyles = [
   { text: 'text-cyan-300', border: 'border-cyan-400/45', bg: 'bg-cyan-400/[0.08]', dot: 'bg-cyan-300', glow: 'shadow-[0_0_14px_rgba(34,211,238,0.65)]' },
   { text: 'text-emerald-300', border: 'border-emerald-400/45', bg: 'bg-emerald-400/[0.08]', dot: 'bg-emerald-300', glow: 'shadow-[0_0_14px_rgba(52,211,153,0.65)]' },
@@ -2138,7 +2162,7 @@ function ArchitectureFlowNode({
     <motion.div
       role="region"
       aria-label={`${layer.name} - ${layer.plain}`}
-      className="relative z-10 w-full max-w-[1160px] rounded-xl border border-violet-400/55 bg-[#11121A]/95 px-3 py-2 transition-all duration-200 hover:z-[100] hover:border-violet-400/75 focus-within:z-[100] lg:h-[72px] lg:overflow-visible"
+      className="relative z-10 mb-4 w-full max-w-[1160px] rounded-xl border border-violet-400/55 bg-[#11121A]/95 px-3 py-3 transition-all duration-200 hover:z-[100] hover:border-violet-400/75 focus-within:z-[100] md:mb-0 md:py-2 lg:h-[72px] lg:overflow-visible"
       style={{ boxShadow: '0 0 24px rgba(139,92,246,0.12)' }}
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
@@ -2156,8 +2180,8 @@ function ArchitectureFlowNode({
           </div>
 
           <div className="min-w-0">
-            <p className="truncate text-sm leading-snug text-white/75">{layer.plain}</p>
-            <p className="mt-0.5 truncate font-mono text-xs leading-snug tracking-wide text-white/55">{layer.technical}</p>
+            <p className="whitespace-normal break-words text-sm leading-snug text-white/75 md:truncate">{layer.plain}</p>
+            <p className="mt-0.5 whitespace-normal break-words font-mono text-xs leading-snug tracking-wide text-white/55 md:truncate">{layer.technical}</p>
           </div>
         </div>
 
@@ -2190,10 +2214,10 @@ function ArchitectureActivityPanel({
   const Icon = architectureActivityIcons[entry.iconHint] || FileText;
   const historyPlacement =
     layerIndex <= 1
-      ? 'right-full top-0 mr-3'
+      ? 'left-0 top-full mt-2 md:left-auto md:right-full md:top-0 md:mt-0 md:mr-3'
       : layerIndex >= 3
-        ? 'right-full bottom-0 mr-3'
-        : 'right-full top-1/2 mr-3 -translate-y-1/2';
+        ? 'left-0 top-full mt-2 md:left-auto md:right-full md:bottom-0 md:top-auto md:mt-0 md:mr-3'
+        : 'left-0 top-full mt-2 md:left-auto md:right-full md:top-1/2 md:mt-0 md:mr-3 md:-translate-y-1/2';
 
   return (
     <div
@@ -2309,7 +2333,7 @@ function ArchitectureConnector({
 
   return (
     <div
-      className={`relative flex h-1.5 w-full max-w-[860px] items-center justify-center ${bidirectional ? 'my-px' : ''}`}
+      className={`relative hidden h-1.5 w-full max-w-[860px] items-center justify-center md:flex ${bidirectional ? 'my-px' : ''}`}
       aria-hidden="true"
     >
       <svg className="h-full w-32 overflow-visible" viewBox="0 0 128 20" fill="none">
