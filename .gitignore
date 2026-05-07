@@ -55,3 +55,4 @@ session-log.txt
 secrets.json
 .playwright-mcp/
 audit-*.md
+.codex-screenshots/
