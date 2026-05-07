@@ -27,8 +27,6 @@
     "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-tabs": "^1.1.12",
-    "@react-three/drei": "^10.7.7",
-    "@react-three/fiber": "^9.6.1",
     "@supabase/supabase-js": "^2.105.3",
     "@tailwindcss/typography": "^0.5.16",
     "ai": "^6.0.137",
@@ -47,7 +45,6 @@
     "resend": "^6.9.4",
     "server-only": "^0.0.1",
     "tailwind-merge": "^3.3.1",
-    "three": "^0.184.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
@@ -60,7 +57,6 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@types/three": "^0.184.1",
     "@vitejs/plugin-react": "^4.5.2",
     "eslint": "9.29.0",
     "eslint-config-next": "15.3.4",

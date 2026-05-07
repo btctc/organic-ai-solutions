@@ -1,10 +1,9 @@
 "use client";
 
-import loadClientOnly from "next/dynamic";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { useIsDesktop } from "@/hooks/useIsDesktop";
-
-const Logo3D = loadClientOnly(() => import("@/components/Logo3D"), { ssr: false });
+import HeroParticles from "@/components/HeroParticles";
 
 export default function Hero() {
   const isDesktop = useIsDesktop();
@@ -81,11 +80,25 @@ export default function Hero() {
             </motion.div>
           </div>
 
-          {isDesktop && (
-            <div className="relative hidden lg:block aspect-square min-h-[420px] max-h-[560px]">
-              <Logo3D />
-            </div>
-          )}
+          <div className="relative hidden lg:flex items-center justify-center aspect-square min-h-[420px] max-h-[560px]">
+            {isDesktop && <HeroParticles />}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.85 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, ease: "easeOut", delay: 0.4 }}
+              className="relative z-10"
+            >
+              <Image
+                src="/oas-logo-3d.png"
+                alt="Organic AI Solutions logo"
+                width={500}
+                height={470}
+                priority
+                className="w-full max-w-[440px] h-auto select-none animate-hero-logo-pulse"
+                draggable={false}
+              />
+            </motion.div>
+          </div>
         </div>
       </div>
     </section>
