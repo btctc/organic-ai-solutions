@@ -101,7 +101,7 @@ export default function ScrollDeviceShowcase() {
   return (
     <section id="proof" className="relative overflow-hidden bg-[#0A0A0F] py-16 text-white md:py-24">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(16,185,129,0.16),transparent_34%),radial-gradient(circle_at_85%_55%,rgba(167,139,250,0.12),transparent_28%)]" />
-      <div className="relative mx-auto max-w-7xl px-6">
+      <div className="relative mx-auto max-w-[1440px] px-6">
         <div className="mb-6 text-center">
           <p className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-emerald-400">
             Three businesses · Same operating system · Different work
@@ -196,7 +196,7 @@ function FindingsPanel({ data, industryLabel }: { data: LiveFindingsData; indust
       exit={{ opacity: 0, y: -12 }}
       viewport={{ once: false, margin: '-100px' }}
       transition={{ duration: 0.4, ease: 'easeOut' }}
-      className="mx-auto max-w-6xl"
+      className="mx-auto max-w-[1320px]"
     >
       <motion.div
         animate={
@@ -213,39 +213,50 @@ function FindingsPanel({ data, industryLabel }: { data: LiveFindingsData; indust
         transition={{ boxShadow: { duration: 4, repeat: Infinity, ease: 'easeInOut' } }}
         className="overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.04] p-4 backdrop-blur md:p-5"
       >
-        <HeadlineKpiTile kpi={data.headlineKpi} active={panelInView} industryLabel={industryLabel} />
-
-        <div className="mt-4 grid gap-4 md:grid-cols-3">
-          {data.secondaryKpis.map((kpi, index) => (
-            <SecondaryKpiTile key={kpi.label} kpi={kpi} delay={index * 0.2} active={panelInView} />
-          ))}
+        <div className="mb-3 flex flex-wrap items-center gap-3">
+          <span className="inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[0.68rem] font-medium uppercase tracking-[0.18em] text-white/60">
+            {industryLabel}
+          </span>
+          <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-[0.68rem] font-medium uppercase tracking-[0.18em] text-emerald-300">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
+            Live Findings
+          </span>
         </div>
 
-        <div className="mt-6">
-          <div className="mb-3 flex items-center gap-3">
-            <span className="h-px flex-1 bg-white/10" />
-            <p className="text-[0.68rem] font-medium uppercase tracking-[0.24em] text-white/45">
-              Recent Activity
-            </p>
-            <span className="h-px flex-1 bg-white/10" />
+        <div className="mb-5 h-0.5 w-full rounded-full bg-white/5">
+          <div className="h-0.5 w-0 rounded-full bg-emerald-500/40" />
+        </div>
+
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
+          <div className="lg:col-span-3">
+            <HeadlineKpiTile kpi={data.headlineKpi} active={panelInView} />
+
+            <div className="mt-4 grid gap-4 md:grid-cols-3">
+              {data.secondaryKpis.map((kpi, index) => (
+                <SecondaryKpiTile key={kpi.label} kpi={kpi} delay={index * 0.2} active={panelInView} />
+              ))}
+            </div>
           </div>
-          <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#11121A]/80">
-            {data.findings.map((finding, index) => (
-              <motion.div
-                key={finding.id}
-                initial={{ opacity: 0, x: 28 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: false, margin: '-100px' }}
-                transition={{ delay: index * 0.1, duration: 0.36, ease: 'easeOut' }}
-                className="grid gap-2 border-b border-white/10 px-4 py-4 last:border-b-0 md:grid-cols-[120px_1fr] md:px-5"
-              >
-                <div className="flex items-center gap-2 text-xs text-white/40">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                  {finding.when}
-                </div>
-                <p className="text-sm leading-relaxed text-white/80 md:text-base">{finding.text}</p>
-              </motion.div>
-            ))}
+
+          <div className="border-t border-white/10 pt-6 lg:col-span-2 lg:border-l lg:border-t-0 lg:border-white/5 lg:pl-6 lg:pt-0">
+            <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#11121A]/80">
+              {data.findings.map((finding, index) => (
+                <motion.div
+                  key={finding.id}
+                  initial={{ opacity: 0, x: 28 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: false, margin: '-100px' }}
+                  transition={{ delay: index * 0.1, duration: 0.36, ease: 'easeOut' }}
+                  className="grid gap-2 border-b border-white/10 px-4 py-4 last:border-b-0 md:grid-cols-[120px_1fr] md:px-5 lg:grid-cols-1 lg:px-4"
+                >
+                  <div className="flex items-center gap-2 text-xs text-white/40">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                    {finding.when}
+                  </div>
+                  <p className="text-sm leading-relaxed text-white/80 md:text-base">{finding.text}</p>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </div>
       </motion.div>
@@ -253,15 +264,7 @@ function FindingsPanel({ data, industryLabel }: { data: LiveFindingsData; indust
   );
 }
 
-function HeadlineKpiTile({
-  kpi,
-  active,
-  industryLabel,
-}: {
-  kpi: HeadlineKpi;
-  active: boolean;
-  industryLabel: string;
-}) {
+function HeadlineKpiTile({ kpi, active }: { kpi: HeadlineKpi; active: boolean }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 18 }}
@@ -278,23 +281,6 @@ function HeadlineKpiTile({
         transition={{ duration: 1.4, repeat: Infinity, repeatDelay: 6.6, ease: 'easeInOut' }}
       />
       <div className="relative">
-        <div className="mb-3 flex flex-wrap items-center gap-3">
-          <span className="inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[0.68rem] font-medium uppercase tracking-[0.18em] text-white/60">
-            {industryLabel}
-          </span>
-          <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-[0.68rem] font-medium uppercase tracking-[0.18em] text-emerald-300">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
-            Live Findings
-          </span>
-        </div>
-        <div className="mb-4">
-          <p className="mb-2 text-[0.62rem] font-medium uppercase tracking-[0.2em] text-white/30">
-            Auto-cycle: Training → Dental → Homebuilder · Paused
-          </p>
-          <div className="h-0.5 w-full rounded-full bg-white/5">
-            <div className="h-0.5 w-0 rounded-full bg-emerald-500/40" />
-          </div>
-        </div>
         <div className="flex items-baseline justify-center gap-1 text-center text-6xl leading-none md:text-8xl">
           {kpi.prefix && <span className="font-display text-4xl text-emerald-300 md:text-6xl">{kpi.prefix}</span>}
           <span className="font-display text-white">
