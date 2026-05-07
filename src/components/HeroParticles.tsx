@@ -34,10 +34,10 @@ function createParticles(): Particle[] {
     const x = CENTER + Math.cos(angle) * radius;
     const y = CENTER + Math.sin(angle) * radius;
 
-    const tangentSpeed = 0.025 + Math.random() * 0.045;
-    const tangentDir = Math.random() < 0.5 ? 1 : -1;
-    const vx = -Math.sin(angle) * tangentSpeed * tangentDir + (Math.random() - 0.5) * 0.04;
-    const vy = Math.cos(angle) * tangentSpeed * tangentDir + (Math.random() - 0.5) * 0.04;
+    const driftSpeed = 0.025 + Math.random() * 0.045;
+    const driftAngle = Math.random() * Math.PI * 2;
+    const vx = Math.cos(driftAngle) * driftSpeed;
+    const vy = Math.sin(driftAngle) * driftSpeed;
 
     particles.push({
       x,
@@ -151,17 +151,6 @@ export default function HeroParticles() {
         p.x += p.vx;
         p.y += p.vy;
 
-        const dx = p.x - CENTER;
-        const dy = p.y - CENTER;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist > 0) {
-          const targetRadius = 36;
-          const radialDelta = (targetRadius - dist) * 0.0015;
-          p.vx += (dx / dist) * radialDelta;
-          p.vy += (dy / dist) * radialDelta;
-        }
-        p.vx *= 0.995;
-        p.vy *= 0.995;
 
         dots[i].setAttribute("cx", p.x.toFixed(2));
         dots[i].setAttribute("cy", p.y.toFixed(2));
