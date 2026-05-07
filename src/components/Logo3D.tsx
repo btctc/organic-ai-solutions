@@ -4,10 +4,10 @@ import { useRef, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
-const PARTICLE_COUNT = 30;
+const PARTICLE_COUNT = 15;
 const ORANGE = "#E8420A";
 const ORANGE_GLOW = "#FF6B2C";
-const CONNECTION_DISTANCE = 1.8;
+const CONNECTION_DISTANCE = 2.4;
 
 interface ParticleData {
   initialPosition: THREE.Vector3;
@@ -20,7 +20,7 @@ interface ParticleData {
 function generateParticles(): ParticleData[] {
   const particles: ParticleData[] = [];
   for (let i = 0; i < PARTICLE_COUNT; i++) {
-    const radius = 1.5 + Math.random() * 1.5;
+    const radius = 2.0 + Math.random() * 1.5;
     const theta = Math.random() * Math.PI * 2;
     const phi = Math.acos(2 * Math.random() - 1);
 
@@ -39,7 +39,7 @@ function generateParticles(): ParticleData[] {
     particles.push({
       initialPosition,
       orbitRadius: radius,
-      orbitSpeed: 0.05 + Math.random() * 0.15,
+      orbitSpeed: 0.05 + Math.random() * 0.12,
       orbitAxis,
       phase: Math.random() * Math.PI * 2,
     });
@@ -47,27 +47,53 @@ function generateParticles(): ParticleData[] {
   return particles;
 }
 
-function CoreShape() {
-  const ref = useRef<THREE.Mesh>(null);
+function GeodesicLogo() {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const edgesRef = useRef<THREE.LineSegments>(null);
+
+  // Build geodesic sphere geometry once
+  const { sphereGeometry, edgesGeometry } = useMemo(() => {
+    const sphere = new THREE.IcosahedronGeometry(1.3, 2);
+    const edges = new THREE.EdgesGeometry(sphere, 0.1);
+    return { sphereGeometry: sphere, edgesGeometry: edges };
+  }, []);
 
   useFrame((_, delta) => {
-    if (ref.current) {
-      ref.current.rotation.y += delta * 0.2;
-      ref.current.rotation.x += delta * 0.08;
+    if (meshRef.current) {
+      meshRef.current.rotation.y += delta * 0.18;
+      meshRef.current.rotation.x += delta * 0.06;
+    }
+    if (edgesRef.current) {
+      edgesRef.current.rotation.y += delta * 0.18;
+      edgesRef.current.rotation.x += delta * 0.06;
     }
   });
 
   return (
-    <mesh ref={ref}>
-      <icosahedronGeometry args={[0.7, 1]} />
-      <meshStandardMaterial
-        color={ORANGE}
-        emissive={ORANGE}
-        emissiveIntensity={0.45}
-        roughness={0.3}
-        metalness={0.6}
-      />
-    </mesh>
+    <group>
+      <mesh ref={meshRef} geometry={sphereGeometry}>
+        <meshPhysicalMaterial
+          color={ORANGE}
+          emissive={ORANGE}
+          emissiveIntensity={0.25}
+          roughness={0.35}
+          metalness={0.15}
+          transmission={0.35}
+          thickness={0.6}
+          transparent
+          opacity={0.92}
+          side={THREE.DoubleSide}
+        />
+      </mesh>
+      <lineSegments ref={edgesRef} geometry={edgesGeometry}>
+        <lineBasicMaterial
+          color="#FFFFFF"
+          transparent
+          opacity={0.85}
+          linewidth={1}
+        />
+      </lineSegments>
+    </group>
   );
 }
 
@@ -126,7 +152,7 @@ function ParticleField({ particles }: { particles: ParticleData[] }) {
     }
 
     if (groupRef.current) {
-      groupRef.current.rotation.y = t * 0.05;
+      groupRef.current.rotation.y = t * 0.04;
     }
   });
 
@@ -141,10 +167,10 @@ function ParticleField({ particles }: { particles: ParticleData[] }) {
           />
         </bufferGeometry>
         <pointsMaterial
-          size={0.06}
+          size={0.05}
           color={ORANGE_GLOW}
           transparent
-          opacity={0.85}
+          opacity={0.7}
           sizeAttenuation
         />
       </points>
@@ -156,7 +182,7 @@ function ParticleField({ particles }: { particles: ParticleData[] }) {
             count={(PARTICLE_COUNT * (PARTICLE_COUNT - 1)) / 2 * 2}
           />
         </bufferGeometry>
-        <lineBasicMaterial color={ORANGE} transparent opacity={0.18} />
+        <lineBasicMaterial color={ORANGE} transparent opacity={0.12} />
       </lineSegments>
     </group>
   );
@@ -173,10 +199,11 @@ export default function Logo3D() {
         gl={{ antialias: true, alpha: true }}
         style={{ background: "transparent" }}
       >
-        <ambientLight intensity={0.4} />
-        <pointLight position={[5, 5, 5]} intensity={0.8} color={ORANGE_GLOW} />
-        <pointLight position={[-5, -3, -2]} intensity={0.3} color="#FFAA77" />
-        <CoreShape />
+        <ambientLight intensity={0.5} />
+        <pointLight position={[5, 5, 5]} intensity={0.9} color={ORANGE_GLOW} />
+        <pointLight position={[-5, -3, -2]} intensity={0.4} color="#FFAA77" />
+        <pointLight position={[0, 0, 6]} intensity={0.5} color="#FFFFFF" />
+        <GeodesicLogo />
         <ParticleField particles={particles} />
       </Canvas>
     </div>
