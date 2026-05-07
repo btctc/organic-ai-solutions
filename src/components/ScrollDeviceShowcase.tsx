@@ -99,45 +99,51 @@ export default function ScrollDeviceShowcase() {
   const [activeIndustry] = useState<Industry>('training');
 
   return (
-    <section id="proof" className="relative overflow-hidden bg-[#0A0A0F] py-24 text-white md:py-32">
+    <section id="proof" className="relative overflow-hidden bg-[#0A0A0F] py-16 text-white md:py-24">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(16,185,129,0.16),transparent_34%),radial-gradient(circle_at_85%_55%,rgba(167,139,250,0.12),transparent_28%)]" />
       <div className="relative mx-auto max-w-7xl px-6">
-        <div className="mb-12 text-center">
+        <div className="mb-6 text-center">
           <p className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-emerald-400">
             Three businesses · Same operating system · Different work
           </p>
-          <h2 className="font-display text-4xl leading-[1.05] md:text-6xl">
+          <h2 className="font-display text-3xl leading-[1.05] md:text-5xl">
             Your operation, running itself.
           </h2>
         </div>
 
-        <div className="mb-8 flex items-center justify-center gap-3 text-sm">
-          <span className="inline-flex h-2 w-2 animate-pulse rounded-full bg-emerald-500 shadow-[0_0_18px_rgba(16,185,129,0.85)]" />
-          <span className="text-xs font-medium uppercase tracking-wide text-emerald-400">
-            Live · {industryMeta[activeIndustry].code}
-          </span>
-          <span className="text-white/40">·</span>
-          <span className="text-white/70">{industryMeta[activeIndustry].label}</span>
-        </div>
+        <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-center gap-3 text-sm">
+            <span className="inline-flex h-2 w-2 animate-pulse rounded-full bg-emerald-500 shadow-[0_0_18px_rgba(16,185,129,0.85)]" />
+            <span className="text-xs font-medium uppercase tracking-wide text-emerald-400">
+              Live · {industryMeta[activeIndustry].code}
+            </span>
+            <span className="text-white/40">·</span>
+            <span className="text-white/70">{industryMeta[activeIndustry].label}</span>
+          </div>
 
-        <div className="mb-8 flex justify-center overflow-x-auto pb-1">
-          <div className="inline-flex rounded-full border border-white/10 bg-white/5 p-1">
-            <PanelButton id="findings" active={activePanel} onClick={setActivePanel}>
-              Live Findings
-            </PanelButton>
-            <PanelButton id="taskflow" active={activePanel} onClick={setActivePanel}>
-              Task Flow
-            </PanelButton>
-            <PanelButton id="architecture" active={activePanel} onClick={setActivePanel}>
-              Service Architecture
-            </PanelButton>
+          <div className="w-full overflow-x-auto pb-1 md:w-auto md:pb-0">
+            <div className="inline-flex min-w-max rounded-full border border-white/10 bg-white/5 p-1">
+              <PanelButton id="findings" active={activePanel} onClick={setActivePanel}>
+                Live Findings
+              </PanelButton>
+              <PanelButton id="taskflow" active={activePanel} onClick={setActivePanel}>
+                Task Flow
+              </PanelButton>
+              <PanelButton id="architecture" active={activePanel} onClick={setActivePanel}>
+                Service Architecture
+              </PanelButton>
+            </div>
           </div>
         </div>
 
         <div className="relative min-h-[480px]">
           <AnimatePresence mode="wait">
             {activePanel === 'findings' && (
-              <FindingsPanel key="findings" data={liveFindings[activeIndustry]} />
+              <FindingsPanel
+                key="findings"
+                data={liveFindings[activeIndustry]}
+                industryLabel={industryMeta[activeIndustry].label}
+              />
             )}
             {activePanel === 'taskflow' && (
               <PlaceholderPanel key="taskflow" label="Task Flow — coming in Pass 2" />
@@ -180,7 +186,7 @@ function PanelButton({
   );
 }
 
-function FindingsPanel({ data }: { data: LiveFindingsData }) {
+function FindingsPanel({ data, industryLabel }: { data: LiveFindingsData; industryLabel: string }) {
   const panelRef = useRef<HTMLDivElement>(null);
   const panelInView = useInView(panelRef, { margin: '-100px' });
 
@@ -194,8 +200,8 @@ function FindingsPanel({ data }: { data: LiveFindingsData }) {
       transition={{ duration: 0.4, ease: 'easeOut' }}
       className="mx-auto max-w-6xl"
     >
-      <div className="overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.04] p-4 shadow-2xl shadow-black/40 backdrop-blur md:p-6">
-        <HeadlineKpiTile kpi={data.headlineKpi} active={panelInView} />
+      <div className="overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.04] p-4 shadow-2xl shadow-black/40 backdrop-blur md:p-5">
+        <HeadlineKpiTile kpi={data.headlineKpi} active={panelInView} industryLabel={industryLabel} />
 
         <div className="mt-4 grid gap-4 md:grid-cols-3">
           {data.secondaryKpis.map((kpi, index) => (
@@ -203,7 +209,7 @@ function FindingsPanel({ data }: { data: LiveFindingsData }) {
           ))}
         </div>
 
-        <div className="mt-8">
+        <div className="mt-6">
           <div className="mb-3 flex items-center gap-3">
             <span className="h-px flex-1 bg-white/10" />
             <p className="text-[0.68rem] font-medium uppercase tracking-[0.24em] text-white/45">
@@ -235,14 +241,22 @@ function FindingsPanel({ data }: { data: LiveFindingsData }) {
   );
 }
 
-function HeadlineKpiTile({ kpi, active }: { kpi: HeadlineKpi; active: boolean }) {
+function HeadlineKpiTile({
+  kpi,
+  active,
+  industryLabel,
+}: {
+  kpi: HeadlineKpi;
+  active: boolean;
+  industryLabel: string;
+}) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 18 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: false, margin: '-100px' }}
       transition={{ duration: 0.45, ease: 'easeOut' }}
-      className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#10131B] px-6 py-8 md:px-10 md:py-10"
+      className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#10131B] px-6 py-6 md:px-10 md:py-7"
     >
       <motion.div
         aria-hidden="true"
@@ -252,9 +266,14 @@ function HeadlineKpiTile({ kpi, active }: { kpi: HeadlineKpi; active: boolean })
         transition={{ duration: 1.4, repeat: Infinity, repeatDelay: 6.6, ease: 'easeInOut' }}
       />
       <div className="relative">
-        <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-[0.68rem] font-medium uppercase tracking-[0.18em] text-emerald-300">
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
-          Live Findings
+        <div className="mb-3 flex flex-wrap items-center gap-3">
+          <span className="inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[0.68rem] font-medium uppercase tracking-[0.18em] text-white/60">
+            {industryLabel}
+          </span>
+          <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-[0.68rem] font-medium uppercase tracking-[0.18em] text-emerald-300">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
+            Live Findings
+          </span>
         </div>
         <div className="flex items-baseline justify-center gap-1 text-center text-6xl leading-none md:text-8xl">
           {kpi.prefix && <span className="font-display text-4xl text-emerald-300 md:text-6xl">{kpi.prefix}</span>}
