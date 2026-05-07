@@ -15,7 +15,7 @@ interface Particle {
   color: string;
 }
 
-const PARTICLE_COUNT = 50;
+const PARTICLE_COUNT = 100;
 const COLORS = ["#E8420A", "#FF6B2C", "#FF8A4C", "#D63704"];
 
 function generateParticles(): Particle[] {
