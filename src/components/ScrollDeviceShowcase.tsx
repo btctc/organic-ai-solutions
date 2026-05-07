@@ -15,6 +15,8 @@ import { Brain, FileText, Link2, Lock, Mail, MessageSquare, Phone, Search } from
 type Industry = 'training' | 'dental' | 'homebuilder';
 type Panel = 'findings' | 'taskflow' | 'architecture';
 type Accent = 'emerald' | 'cyan' | 'violet' | 'amber';
+type TooltipPlacement = 'top' | 'bottom';
+type TooltipAlign = 'left' | 'center' | 'right' | 'outside-left' | 'outside-right';
 
 interface HeadlineKpi {
   value: number;
@@ -914,11 +916,33 @@ const industries: IndustryData[] = [
 
 const CYCLE_INTERVAL_MS = 30000;
 const CYCLE_TICK_MS = 100;
+const TASK_TOOLTIP_WIDTH = 380;
+const TASK_TOOLTIP_HEIGHT = 190;
 
 const quickContactSelectors = [
   '[aria-label="Open quick contact"]',
   '[aria-label="Organic AI Solutions chat assistant"]',
 ];
+
+function focusTabByOffset(container: HTMLElement, offset: number) {
+  const tabs = Array.from(container.querySelectorAll<HTMLButtonElement>('[role="tab"]'));
+  const currentIndex = tabs.findIndex((tab) => tab === document.activeElement);
+  if (currentIndex < 0) return;
+
+  const nextIndex = (currentIndex + offset + tabs.length) % tabs.length;
+  tabs[nextIndex]?.focus();
+}
+
+function handleTabListKeyDown(event: React.KeyboardEvent<HTMLElement>) {
+  if (event.key === 'ArrowRight') {
+    event.preventDefault();
+    focusTabByOffset(event.currentTarget, 1);
+  }
+  if (event.key === 'ArrowLeft') {
+    event.preventDefault();
+    focusTabByOffset(event.currentTarget, -1);
+  }
+}
 
 function findFixedContainer(element: Element | null) {
   let current = element?.parentElement || null;
@@ -1125,7 +1149,12 @@ function PanelTabs({
   tabPulseActive: boolean;
 }) {
   return (
-    <div className="inline-flex min-w-max rounded-full border border-white/10 bg-white/5 p-1">
+    <div
+      role="tablist"
+      aria-label="Select dashboard view"
+      onKeyDown={handleTabListKeyDown}
+      className="inline-flex min-w-max rounded-full border border-white/10 bg-white/5 p-1"
+    >
       <PanelButton id="findings" active={activePanel} onClick={onPanelChange} pulse={tabPulseActive}>
         Live Findings
       </PanelButton>
@@ -1161,11 +1190,16 @@ function PanelButton({
   return (
     <button
       type="button"
+      id={`dashboard-tab-${id}`}
+      role="tab"
+      aria-selected={isActive}
+      aria-controls="dashboard-content"
+      aria-label={`Show ${children}`}
       onClick={() => onClick(id)}
-      className={`relative cursor-pointer whitespace-nowrap rounded-full border-b px-4 py-2 text-sm font-medium transition-all duration-200 ${
+      className={`relative cursor-pointer whitespace-nowrap rounded-full border-b px-4 py-3 text-base font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#11121A] ${
         isActive
           ? 'border-transparent'
-          : 'border-white/15 text-white/60 hover:-translate-y-0.5 hover:border-white/40 hover:bg-white/5 hover:text-white/90'
+          : 'border-white/15 text-white/55 hover:-translate-y-0.5 hover:border-white/40 hover:bg-white/5 hover:text-white/90'
       }`}
       style={
         isActive
@@ -1223,7 +1257,12 @@ function IndustryTabs({
   activeIndustryLabel: string;
 }) {
   return (
-    <div className="inline-flex min-w-max items-center rounded-full border border-white/10 bg-white/[0.035] p-1">
+    <div
+      role="tablist"
+      aria-label="Select industry"
+      onKeyDown={handleTabListKeyDown}
+      className="inline-flex min-w-max items-center rounded-full border border-white/10 bg-white/[0.035] p-1"
+    >
       {industries.map((industry, index) => (
         <div key={industry.id} className="flex items-center">
           {index > 0 && <span className="mx-1 rounded-full bg-white/25 p-0.5" aria-hidden="true" />}
@@ -1262,12 +1301,16 @@ function IndustryButton({
   return (
     <button
       type="button"
+      id={`dashboard-industry-tab-${index}`}
+      role="tab"
+      aria-selected={isActive}
+      aria-controls="dashboard-content"
       onClick={() => onClick(index)}
       aria-label={ariaLabel}
-      className={`relative cursor-pointer whitespace-nowrap rounded-full border-b px-4 py-2 text-sm font-medium text-white transition-all duration-200 ${
+      className={`relative cursor-pointer whitespace-nowrap rounded-full border-b px-4 py-3 text-base font-medium text-white transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#11121A] ${
         isActive
           ? 'border-emerald-400 bg-emerald-400/12 text-emerald-300 shadow-[0_8px_24px_rgba(16,185,129,0.18),inset_0_0_16px_rgba(16,185,129,0.08)]'
-          : 'border-white/10 text-white/50 hover:-translate-y-0.5 hover:border-white/40 hover:bg-white/5 hover:text-white/80'
+          : 'border-white/10 text-white/55 hover:-translate-y-0.5 hover:border-white/40 hover:bg-white/5 hover:text-white/80'
       }`}
     >
       <AnimatePresence>
@@ -1375,6 +1418,15 @@ function DashboardPanelShell({
           if (event.pointerType !== 'mouse') onManualPause();
         }}
       >
+        <button
+          type="button"
+          onClick={onManualPause}
+          className="sr-only focus:not-sr-only focus:absolute focus:left-5 focus:top-5 focus:z-50 focus:rounded-full focus:border focus:border-emerald-400 focus:bg-[#0E1118] focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-emerald-200 focus:outline-none"
+          aria-label="Pause industry rotation"
+        >
+          Pause industry rotation
+        </button>
+
         <div className="mb-3 flex flex-col gap-3">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <span className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-emerald-400">
@@ -1410,7 +1462,12 @@ function DashboardPanelShell({
           />
         </div>
 
-        <div className="min-h-0 flex-1">
+        <div
+          id="dashboard-content"
+          role="tabpanel"
+          aria-labelledby={`dashboard-tab-${activePanel}`}
+          className="min-h-0 flex-1"
+        >
           {children(panelInView)}
         </div>
       </motion.div>
@@ -1445,26 +1502,25 @@ function FindingsPanel({
         </div>
 
         <div className="border-t border-white/10 pt-6 lg:border-l lg:border-t-0 lg:border-white/5 lg:pl-6 lg:pt-0">
-          <p className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-white/40">
+          <p className="mb-3 text-sm font-medium uppercase tracking-[0.2em] text-white/45">
             Recent
           </p>
-          <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#11121A]/80 lg:max-h-[420px]">
+          <div aria-live="polite" aria-atomic="false" className="overflow-hidden rounded-2xl border border-white/10 bg-[#11121A]/80 lg:max-h-[420px]">
             {data.findings.map((finding, index) => (
               <motion.div
                 key={finding.id}
                 initial={{ opacity: 0, x: 28 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: false, margin: '-100px' }}
+                animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.1, duration: 0.36, ease: 'easeOut' }}
-                className={`grid gap-2 border-b border-white/10 px-4 py-4 last:border-b-0 md:grid-cols-[120px_1fr] md:px-5 lg:grid-cols-1 lg:px-4 lg:py-3 ${
+                className={`grid gap-2 border-b border-white/10 px-4 py-5 last:border-b-0 md:grid-cols-[120px_1fr] md:px-5 lg:grid-cols-1 lg:px-4 lg:py-4 ${
                   index >= 4 ? 'lg:hidden' : ''
                 }`}
               >
-                <div className="flex items-center gap-2 text-xs text-white/40">
+                <div className="flex items-center gap-2 text-sm text-white/55">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
                   {finding.when}
                 </div>
-                <p className="text-sm leading-relaxed text-white/80 md:text-base">{finding.text}</p>
+                <p className="text-base leading-relaxed text-white/85">{finding.text}</p>
               </motion.div>
             ))}
           </div>
@@ -1516,14 +1572,15 @@ function TaskFlowGraph({
 }) {
   return (
     <div
-      className="relative h-[392px] overflow-hidden rounded-3xl border border-white/10 bg-[#0E1118]"
+      data-task-flow-graph
+      className="relative h-[392px] overflow-visible rounded-3xl border border-white/10 bg-[#0E1118]"
       style={{
         backgroundImage:
           'radial-gradient(circle at 52% 50%, rgba(16,185,129,0.10), transparent 34%), linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px)',
         backgroundSize: '100% 100%, 44px 44px, 44px 44px',
       }}
     >
-      <div className="absolute inset-y-0 left-0 z-20 w-[104px] border-r border-white/10 bg-[#0E1118]/70 backdrop-blur-sm">
+      <div className="absolute inset-y-0 left-0 z-20 w-[104px] overflow-hidden rounded-l-3xl border-r border-white/10 bg-[#0E1118]/70 backdrop-blur-sm">
         {taskLanes.map((lane) => (
           <div
             key={lane.id}
@@ -1535,7 +1592,7 @@ function TaskFlowGraph({
         ))}
       </div>
 
-      <div className="absolute inset-y-0 left-[104px] right-0 overflow-hidden">
+      <div className="absolute inset-y-0 left-[104px] right-0 overflow-visible rounded-r-3xl">
         {taskLanes.map((lane) => (
           <div
             key={lane.id}
@@ -1676,11 +1733,18 @@ function MobileTaskNodeChip({
           event.stopPropagation();
           setTooltipOpen((open) => !open);
         }}
-        className="w-full rounded-lg border bg-[#11121A]/95 px-3 py-1.5 text-left text-xs font-medium leading-snug text-white/85"
-        style={{ borderColor: `${lane.color}66`, boxShadow: `0 0 14px ${lane.color}18` }}
+        onKeyDown={(event) => {
+          if (event.key === 'Escape') setTooltipOpen(false);
+        }}
+        aria-describedby={`task-node-mobile-${node.id}-description`}
+        className="w-full rounded-lg border bg-[#11121A]/95 px-3 py-2 text-left text-sm font-medium leading-snug text-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#11121A]"
+        style={{ borderColor: `${lane.color}8C`, boxShadow: `0 0 14px ${lane.color}18` }}
       >
         {node.label}
       </button>
+      <span id={`task-node-mobile-${node.id}-description`} className="sr-only">
+        {node.tooltip.technical}. {node.tooltip.plain}
+      </span>
       <AnimatePresence>
         {tooltipOpen && <TaskNodeTooltip node={node} lane={lane} placement="bottom" />}
       </AnimatePresence>
@@ -1702,6 +1766,8 @@ function TaskNodeCard({
   const height = isDiamond ? 92 : 40;
   const width = isDiamond ? 92 : node.width;
   const [tooltipOpen, setTooltipOpen] = useState(false);
+  const [tooltipPlacement, setTooltipPlacement] = useState<TooltipPlacement>('top');
+  const [tooltipAlign, setTooltipAlign] = useState<TooltipAlign>('center');
   const wrapperRef = useRef<HTMLDivElement>(null);
   const showTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -1731,8 +1797,29 @@ function TaskNodeCard({
     };
   }, []);
 
+  const positionTooltip = () => {
+    const nextPosition = calculateTaskTooltipPosition(wrapperRef.current);
+    if (nextPosition.placement === 'bottom' && node.lane === 'system') {
+      if (node.x > 500) {
+        nextPosition.align = 'right';
+      } else if (node.x > 160) {
+        nextPosition.align = 'outside-left';
+      } else {
+        nextPosition.align = 'left';
+      }
+    }
+    setTooltipPlacement(nextPosition.placement);
+    setTooltipAlign(nextPosition.align);
+  };
+
+  const openTooltip = () => {
+    positionTooltip();
+    setTooltipOpen(true);
+  };
+
   const showTooltip = () => {
     if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+    positionTooltip();
     showTimerRef.current = setTimeout(() => setTooltipOpen(true), 200);
   };
 
@@ -1744,7 +1831,10 @@ function TaskNodeCard({
   return (
     <motion.div
       ref={wrapperRef}
-      className={`absolute hover:z-40 ${isDiamond ? 'z-[9]' : 'z-10'}`}
+      role="button"
+      tabIndex={0}
+      aria-describedby={`task-node-${node.id}-description`}
+      className={`absolute rounded-xl focus-visible:z-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0E1118] hover:z-40 ${isDiamond ? 'z-[9]' : 'z-10'}`}
       style={{
         left: `calc(${node.x / 10}% - ${width / 2}px)`,
         top: `calc(${(node.y / TASK_GRAPH_HEIGHT) * 100}% - ${height / 2}px)`,
@@ -1757,10 +1847,22 @@ function TaskNodeCard({
       whileHover={{ scale: 1.05 }}
       onMouseEnter={showTooltip}
       onMouseLeave={hideTooltip}
+      onBlur={hideTooltip}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          openTooltip();
+        }
+        if (event.key === 'Escape') {
+          event.preventDefault();
+          setTooltipOpen(false);
+        }
+      }}
       onPointerDown={(event) => {
         if (event.pointerType !== 'mouse') {
           event.preventDefault();
           event.stopPropagation();
+          if (!tooltipOpen) positionTooltip();
           setTooltipOpen((open) => !open);
         }
       }}
@@ -1769,7 +1871,7 @@ function TaskNodeCard({
         <div
           className="flex h-full w-full rotate-45 items-center justify-center rounded-xl border bg-[#11121A]/95"
           style={{
-            borderColor: `${lane.color}66`,
+            borderColor: `${lane.color}8C`,
             boxShadow: `0 0 20px ${lane.color}24`,
           }}
         >
@@ -1781,20 +1883,23 @@ function TaskNodeCard({
         <div
           className="flex min-h-10 w-full items-center justify-center rounded-lg border bg-[#11121A]/95 px-3 py-1.5 text-center text-xs font-medium leading-snug text-white/90"
           style={{
-            borderColor: `${lane.color}66`,
+            borderColor: `${lane.color}8C`,
             boxShadow: `0 0 18px ${lane.color}20`,
           }}
         >
           {node.label}
         </div>
       )}
+      <span id={`task-node-${node.id}-description`} className="sr-only">
+        {node.tooltip.technical}. {node.tooltip.plain}
+      </span>
       <AnimatePresence>
         {tooltipOpen && (
           <TaskNodeTooltip
             node={node}
             lane={lane}
-            placement={node.y < 90 ? 'bottom' : 'top'}
-            align={node.x > 760 ? 'right' : node.x < 180 ? 'left' : 'center'}
+            placement={tooltipPlacement}
+            align={tooltipAlign}
           />
         )}
       </AnimatePresence>
@@ -1810,28 +1915,31 @@ function TaskNodeTooltip({
 }: {
   node: TaskNode;
   lane: TaskLane;
-  placement: 'top' | 'bottom';
-  align?: 'left' | 'center' | 'right';
+  placement: TooltipPlacement;
+  align?: TooltipAlign;
 }) {
   const placementClass = placement === 'bottom' ? 'top-full mt-3' : 'bottom-full mb-3';
-  const alignClass =
-    align === 'left'
-      ? 'left-0'
-      : align === 'right'
-        ? 'right-0'
-        : 'left-1/2 -translate-x-1/2';
+  const alignClassByAlign: Record<TooltipAlign, string> = {
+    left: 'left-0',
+    center: 'left-1/2 -translate-x-1/2',
+    right: 'right-0',
+    'outside-left': 'right-[calc(100%-80px)]',
+    'outside-right': 'left-full ml-3',
+  };
+  const alignClass = alignClassByAlign[align];
 
   return (
     <motion.div
-      className={`pointer-events-none absolute ${placementClass} ${alignClass} z-50 w-[280px] max-w-[280px] rounded-lg border bg-[#0B0D13]/95 p-3 text-left shadow-2xl backdrop-blur-md`}
-      style={{ borderColor: `${lane.color}99`, boxShadow: `0 18px 42px rgba(0,0,0,0.42), 0 0 22px ${lane.color}2B` }}
+      data-task-node-tooltip
+      className={`pointer-events-none absolute ${placementClass} ${alignClass} z-[80] w-[380px] max-w-[calc(100vw-2rem)] rounded-xl border bg-[#0B0D13]/95 p-5 text-left shadow-2xl backdrop-blur-md`}
+      style={{ borderColor: `${lane.color}B3`, boxShadow: `0 18px 42px rgba(0,0,0,0.42), 0 0 26px ${lane.color}38` }}
       initial={{ opacity: 0, scale: 0.96, y: placement === 'bottom' ? -4 : 4 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.96, y: placement === 'bottom' ? -4 : 4 }}
       transition={{ duration: 0.2, ease: 'easeOut' }}
     >
-      <p className="font-mono text-[11px] leading-snug text-white/60">{node.tooltip.technical}</p>
-      <p className="mt-3 text-[13px] leading-snug text-white/90">{node.tooltip.plain}</p>
+      <p className="font-mono text-base leading-relaxed tracking-wide text-white/70">{node.tooltip.technical}</p>
+      <p className="mt-3 text-lg leading-relaxed text-white/95">{node.tooltip.plain}</p>
     </motion.div>
   );
 }
@@ -1869,12 +1977,41 @@ function buildTaskEdgePath(edge: TaskEdge, nodes: TaskNode[]) {
   return `M ${startX} ${startY} C ${startX + curve} ${startY}, ${endX - curve} ${endY}, ${endX} ${endY}`;
 }
 
+function calculateTaskTooltipPosition(wrapper: HTMLDivElement | null): {
+  placement: TooltipPlacement;
+  align: TooltipAlign;
+} {
+  if (!wrapper) return { placement: 'top', align: 'center' };
+
+  const graph = wrapper.closest<HTMLElement>('[data-task-flow-graph]');
+  const nodeRect = wrapper.getBoundingClientRect();
+  const boundaryRect = graph?.getBoundingClientRect() ?? document.documentElement.getBoundingClientRect();
+  const gap = 16;
+  const spaceAbove = nodeRect.top - boundaryRect.top;
+  const spaceBelow = boundaryRect.bottom - nodeRect.bottom;
+  const placement =
+    spaceAbove >= TASK_TOOLTIP_HEIGHT + gap || spaceAbove >= spaceBelow ? 'top' : 'bottom';
+
+  const centerX = nodeRect.left + nodeRect.width / 2;
+  const centeredLeft = centerX - TASK_TOOLTIP_WIDTH / 2;
+  const centeredRight = centerX + TASK_TOOLTIP_WIDTH / 2;
+  let align: TooltipAlign = 'center';
+
+  if (centeredLeft < boundaryRect.left + gap) {
+    align = 'left';
+  } else if (centeredRight > boundaryRect.right - gap) {
+    align = 'right';
+  }
+
+  return { placement, align };
+}
+
 const architectureActivityStyles = [
-  { text: 'text-cyan-300', border: 'border-cyan-400/30', bg: 'bg-cyan-400/[0.08]', dot: 'bg-cyan-300', glow: 'shadow-[0_0_14px_rgba(34,211,238,0.65)]' },
-  { text: 'text-emerald-300', border: 'border-emerald-400/30', bg: 'bg-emerald-400/[0.08]', dot: 'bg-emerald-300', glow: 'shadow-[0_0_14px_rgba(52,211,153,0.65)]' },
-  { text: 'text-violet-300', border: 'border-violet-400/35', bg: 'bg-violet-400/[0.08]', dot: 'bg-violet-300', glow: 'shadow-[0_0_14px_rgba(167,139,250,0.65)]' },
-  { text: 'text-amber-300', border: 'border-amber-400/30', bg: 'bg-amber-400/[0.08]', dot: 'bg-amber-300', glow: 'shadow-[0_0_14px_rgba(251,191,36,0.65)]' },
-  { text: 'text-white/65', border: 'border-white/15', bg: 'bg-white/[0.055]', dot: 'bg-white/70', glow: 'shadow-[0_0_14px_rgba(255,255,255,0.35)]' },
+  { text: 'text-cyan-300', border: 'border-cyan-400/45', bg: 'bg-cyan-400/[0.08]', dot: 'bg-cyan-300', glow: 'shadow-[0_0_14px_rgba(34,211,238,0.65)]' },
+  { text: 'text-emerald-300', border: 'border-emerald-400/45', bg: 'bg-emerald-400/[0.08]', dot: 'bg-emerald-300', glow: 'shadow-[0_0_14px_rgba(52,211,153,0.65)]' },
+  { text: 'text-violet-300', border: 'border-violet-400/50', bg: 'bg-violet-400/[0.08]', dot: 'bg-violet-300', glow: 'shadow-[0_0_14px_rgba(167,139,250,0.65)]' },
+  { text: 'text-amber-300', border: 'border-amber-400/45', bg: 'bg-amber-400/[0.08]', dot: 'bg-amber-300', glow: 'shadow-[0_0_14px_rgba(251,191,36,0.65)]' },
+  { text: 'text-white/75', border: 'border-white/25', bg: 'bg-white/[0.055]', dot: 'bg-white/70', glow: 'shadow-[0_0_14px_rgba(255,255,255,0.35)]' },
 ];
 
 const architectureActivityIcons: Record<ArchitectureIconHint, typeof FileText> = {
@@ -1935,10 +2072,10 @@ function ServiceArchitecturePanel({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
       transition={{ duration: 0.28, ease: 'easeOut' }}
-      className="flex h-full min-h-0 flex-col justify-center overflow-hidden"
+      className="flex h-full min-h-0 flex-col justify-center overflow-visible"
     >
       <div
-        className="relative flex h-full min-h-0 flex-col items-center justify-center overflow-hidden rounded-3xl border border-violet-400/20 bg-[#0E1118] px-3 py-1 md:px-5"
+        className="relative flex h-full min-h-0 flex-col items-center justify-center overflow-visible rounded-3xl border border-violet-400/20 bg-[#0E1118] px-3 py-1 md:px-5"
         style={{
           backgroundImage:
             'radial-gradient(circle at 50% 48%, rgba(139,92,246,0.14), transparent 38%), linear-gradient(rgba(255,255,255,0.028) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.028) 1px, transparent 1px)',
@@ -1954,6 +2091,7 @@ function ServiceArchitecturePanel({
               layer={layer}
               index={index}
               activity={activities[index]?.[activityIndices[index] || 0] || activities[index]?.[0]}
+              activityHistory={activities[index] || []}
             />
             <ArchitectureConnector
               id={`layer-${index}`}
@@ -1987,16 +2125,20 @@ function ArchitectureFlowNode({
   layer,
   index,
   activity,
+  activityHistory,
 }: {
   layer: ArchitectureLayer;
   index: number;
   activity?: ArchitectureActivityEntry;
+  activityHistory: ArchitectureActivityEntry[];
 }) {
   const style = architectureActivityStyles[index] || architectureActivityStyles[0];
 
   return (
     <motion.div
-      className="relative w-full max-w-[1060px] rounded-xl border border-violet-400/40 bg-[#11121A]/95 px-3 py-1 transition-all duration-200 hover:border-violet-400/70 lg:h-[72px] lg:overflow-hidden"
+      role="region"
+      aria-label={`${layer.name} - ${layer.plain}`}
+      className="relative z-10 w-full max-w-[1160px] rounded-xl border border-violet-400/55 bg-[#11121A]/95 px-3 py-2 transition-all duration-200 hover:z-[100] hover:border-violet-400/75 focus-within:z-[100] lg:h-[72px] lg:overflow-visible"
       style={{ boxShadow: '0 0 24px rgba(139,92,246,0.12)' }}
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
@@ -2004,24 +2146,31 @@ function ArchitectureFlowNode({
       transition={{ delay: 0.15 + index * 0.15, duration: 0.3, ease: 'easeOut' }}
       whileHover={{ scale: 1.005 }}
     >
-      <div className="grid h-full gap-2 md:grid-cols-[minmax(0,1.02fr)_1px_minmax(270px,0.82fr)] md:items-center">
-        <div className="grid min-w-0 gap-2 md:grid-cols-[180px_minmax(0,1fr)] md:items-center">
+      <div className="grid h-full gap-2 md:grid-cols-[minmax(0,0.98fr)_1px_minmax(360px,0.86fr)] md:items-center">
+        <div className="grid min-w-0 gap-3 md:grid-cols-[220px_minmax(0,1fr)] md:items-center">
           <div className="min-w-0">
-            <p className="mb-1 text-[0.65rem] font-medium uppercase tracking-[0.2em] text-white/40">
+            <p className="mb-1 text-xs font-medium uppercase tracking-[0.2em] text-white/45">
               Layer {String(index + 1).padStart(2, '0')}
             </p>
-            <h3 className="text-sm font-medium leading-tight text-white/90">{layer.name}</h3>
+            <h3 className="text-base font-medium leading-tight text-white/90">{layer.name}</h3>
           </div>
 
           <div className="min-w-0">
-            <p className="mt-0.5 text-xs leading-tight text-white/70">{layer.plain}</p>
-            <p className="mt-0.5 font-mono text-[0.64rem] leading-tight text-white/50">{layer.technical}</p>
+            <p className="truncate text-sm leading-snug text-white/75">{layer.plain}</p>
+            <p className="mt-0.5 truncate font-mono text-xs leading-snug tracking-wide text-white/55">{layer.technical}</p>
           </div>
         </div>
 
         <div className="hidden h-full w-px bg-white/10 md:block" aria-hidden="true" />
 
-        {activity && <ArchitectureActivityPanel entry={activity} layerIndex={index} style={style} />}
+        {activity && (
+          <ArchitectureActivityPanel
+            entry={activity}
+            history={activityHistory}
+            layerIndex={index}
+            style={style}
+          />
+        )}
       </div>
     </motion.div>
   );
@@ -2029,54 +2178,112 @@ function ArchitectureFlowNode({
 
 function ArchitectureActivityPanel({
   entry,
+  history,
   layerIndex,
   style,
 }: {
   entry: ArchitectureActivityEntry;
+  history: ArchitectureActivityEntry[];
   layerIndex: number;
   style: (typeof architectureActivityStyles)[number];
 }) {
   const Icon = architectureActivityIcons[entry.iconHint] || FileText;
+  const historyPlacement =
+    layerIndex <= 1
+      ? 'right-full top-0 mr-3'
+      : layerIndex >= 3
+        ? 'right-full bottom-0 mr-3'
+        : 'right-full top-1/2 mr-3 -translate-y-1/2';
 
   return (
-    <div data-architecture-active-panel className={`min-w-0 rounded-lg border ${style.border} ${style.bg} px-2.5 py-1`}>
-      <div className="mb-0.5 flex items-center gap-2">
-        <span className={`h-1.5 w-1.5 animate-pulse rounded-full ${style.dot} ${style.glow}`} aria-hidden="true" />
-        <span className={`text-[0.56rem] font-semibold uppercase tracking-[0.2em] ${style.text}`}>Active</span>
+    <div
+      data-architecture-active-panel
+      tabIndex={0}
+      aria-live="polite"
+      aria-atomic="false"
+      aria-label={`Layer ${layerIndex + 1} active log. Hover or focus to reveal recent history.`}
+      className="group relative flex h-full min-w-0 items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#11121A]"
+    >
+      <div className={`h-[56px] w-full overflow-hidden rounded-lg border ${style.border} ${style.bg} px-2 py-1`}>
+        <div className="flex items-center justify-between gap-2">
+          <span className="flex min-w-0 items-center gap-2">
+            <span className={`h-1.5 w-1.5 animate-pulse rounded-full ${style.dot} ${style.glow}`} aria-hidden="true" />
+            <span className={`text-xs font-semibold uppercase tracking-[0.2em] ${style.text}`}>Active</span>
+          </span>
+          <span className="truncate font-mono text-[11px] leading-none text-white/55">
+            {entry.timestamp} <span className="text-white/20">·</span> <span className="text-white/70">{entry.id}</span>
+          </span>
+        </div>
+
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={`${entry.timestamp}-${entry.description}`}
+            initial={{ opacity: 0.38, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0.38, y: -6 }}
+            transition={{ duration: 0.22, ease: 'easeInOut' }}
+            className="min-w-0"
+          >
+            <p
+              data-architecture-active-description
+              className="mt-1 text-sm italic leading-tight text-white/85"
+              style={{
+                display: '-webkit-box',
+                WebkitBoxOrient: 'vertical',
+                WebkitLineClamp: 1,
+                overflow: 'hidden',
+              }}
+            >
+              {entry.description}
+            </p>
+            <p className={`mt-0.5 flex min-w-0 items-center gap-1.5 truncate font-mono text-[11px] leading-none ${style.text}`}>
+              <Icon size={12} strokeWidth={1.8} className="shrink-0" aria-hidden="true" />
+              <span className="truncate">{entry.source}</span>
+              <span className="text-white/25">·</span>
+              <span className="truncate text-white/65">{entry.metrics}</span>
+            </p>
+          </motion.div>
+        </AnimatePresence>
       </div>
 
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={`${entry.timestamp}-${entry.description}`}
-          initial={{ opacity: 0.38, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0.38, y: -6 }}
-          transition={{ duration: 0.22, ease: 'easeInOut' }}
-          className="min-w-0"
-        >
-          <p className="truncate font-mono text-[0.58rem] leading-tight text-white/45">
-            {entry.timestamp} <span className="text-white/20">·</span> <span className="text-white/70">{entry.id}</span>
-          </p>
-          <p
-            data-architecture-active-description
-            className="mt-px text-[0.68rem] italic leading-tight text-white/85"
-            style={{
-              display: '-webkit-box',
-              WebkitBoxOrient: 'vertical',
-              WebkitLineClamp: 2,
-              overflow: 'hidden',
-            }}
-          >
-            {entry.description}
-          </p>
-          <p className={`mt-px flex min-w-0 items-center gap-1.5 truncate font-mono text-[0.56rem] leading-tight ${style.text}`}>
-            <Icon size={11} strokeWidth={1.8} className="shrink-0" aria-hidden="true" />
-            <span className="truncate">{entry.source}</span>
-            <span className="text-white/25">·</span>
-            <span className="truncate text-white/55">{entry.metrics}</span>
-          </p>
-        </motion.div>
-      </AnimatePresence>
+      <div
+        data-architecture-log-history
+        className={`pointer-events-none absolute ${historyPlacement} z-[120] max-h-[300px] w-[min(560px,calc(100vw-3rem))] overflow-hidden rounded-xl border ${style.border} bg-[#070A10] p-3 text-left opacity-0 shadow-[0_18px_44px_rgba(0,0,0,0.55),0_0_28px_rgba(139,92,246,0.24)] backdrop-blur-md transition-opacity duration-200 group-hover:pointer-events-none group-hover:opacity-100 group-focus-within:pointer-events-none group-focus-within:opacity-100`}
+      >
+        <div className="mb-2 flex items-center justify-between gap-4">
+          <span className={`text-xs font-semibold uppercase tracking-[0.2em] ${style.text}`}>
+            Log History
+          </span>
+          <span className="font-mono text-xs text-white/45">Last {history.length} events</span>
+        </div>
+        <div className="grid gap-1.5">
+          {history.map((item) => {
+            const HistoryIcon = architectureActivityIcons[item.iconHint] || FileText;
+
+            return (
+              <div
+                key={`${item.timestamp}-${item.description}`}
+                className="grid gap-2 rounded-lg border border-white/10 bg-white/[0.035] px-3 py-1.5 md:grid-cols-[120px_minmax(0,1fr)_160px]"
+              >
+                <p className="truncate font-mono text-xs text-white/60">
+                  {item.timestamp}
+                  <span className="px-1.5 text-white/25">·</span>
+                  <span className="text-white/75">{item.id}</span>
+                </p>
+                <p className="truncate text-sm italic leading-snug text-white/[0.88]">
+                  {item.description}
+                </p>
+                <p className={`flex min-w-0 items-center gap-1.5 truncate font-mono text-xs ${style.text}`}>
+                  <HistoryIcon size={13} strokeWidth={1.8} className="shrink-0" aria-hidden="true" />
+                  <span className="truncate">{item.source}</span>
+                  <span className="text-white/25">·</span>
+                  <span className="truncate text-white/65">{item.metrics}</span>
+                </p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
 
       <span className="sr-only">Layer {layerIndex + 1} active activity</span>
     </div>
@@ -2186,8 +2393,7 @@ function HeadlineKpiTile({ kpi, active }: { kpi: HeadlineKpi; active: boolean })
   return (
     <motion.div
       initial={{ opacity: 0, y: 18 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: false, margin: '-100px' }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45, ease: 'easeOut' }}
       className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#10131B] px-6 py-6 md:px-10 md:py-7"
     >
@@ -2220,8 +2426,7 @@ function SecondaryKpiTile({ kpi, delay, active }: { kpi: SecondaryKpi; delay: nu
   return (
     <motion.div
       initial={{ opacity: 0, y: 18 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: false, margin: '-100px' }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.4, ease: 'easeOut' }}
       className={`rounded-2xl border border-white/10 border-l-4 ${accent.border} bg-[#11121A] p-5 shadow-xl ${accent.glow}`}
     >
@@ -2256,7 +2461,7 @@ function PlaceholderPanel({
         <span className="absolute right-0 top-0 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-[0.65rem] font-medium uppercase tracking-[0.18em] text-emerald-300">
           {pass}
         </span>
-        <p className="text-sm font-medium uppercase tracking-[0.2em] text-white/30">{label}</p>
+        <p className="text-sm font-medium uppercase tracking-[0.2em] text-white/55">{label}</p>
       </div>
     </motion.div>
   );
