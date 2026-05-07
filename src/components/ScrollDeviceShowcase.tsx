@@ -846,8 +846,8 @@ export default function ScrollDeviceShowcase() {
     pauseForManualInteraction();
   };
 
-  const handleIndustryClick = () => {
-    setActiveIndustryIndex((index) => (index + 1) % industries.length);
+  const handleIndustryChange = (index: number) => {
+    setActiveIndustryIndex(index);
     cycleProgressRef.current = 0;
     setCycleProgress(0);
     pauseForManualInteraction();
@@ -922,9 +922,11 @@ export default function ScrollDeviceShowcase() {
           <DashboardPanelShell
             industryLabel={activeIndustry.label}
             industryCode={activeIndustry.code}
+            industries={industries}
+            activeIndustryIndex={activeIndustryIndex}
             activePanel={activePanel}
             onPanelChange={handlePanelChange}
-            onIndustryClick={handleIndustryClick}
+            onIndustryChange={handleIndustryChange}
             onHoverPauseChange={setHoverPaused}
             onManualPause={pauseForManualInteraction}
             cycleProgress={cycleProgress}
@@ -950,7 +952,6 @@ export default function ScrollDeviceShowcase() {
                   <ServiceArchitecturePanel
                     key={`architecture-${activeIndustry.id}`}
                     layers={activeIndustry.serviceArchitecture}
-                    onTooltipOpenChange={setTooltipPaused}
                   />
                 )}
               </AnimatePresence>
@@ -1056,12 +1057,98 @@ function PanelButton({
   );
 }
 
+function IndustryTabs({
+  industries,
+  activeIndustryIndex,
+  onIndustryChange,
+  pulse,
+  activeIndustryLabel,
+}: {
+  industries: IndustryData[];
+  activeIndustryIndex: number;
+  onIndustryChange: (index: number) => void;
+  pulse: boolean;
+  activeIndustryLabel: string;
+}) {
+  return (
+    <div className="inline-flex min-w-max items-center rounded-full border border-white/10 bg-white/[0.035] p-1">
+      {industries.map((industry, index) => (
+        <div key={industry.id} className="flex items-center">
+          {index > 0 && <span className="mx-1 rounded-full bg-white/25 p-0.5" aria-hidden="true" />}
+          <IndustryButton
+            index={index}
+            activeIndex={activeIndustryIndex}
+            onClick={onIndustryChange}
+            pulse={pulse}
+            ariaLabel={`Show ${industry.label} dashboard${industry.label === activeIndustryLabel ? ' (current)' : ''}`}
+          >
+            {industry.label}
+          </IndustryButton>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function IndustryButton({
+  index,
+  activeIndex,
+  onClick,
+  pulse,
+  ariaLabel,
+  children,
+}: {
+  index: number;
+  activeIndex: number;
+  onClick: (index: number) => void;
+  pulse: boolean;
+  ariaLabel: string;
+  children: React.ReactNode;
+}) {
+  const isActive = index === activeIndex;
+
+  return (
+    <button
+      type="button"
+      onClick={() => onClick(index)}
+      aria-label={ariaLabel}
+      className={`relative cursor-pointer whitespace-nowrap rounded-full border-b px-4 py-2 text-sm font-medium text-white transition-all duration-200 ${
+        isActive
+          ? 'border-emerald-400 bg-emerald-400/12 text-emerald-300 shadow-[0_8px_24px_rgba(16,185,129,0.18),inset_0_0_16px_rgba(16,185,129,0.08)]'
+          : 'border-white/10 text-white/50 hover:-translate-y-0.5 hover:border-white/40 hover:bg-white/5 hover:text-white/80'
+      }`}
+    >
+      <AnimatePresence>
+        {pulse && isActive && (
+          <motion.span
+            aria-hidden="true"
+            className="absolute inset-0 rounded-full border border-emerald-400/45 shadow-[0_0_22px_rgba(16,185,129,0.24)]"
+            initial={{ opacity: 0.42, scale: 1 }}
+            animate={{ opacity: 0, scale: 1.45 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.8, repeat: 2, repeatDelay: 0.2, ease: 'easeOut' }}
+          />
+        )}
+      </AnimatePresence>
+      <span className="relative z-10">{children}</span>
+      {isActive && (
+        <span
+          aria-hidden="true"
+          className="absolute inset-x-3 bottom-1 h-px rounded-full bg-emerald-300 shadow-[0_0_14px_rgba(16,185,129,0.72)]"
+        />
+      )}
+    </button>
+  );
+}
+
 function DashboardPanelShell({
   industryLabel,
   industryCode,
+  industries,
+  activeIndustryIndex,
   activePanel,
   onPanelChange,
-  onIndustryClick,
+  onIndustryChange,
   onHoverPauseChange,
   onManualPause,
   cycleProgress,
@@ -1070,9 +1157,11 @@ function DashboardPanelShell({
 }: {
   industryLabel: string;
   industryCode: string;
+  industries: IndustryData[];
+  activeIndustryIndex: number;
   activePanel: Panel;
   onPanelChange: (panel: Panel) => void;
-  onIndustryClick: () => void;
+  onIndustryChange: (index: number) => void;
   onHoverPauseChange: (paused: boolean) => void;
   onManualPause: () => void;
   cycleProgress: number;
@@ -1134,24 +1223,26 @@ function DashboardPanelShell({
           if (event.pointerType !== 'mouse') onManualPause();
         }}
       >
-        <div className="mb-3 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex flex-wrap items-center gap-3">
+        <div className="mb-3 flex flex-col gap-3">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <span className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-emerald-400">
               <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500 shadow-[0_0_18px_rgba(16,185,129,0.85)]" />
               Live · {industryCode}
             </span>
-            <button
-              type="button"
-              onClick={onIndustryClick}
-              className="inline-flex cursor-pointer rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[0.68rem] font-medium uppercase tracking-[0.18em] text-white/60 transition-all duration-200 hover:-translate-y-px hover:border-white/20 hover:bg-white/10 hover:text-white/75"
-              aria-label={`Switch industry from ${industryLabel}`}
-            >
-              {industryLabel}
-            </button>
+
+            <div className="w-full overflow-x-auto pb-1 lg:w-auto lg:pb-0">
+              <PanelTabs activePanel={activePanel} onPanelChange={onPanelChange} tabPulseActive={tabPulseActive} />
+            </div>
           </div>
 
-          <div className="w-full overflow-x-auto pb-1 lg:w-auto lg:pb-0">
-            <PanelTabs activePanel={activePanel} onPanelChange={onPanelChange} tabPulseActive={tabPulseActive} />
+          <div className="w-full overflow-x-auto pb-1 lg:pb-0">
+            <IndustryTabs
+              industries={industries}
+              activeIndustryIndex={activeIndustryIndex}
+              onIndustryChange={onIndustryChange}
+              pulse={tabPulseActive}
+              activeIndustryLabel={industryLabel}
+            />
           </div>
         </div>
 
@@ -1626,116 +1717,88 @@ function buildTaskEdgePath(edge: TaskEdge, nodes: TaskNode[]) {
   return `M ${startX} ${startY} C ${startX + curve} ${startY}, ${endX - curve} ${endY}, ${endX} ${endY}`;
 }
 
-function ServiceArchitecturePanel({
-  layers,
-  onTooltipOpenChange,
-}: {
-  layers: ArchitectureLayer[];
-  onTooltipOpenChange: (open: boolean) => void;
-}) {
-  useEffect(() => () => onTooltipOpenChange(false), [onTooltipOpenChange]);
-
+function ServiceArchitecturePanel({ layers }: { layers: ArchitectureLayer[] }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
       transition={{ duration: 0.28, ease: 'easeOut' }}
-      className="flex h-full flex-col justify-start"
+      className="flex h-full min-h-0 flex-col justify-center overflow-hidden"
     >
-      <div className="space-y-2">
+      <div
+        className="relative flex h-full min-h-0 flex-col items-center justify-center overflow-hidden rounded-3xl border border-violet-400/20 bg-[#0E1118] px-3 py-1 md:px-5"
+        style={{
+          backgroundImage:
+            'radial-gradient(circle at 50% 48%, rgba(139,92,246,0.14), transparent 38%), linear-gradient(rgba(255,255,255,0.028) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.028) 1px, transparent 1px)',
+          backgroundSize: '100% 100%, 42px 42px, 42px 42px',
+        }}
+      >
+        <ArchitectureEndpoint label="Request enters" delay={0} />
+        <ArchitectureConnector id="entry" index={0} />
+
         {layers.map((layer, index) => (
-          <ArchitectureLayerCard
-            key={layer.name}
-            layer={layer}
-            index={index}
-            onTooltipOpenChange={onTooltipOpenChange}
-          />
+          <div key={layer.name} className="flex w-full flex-col items-center">
+            <ArchitectureFlowNode layer={layer} index={index} />
+            <ArchitectureConnector
+              id={`layer-${index}`}
+              index={index + 1}
+              bidirectional={index === 1}
+            />
+          </div>
         ))}
+
+        <ArchitectureEndpoint label="Decision delivered" delay={1.05} />
       </div>
     </motion.div>
   );
 }
 
-function ArchitectureLayerCard({
+function ArchitectureEndpoint({ label, delay }: { label: string; delay: number }) {
+  return (
+    <motion.div
+      className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-0.5 text-[0.6rem] font-medium uppercase tracking-[0.2em] text-white/45"
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay, duration: 0.24, ease: 'easeOut' }}
+    >
+      <span className="h-1.5 w-1.5 rounded-full bg-violet-300 shadow-[0_0_14px_rgba(167,139,250,0.85)]" />
+      {label}
+    </motion.div>
+  );
+}
+
+function ArchitectureFlowNode({
   layer,
   index,
-  onTooltipOpenChange,
 }: {
   layer: ArchitectureLayer;
   index: number;
-  onTooltipOpenChange: (open: boolean) => void;
 }) {
-  const [tooltipOpen, setTooltipOpen] = useState(false);
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const showTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => {
-    onTooltipOpenChange(tooltipOpen);
-    return () => onTooltipOpenChange(false);
-  }, [onTooltipOpenChange, tooltipOpen]);
-
-  useEffect(() => {
-    if (!tooltipOpen) return;
-
-    const onPointerDown = (event: PointerEvent) => {
-      if (!wrapperRef.current?.contains(event.target as Node)) {
-        setTooltipOpen(false);
-      }
-    };
-
-    document.addEventListener('pointerdown', onPointerDown);
-    return () => document.removeEventListener('pointerdown', onPointerDown);
-  }, [tooltipOpen]);
-
-  useEffect(() => {
-    return () => {
-      if (showTimerRef.current) clearTimeout(showTimerRef.current);
-      if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
-    };
-  }, []);
-
-  const showTooltip = () => {
-    if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
-    showTimerRef.current = setTimeout(() => setTooltipOpen(true), 200);
-  };
-
-  const hideTooltip = () => {
-    if (showTimerRef.current) clearTimeout(showTimerRef.current);
-    hideTimerRef.current = setTimeout(() => setTooltipOpen(false), 100);
-  };
-
   return (
     <motion.div
-      ref={wrapperRef}
-      className="relative rounded-2xl border border-violet-400/40 bg-[#11121A]/90 px-4 py-2.5 transition-all duration-200 hover:border-violet-400/70"
-      style={{ boxShadow: '0 0 22px rgba(139,92,246,0.11)' }}
+      className="relative w-full max-w-[860px] rounded-xl border border-violet-400/40 bg-[#11121A]/95 px-4 py-1.5 transition-all duration-200 hover:border-violet-400/70 lg:h-[68px] lg:overflow-hidden"
+      style={{ boxShadow: '0 0 24px rgba(139,92,246,0.12)' }}
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
-      transition={{ delay: index * 0.1, duration: 0.32, ease: 'easeOut' }}
+      transition={{ delay: 0.15 + index * 0.15, duration: 0.3, ease: 'easeOut' }}
       whileHover={{ scale: 1.005 }}
-      onMouseEnter={showTooltip}
-      onMouseLeave={hideTooltip}
-      onPointerDown={(event) => {
-        if (event.pointerType !== 'mouse') {
-          event.preventDefault();
-          event.stopPropagation();
-          setTooltipOpen((open) => !open);
-        }
-      }}
     >
-      <div className="flex items-center justify-between gap-6">
+      <div className="grid gap-2 md:grid-cols-[220px_minmax(0,1fr)_90px] md:items-center">
         <div className="min-w-0">
           <p className="mb-1 text-[0.65rem] font-medium uppercase tracking-[0.2em] text-white/40">
             Layer {String(index + 1).padStart(2, '0')}
           </p>
-          <h3 className="text-sm font-medium text-white/90 md:text-base">{layer.name}</h3>
-          <p className="mt-0.5 text-xs leading-relaxed text-white/70 md:text-sm">{layer.plain}</p>
+          <h3 className="text-sm font-medium leading-tight text-white/90">{layer.name}</h3>
         </div>
 
-        <div className="hidden shrink-0 items-center gap-1.5 md:flex" aria-hidden="true">
+        <div className="min-w-0">
+          <p className="mt-0.5 text-xs leading-tight text-white/70">{layer.plain}</p>
+          <p className="mt-0.5 font-mono text-[0.64rem] leading-tight text-white/50">{layer.technical}</p>
+        </div>
+
+        <div className="hidden shrink-0 items-center justify-end gap-1.5 md:flex" aria-hidden="true">
           {[0, 1, 2, 3, 4, 5].map((dot) => (
             <motion.span
               key={dot}
@@ -1746,37 +1809,106 @@ function ArchitectureLayerCard({
           ))}
         </div>
       </div>
-
-      <AnimatePresence>
-        {tooltipOpen && (
-          <ArchitectureLayerTooltip layer={layer} placement={index === 0 ? 'bottom' : 'top'} />
-        )}
-      </AnimatePresence>
     </motion.div>
   );
 }
 
-function ArchitectureLayerTooltip({
-  layer,
-  placement,
+function ArchitectureConnector({
+  id,
+  index,
+  bidirectional = false,
+  hidden = false,
 }: {
-  layer: ArchitectureLayer;
-  placement: 'top' | 'bottom';
+  id: string;
+  index: number;
+  bidirectional?: boolean;
+  hidden?: boolean;
 }) {
-  const placementClass = placement === 'bottom' ? 'top-full mt-3' : 'bottom-full mb-3';
+  if (hidden) return <div className="h-2" aria-hidden="true" />;
+
+  const primaryPathId = `architecture-flow-${id}-down`;
+  const returnPathId = `architecture-flow-${id}-up`;
+  const delay = 0.28 + index * 0.15;
 
   return (
-    <motion.div
-      className={`pointer-events-none absolute left-4 ${placementClass} z-50 w-[320px] max-w-[calc(100vw-4rem)] rounded-lg border border-violet-400/60 bg-[#0B0D13]/95 p-3 text-left shadow-2xl backdrop-blur-md`}
-      style={{ boxShadow: '0 18px 42px rgba(0,0,0,0.42), 0 0 22px rgba(139,92,246,0.25)' }}
-      initial={{ opacity: 0, scale: 0.96, y: placement === 'bottom' ? -4 : 4 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.96, y: placement === 'bottom' ? -4 : 4 }}
-      transition={{ duration: 0.2, ease: 'easeOut' }}
+    <div
+      className={`relative flex h-2 w-full max-w-[860px] items-center justify-center ${bidirectional ? 'my-px' : ''}`}
+      aria-hidden="true"
     >
-      <p className="font-mono text-[11px] leading-snug text-white/60">{layer.technical}</p>
-      <p className="mt-3 text-[13px] leading-snug text-white/90">{layer.plain}</p>
-    </motion.div>
+      <svg className="h-full w-32 overflow-visible" viewBox="0 0 128 20" fill="none">
+        <defs>
+          <filter id={`architecture-pulse-glow-${id}`} x="-70%" y="-70%" width="240%" height="240%">
+            <feGaussianBlur stdDeviation="2.4" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+
+        <motion.path
+          id={primaryPathId}
+          d={bidirectional ? 'M 54 0 C 48 6, 48 14, 54 20' : 'M 64 0 C 64 6, 64 14, 64 20'}
+          stroke="rgba(255,255,255,0.15)"
+          strokeWidth="1.5"
+          fill="none"
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: 1, opacity: 1 }}
+          transition={{ delay, duration: 0.28, ease: 'easeOut' }}
+        />
+        <circle r="3.2" fill="#A78BFA" opacity="0" filter={`url(#architecture-pulse-glow-${id})`}>
+          <animate
+            attributeName="opacity"
+            values="0;0.95;0.95;0"
+            keyTimes="0;0.16;0.84;1"
+            dur={`${2.1 + (index % 3) * 0.18}s`}
+            begin={`${1.2 + index * 0.12}s`}
+            repeatCount="indefinite"
+          />
+          <animateMotion
+            dur={`${2.1 + (index % 3) * 0.18}s`}
+            begin={`${1.2 + index * 0.12}s`}
+            repeatCount="indefinite"
+          >
+            <mpath href={`#${primaryPathId}`} />
+          </animateMotion>
+        </circle>
+
+        {bidirectional && (
+          <>
+            <motion.path
+              id={returnPathId}
+              d="M 74 20 C 80 14, 80 6, 74 0"
+              stroke="rgba(255,255,255,0.15)"
+              strokeWidth="1.5"
+              fill="none"
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ pathLength: 1, opacity: 1 }}
+              transition={{ delay: delay + 0.06, duration: 0.28, ease: 'easeOut' }}
+            />
+            <circle r="3.2" fill="#C4B5FD" opacity="0" filter={`url(#architecture-pulse-glow-${id})`}>
+              <animate
+                attributeName="opacity"
+                values="0;0.9;0.9;0"
+                keyTimes="0;0.16;0.84;1"
+                dur="2.35s"
+                begin={`${1.38 + index * 0.12}s`}
+                repeatCount="indefinite"
+              />
+              <animateMotion dur="2.35s" begin={`${1.38 + index * 0.12}s`} repeatCount="indefinite">
+                <mpath href={`#${returnPathId}`} />
+              </animateMotion>
+            </circle>
+          </>
+        )}
+      </svg>
+      {bidirectional && (
+        <div className="pointer-events-none absolute left-1/2 top-1/2 hidden w-56 -translate-x-1/2 -translate-y-1/2 justify-between text-[0.58rem] uppercase tracking-[0.18em] text-white/25 md:flex">
+          <span>queries</span>
+          <span>returns</span>
+        </div>
+      )}
+    </div>
   );
 }
 
