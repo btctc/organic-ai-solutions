@@ -69,11 +69,26 @@ interface TaskEdge {
   to: string;
 }
 
-const industryMeta: Record<Industry, { code: string; label: string }> = {
-  training: { code: 'TRN-A4291', label: 'Training Facility' },
-  dental: { code: 'DNT-44912', label: 'Dental Practice' },
-  homebuilder: { code: 'BLD-7702', label: 'Homebuilder' },
-};
+interface TaskFlowData {
+  subhead: string;
+  nodes: TaskNode[];
+  edges: TaskEdge[];
+}
+
+interface ArchitectureLayer {
+  name: string;
+  plain: string;
+  technical: string;
+}
+
+interface IndustryData {
+  id: Industry;
+  code: string;
+  label: string;
+  liveFindings: LiveFindingsData;
+  taskFlow: TaskFlowData;
+  serviceArchitecture: ArchitectureLayer[];
+}
 
 const panelGlowByPanel: Record<Panel, { rgb: [number, number, number] }> = {
   findings: { rgb: [16, 185, 129] },
@@ -98,14 +113,34 @@ const liveFindings: Record<Industry, LiveFindingsData> = {
     ],
   },
   dental: {
-    headlineKpi: { value: 0, label: '', prefix: '$' },
-    secondaryKpis: [],
-    findings: [],
+    headlineKpi: { value: 38900, label: 'Recovered this month', prefix: '$' },
+    secondaryKpis: [
+      { value: 18, label: 'Patients reactivated', accent: 'emerald' },
+      { value: 287, label: 'Hours saved', accent: 'cyan' },
+      { value: 94, label: 'Triage accuracy', suffix: '%', accent: 'violet' },
+    ],
+    findings: [
+      { id: 1, when: '2 min ago', text: "Dr. Chen's 3pm slot rebooked · 94% confidence" },
+      { id: 2, when: '9 min ago', text: 'Patient reminder sent for Friday cleaning' },
+      { id: 3, when: '16 min ago', text: 'Lapsed patient outreach drafted · awaiting reply' },
+      { id: 4, when: '24 min ago', text: 'Insurance pre-auth completed for treatment plan' },
+      { id: 5, when: '41 min ago', text: 'Treatment plan accepted · deposit booked' },
+    ],
   },
   homebuilder: {
-    headlineKpi: { value: 0, label: '', prefix: '$' },
-    secondaryKpis: [],
-    findings: [],
+    headlineKpi: { value: 112400, label: 'Recovered this month', prefix: '$' },
+    secondaryKpis: [
+      { value: 9, label: 'Projects re-quoted', accent: 'emerald' },
+      { value: 198, label: 'Hours saved', accent: 'cyan' },
+      { value: 88, label: 'Lead qualification', suffix: '%', accent: 'violet' },
+    ],
+    findings: [
+      { id: 1, when: '3 min ago', text: 'New lead matched to deck specialist crew' },
+      { id: 2, when: '11 min ago', text: 'Quote sent for kitchen remodel · 91% match' },
+      { id: 3, when: '18 min ago', text: 'Supplier delay flagged · timeline adjusted' },
+      { id: 4, when: '27 min ago', text: 'Crew assignment auto-balanced across 3 jobs' },
+      { id: 5, when: '38 min ago', text: 'Project milestone confirmed · invoice queued' },
+    ],
   },
 };
 
@@ -177,7 +212,7 @@ const taskLanes: TaskLane[] = [
 
 const TASK_GRAPH_HEIGHT = 392;
 
-const taskNodes: TaskNode[] = [
+const trainingTaskNodes: TaskNode[] = [
   {
     id: 'new-lead',
     label: 'New lead arrived',
@@ -313,6 +348,278 @@ const taskNodes: TaskNode[] = [
   },
 ];
 
+const dentalTaskNodes: TaskNode[] = [
+  {
+    id: 'new-lead',
+    label: 'New patient call',
+    lane: 'system',
+    x: 80,
+    y: 40,
+    width: 150,
+    tooltip: {
+      technical: 'Real-time signal capture · under 50ms',
+      plain: "Captured Sarah's call the moment she dialed in",
+    },
+  },
+  {
+    id: 'identity',
+    label: 'Identity verified',
+    lane: 'system',
+    x: 245,
+    y: 40,
+    width: 150,
+    tooltip: {
+      technical: 'Identity match · 320ms',
+      plain: 'Confirmed Sarah is new, not an existing patient',
+    },
+  },
+  {
+    id: 'plan',
+    label: 'Treatment plan drafted',
+    lane: 'system',
+    x: 620,
+    y: 40,
+    width: 170,
+    tooltip: {
+      technical: 'Personalized plan generation',
+      plain: "Wrote Sarah's full treatment plan with cost estimates",
+    },
+  },
+  {
+    id: 'trial',
+    label: 'Cleaning scheduled · 97% confirmed',
+    lane: 'intake',
+    x: 515,
+    y: 118,
+    width: 198,
+    tooltip: {
+      technical: 'Calendar booking · text confirmation',
+      plain: 'Found a cleaning slot — Sarah confirmed by text in 45 seconds',
+    },
+  },
+  {
+    id: 'goal',
+    label: 'Symptoms understood',
+    lane: 'intake',
+    x: 320,
+    y: 118,
+    width: 160,
+    tooltip: {
+      technical: 'Symptom extraction from conversation',
+      plain: "Turned 'tooth pain on left' into specific diagnostic markers",
+    },
+  },
+  {
+    id: 'similar',
+    label: 'Past similar cases reviewed',
+    lane: 'knowledge',
+    x: 455,
+    y: 196,
+    width: 190,
+    tooltip: {
+      technical: 'Searched 1,847 past patients · 198ms',
+      plain: "Reviewed every past patient who had Sarah's symptom profile",
+    },
+  },
+  {
+    id: 'program',
+    label: 'Best-fit treatment protocol · 89% match',
+    lane: 'knowledge',
+    x: 650,
+    y: 196,
+    width: 220,
+    tooltip: {
+      technical: 'Ranked top 5 protocols by similarity',
+      plain: 'Picked the protocol patients like Sarah responded best to',
+    },
+  },
+  {
+    id: 'decision',
+    label: 'General clean or restorative work?',
+    lane: 'decision',
+    x: 650,
+    y: 282,
+    width: 112,
+    shape: 'diamond',
+    tooltip: {
+      technical: 'Tier decision · 3 inputs · 85% confidence required',
+      plain: "Chose the right treatment level for Sarah's symptoms",
+    },
+  },
+  {
+    id: 'welcome',
+    label: 'Welcome SMS sent',
+    lane: 'action',
+    x: 620,
+    y: 360,
+    width: 150,
+    tooltip: {
+      technical: 'Personalized SMS · authenticated send',
+      plain: 'Sent Sarah her appointment details and intake form',
+    },
+  },
+  {
+    id: 'session',
+    label: 'First appointment booked',
+    lane: 'action',
+    x: 790,
+    y: 360,
+    width: 170,
+    tooltip: {
+      technical: 'Provider availability matched · slot reserved',
+      plain: 'Booked Sarah with the right provider at the right time',
+    },
+  },
+  {
+    id: 'coach',
+    label: 'Provider assigned',
+    lane: 'action',
+    x: 925,
+    y: 360,
+    width: 150,
+    tooltip: {
+      technical: 'Provider match · specialty + workload balanced',
+      plain: 'Matched Sarah with the dentist who specializes in her symptoms',
+    },
+  },
+];
+
+const homebuilderTaskNodes: TaskNode[] = [
+  {
+    id: 'new-lead',
+    label: 'New lead inquiry',
+    lane: 'system',
+    x: 80,
+    y: 40,
+    width: 150,
+    tooltip: {
+      technical: 'Real-time signal capture · under 50ms',
+      plain: "Captured Mike's inquiry the moment he submitted the form",
+    },
+  },
+  {
+    id: 'identity',
+    label: 'Identity verified',
+    lane: 'system',
+    x: 245,
+    y: 40,
+    width: 150,
+    tooltip: {
+      technical: 'Identity match · 320ms',
+      plain: 'Confirmed Mike is a new lead, not a returning customer',
+    },
+  },
+  {
+    id: 'plan',
+    label: 'Quote drafted',
+    lane: 'system',
+    x: 620,
+    y: 40,
+    width: 140,
+    tooltip: {
+      technical: 'Personalized quote generation',
+      plain: "Wrote Mike's full quote with materials, labor, and timeline",
+    },
+  },
+  {
+    id: 'trial',
+    label: 'Site visit scheduled · 95% confirmed',
+    lane: 'intake',
+    x: 515,
+    y: 118,
+    width: 204,
+    tooltip: {
+      technical: 'Calendar booking · text confirmation',
+      plain: 'Found a site visit slot — Mike confirmed by text in 90 seconds',
+    },
+  },
+  {
+    id: 'goal',
+    label: 'Specs understood',
+    lane: 'intake',
+    x: 320,
+    y: 118,
+    width: 150,
+    tooltip: {
+      technical: 'Spec extraction from conversation',
+      plain: "Turned '3-car garage with workshop' into measurable build specs",
+    },
+  },
+  {
+    id: 'similar',
+    label: 'Past similar projects reviewed',
+    lane: 'knowledge',
+    x: 455,
+    y: 196,
+    width: 198,
+    tooltip: {
+      technical: 'Searched 800+ past projects · 312ms',
+      plain: "Reviewed every past project that matched Mike's spec profile",
+    },
+  },
+  {
+    id: 'program',
+    label: 'Best-fit crew specialty · 87% match',
+    lane: 'knowledge',
+    x: 650,
+    y: 196,
+    width: 210,
+    tooltip: {
+      technical: 'Ranked top 5 crews by similarity',
+      plain: "Picked the crew that's built the most projects like Mike's",
+    },
+  },
+  {
+    id: 'decision',
+    label: 'Standard build or premium finish?',
+    lane: 'decision',
+    x: 650,
+    y: 282,
+    width: 112,
+    shape: 'diamond',
+    tooltip: {
+      technical: 'Tier decision · 3 inputs · 85% confidence required',
+      plain: "Chose the right build tier for Mike's budget and specs",
+    },
+  },
+  {
+    id: 'welcome',
+    label: 'Welcome email sent',
+    lane: 'action',
+    x: 620,
+    y: 360,
+    width: 150,
+    tooltip: {
+      technical: 'Personalized email · authenticated send',
+      plain: 'Sent Mike his quote, timeline, and next-step prep',
+    },
+  },
+  {
+    id: 'session',
+    label: 'Site visit booked',
+    lane: 'action',
+    x: 790,
+    y: 360,
+    width: 150,
+    tooltip: {
+      technical: 'Crew availability matched · slot reserved',
+      plain: "Booked Mike's site visit with the right project manager",
+    },
+  },
+  {
+    id: 'coach',
+    label: 'Crew assigned',
+    lane: 'action',
+    x: 925,
+    y: 360,
+    width: 150,
+    tooltip: {
+      technical: 'Crew match · specialty + workload balanced',
+      plain: 'Matched Mike with the garage-specialty crew',
+    },
+  },
+];
+
 const taskEdges: TaskEdge[] = [
   { from: 'new-lead', to: 'identity' },
   { from: 'identity', to: 'trial' },
@@ -325,6 +632,138 @@ const taskEdges: TaskEdge[] = [
   { from: 'plan', to: 'session' },
   { from: 'plan', to: 'coach' },
 ];
+
+const taskFlows: Record<Industry, TaskFlowData> = {
+  training: {
+    subhead: 'New member walked in — Greg, wants to lose 20 lbs in 12 weeks',
+    nodes: trainingTaskNodes,
+    edges: taskEdges,
+  },
+  dental: {
+    subhead: 'New patient called — Sarah, recurring tooth pain on left side',
+    nodes: dentalTaskNodes,
+    edges: taskEdges,
+  },
+  homebuilder: {
+    subhead: 'New lead inquired — Mike, wants 3-car garage with workshop',
+    nodes: homebuilderTaskNodes,
+    edges: taskEdges,
+  },
+};
+
+const serviceArchitectures: Record<Industry, ArchitectureLayer[]> = {
+  training: [
+    {
+      name: 'Customer-Facing Layer',
+      plain: 'Member-facing booking, plan delivery, support',
+      technical: 'Web · SMS · Email · phone routing',
+    },
+    {
+      name: 'Decision Engine',
+      plain: 'Picks programs, tiers, coaches, schedules',
+      technical: 'Claude (Anthropic) · structured outputs · 85% confidence threshold',
+    },
+    {
+      name: 'Knowledge Base',
+      plain: 'Past member journeys, program library, coach specialties',
+      technical: 'Vector search · semantic indexing · 1,247 indexed members',
+    },
+    {
+      name: 'Integration Layer',
+      plain: 'Connects to your existing tools',
+      technical: 'Member management · point-of-sale · scheduling · accounting',
+    },
+    {
+      name: 'Storage & Audit',
+      plain: "Every decision logged, every member's history saved",
+      technical: 'Encrypted storage · full audit trail · 7-year retention',
+    },
+  ],
+  dental: [
+    {
+      name: 'Customer-Facing Layer',
+      plain: 'Patient-facing scheduling, reminders, intake',
+      technical: 'Web · SMS · Email · phone routing',
+    },
+    {
+      name: 'Decision Engine',
+      plain: 'Triages cases, books appointments, assigns providers',
+      technical: 'Claude (Anthropic) · structured outputs · clinical guardrails',
+    },
+    {
+      name: 'Knowledge Base',
+      plain: 'Past patient histories, treatment protocols, insurance rules',
+      technical: 'Vector search · HIPAA-compliant indexing · semantic retrieval',
+    },
+    {
+      name: 'Integration Layer',
+      plain: 'Connects to your existing tools',
+      technical: 'Practice management · charting · insurance verification · accounting',
+    },
+    {
+      name: 'Storage & Audit',
+      plain: "Every decision logged, every patient's history saved",
+      technical: 'HIPAA-compliant encrypted storage · 7-year retention',
+    },
+  ],
+  homebuilder: [
+    {
+      name: 'Customer-Facing Layer',
+      plain: 'Lead-facing intake, project updates, scheduling',
+      technical: 'Web · SMS · Email · phone routing',
+    },
+    {
+      name: 'Decision Engine',
+      plain: 'Qualifies leads, routes projects, schedules crews',
+      technical: 'Claude (Anthropic) · structured outputs · 85% confidence threshold',
+    },
+    {
+      name: 'Knowledge Base',
+      plain: 'Past project specs, crew expertise, supplier pricing',
+      technical: 'Vector search · semantic indexing · 800+ indexed projects',
+    },
+    {
+      name: 'Integration Layer',
+      plain: 'Connects to your existing tools',
+      technical: 'Project management · estimating · accounting · payments',
+    },
+    {
+      name: 'Storage & Audit',
+      plain: "Every quote logged, every project's history saved",
+      technical: 'Encrypted storage · full audit trail · 7-year retention',
+    },
+  ],
+};
+
+const industries: IndustryData[] = [
+  {
+    id: 'training',
+    code: 'TRN-A4291',
+    label: 'Training Facility',
+    liveFindings: liveFindings.training,
+    taskFlow: taskFlows.training,
+    serviceArchitecture: serviceArchitectures.training,
+  },
+  {
+    id: 'dental',
+    code: 'DNT-44912',
+    label: 'Dental Practice',
+    liveFindings: liveFindings.dental,
+    taskFlow: taskFlows.dental,
+    serviceArchitecture: serviceArchitectures.dental,
+  },
+  {
+    id: 'homebuilder',
+    code: 'BLD-7702',
+    label: 'Homebuilder',
+    liveFindings: liveFindings.homebuilder,
+    taskFlow: taskFlows.homebuilder,
+    serviceArchitecture: serviceArchitectures.homebuilder,
+  },
+];
+
+const CYCLE_INTERVAL_MS = 30000;
+const CYCLE_TICK_MS = 100;
 
 const quickContactSelectors = [
   '[aria-label="Open quick contact"]',
@@ -384,9 +823,51 @@ function setQuickContactHidden(hidden: boolean) {
 export default function ScrollDeviceShowcase() {
   const sectionRef = useRef<HTMLElement>(null);
   const [activePanel, setActivePanel] = useState<Panel>('findings');
-  const [activeIndustry] = useState<Industry>('training');
+  const [activeIndustryIndex, setActiveIndustryIndex] = useState(0);
+  const [cycleProgress, setCycleProgress] = useState(0);
+  const [hoverPaused, setHoverPaused] = useState(false);
+  const [manualPaused, setManualPaused] = useState(false);
+  const [tooltipPaused, setTooltipPaused] = useState(false);
   const [tabPulseActive, setTabPulseActive] = useState(false);
   const hasPlayedTabPulseRef = useRef(false);
+  const manualPauseTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const cycleProgressRef = useRef(0);
+  const activeIndustry = industries[activeIndustryIndex];
+  const isPaused = hoverPaused || manualPaused || tooltipPaused;
+
+  const pauseForManualInteraction = () => {
+    if (manualPauseTimeoutRef.current) clearTimeout(manualPauseTimeoutRef.current);
+    setManualPaused(true);
+    manualPauseTimeoutRef.current = setTimeout(() => setManualPaused(false), CYCLE_INTERVAL_MS);
+  };
+
+  const handlePanelChange = (panel: Panel) => {
+    setActivePanel(panel);
+    pauseForManualInteraction();
+  };
+
+  const handleIndustryClick = () => {
+    setActiveIndustryIndex((index) => (index + 1) % industries.length);
+    cycleProgressRef.current = 0;
+    setCycleProgress(0);
+    pauseForManualInteraction();
+  };
+
+  useEffect(() => {
+    if (isPaused) return;
+
+    const interval = setInterval(() => {
+      let next = cycleProgressRef.current + CYCLE_TICK_MS / CYCLE_INTERVAL_MS;
+      if (next >= 1) {
+        next = 0;
+        setActiveIndustryIndex((index) => (index + 1) % industries.length);
+      }
+      cycleProgressRef.current = next;
+      setCycleProgress(next);
+    }, CYCLE_TICK_MS);
+
+    return () => clearInterval(interval);
+  }, [isPaused]);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -419,6 +900,7 @@ export default function ScrollDeviceShowcase() {
       observer.disconnect();
       mutationObserver.disconnect();
       if (pulseTimeout) clearTimeout(pulseTimeout);
+      if (manualPauseTimeoutRef.current) clearTimeout(manualPauseTimeoutRef.current);
       setQuickContactHidden(false);
     };
   }, []);
@@ -438,26 +920,38 @@ export default function ScrollDeviceShowcase() {
 
         <div className="relative">
           <DashboardPanelShell
-            industryLabel={industryMeta[activeIndustry].label}
-            industryCode={industryMeta[activeIndustry].code}
+            industryLabel={activeIndustry.label}
+            industryCode={activeIndustry.code}
             activePanel={activePanel}
-            onPanelChange={setActivePanel}
+            onPanelChange={handlePanelChange}
+            onIndustryClick={handleIndustryClick}
+            onHoverPauseChange={setHoverPaused}
+            onManualPause={pauseForManualInteraction}
+            cycleProgress={cycleProgress}
             tabPulseActive={tabPulseActive}
           >
             {(panelInView) => (
               <AnimatePresence mode="wait">
                 {activePanel === 'findings' && (
                   <FindingsPanel
-                    key="findings"
-                    data={liveFindings[activeIndustry]}
+                    key={`findings-${activeIndustry.id}`}
+                    data={activeIndustry.liveFindings}
                     panelInView={panelInView}
                   />
                 )}
                 {activePanel === 'taskflow' && (
-                  <TaskFlowPanel key="taskflow" />
+                  <TaskFlowPanel
+                    key={`taskflow-${activeIndustry.id}`}
+                    data={activeIndustry.taskFlow}
+                    onTooltipOpenChange={setTooltipPaused}
+                  />
                 )}
                 {activePanel === 'architecture' && (
-                  <PlaceholderPanel key="architecture" label="Service Architecture — coming in Pass 3" />
+                  <ServiceArchitecturePanel
+                    key={`architecture-${activeIndustry.id}`}
+                    layers={activeIndustry.serviceArchitecture}
+                    onTooltipOpenChange={setTooltipPaused}
+                  />
                 )}
               </AnimatePresence>
             )}
@@ -567,6 +1061,10 @@ function DashboardPanelShell({
   industryCode,
   activePanel,
   onPanelChange,
+  onIndustryClick,
+  onHoverPauseChange,
+  onManualPause,
+  cycleProgress,
   tabPulseActive,
   children,
 }: {
@@ -574,6 +1072,10 @@ function DashboardPanelShell({
   industryCode: string;
   activePanel: Panel;
   onPanelChange: (panel: Panel) => void;
+  onIndustryClick: () => void;
+  onHoverPauseChange: (paused: boolean) => void;
+  onManualPause: () => void;
+  cycleProgress: number;
   tabPulseActive: boolean;
   children: (panelInView: boolean) => React.ReactNode;
 }) {
@@ -586,6 +1088,7 @@ function DashboardPanelShell({
   const glowOpacity = useMotionValue(0.1);
   const glowSize = useMotionValue(40);
   const panelShadow = useMotionTemplate`0 24px 80px rgba(0,0,0,0.40), 0 0 ${glowSize}px 0 rgba(${glowR}, ${glowG}, ${glowB}, ${glowOpacity})`;
+  const progressRgb = glow.rgb.join(', ');
 
   useEffect(() => {
     const controls = [
@@ -625,6 +1128,11 @@ function DashboardPanelShell({
       <motion.div
         style={{ boxShadow: panelShadow }}
         className="relative flex min-h-[640px] flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.04] p-4 backdrop-blur md:p-5"
+        onMouseEnter={() => onHoverPauseChange(true)}
+        onMouseLeave={() => onHoverPauseChange(false)}
+        onPointerDown={(event) => {
+          if (event.pointerType !== 'mouse') onManualPause();
+        }}
       >
         <div className="mb-3 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-wrap items-center gap-3">
@@ -632,9 +1140,14 @@ function DashboardPanelShell({
               <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500 shadow-[0_0_18px_rgba(16,185,129,0.85)]" />
               Live · {industryCode}
             </span>
-            <span className="inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[0.68rem] font-medium uppercase tracking-[0.18em] text-white/60">
+            <button
+              type="button"
+              onClick={onIndustryClick}
+              className="inline-flex cursor-pointer rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[0.68rem] font-medium uppercase tracking-[0.18em] text-white/60 transition-all duration-200 hover:-translate-y-px hover:border-white/20 hover:bg-white/10 hover:text-white/75"
+              aria-label={`Switch industry from ${industryLabel}`}
+            >
               {industryLabel}
-            </span>
+            </button>
           </div>
 
           <div className="w-full overflow-x-auto pb-1 lg:w-auto lg:pb-0">
@@ -643,7 +1156,15 @@ function DashboardPanelShell({
         </div>
 
         <div className="mb-4 h-0.5 w-full rounded-full bg-white/5">
-          <div className="h-0.5 w-0 rounded-full bg-emerald-500/40" />
+          <motion.div
+            className="h-0.5 rounded-full"
+            animate={{ width: `${cycleProgress * 100}%` }}
+            transition={{ duration: 0.12, ease: 'linear' }}
+            style={{
+              backgroundColor: `rgba(${progressRgb}, 0.55)`,
+              boxShadow: `0 0 12px rgba(${progressRgb}, 0.35)`,
+            }}
+          />
         </div>
 
         <div className="min-h-0 flex-1">
@@ -710,7 +1231,15 @@ function FindingsPanel({
   );
 }
 
-function TaskFlowPanel() {
+function TaskFlowPanel({
+  data,
+  onTooltipOpenChange,
+}: {
+  data: TaskFlowData;
+  onTooltipOpenChange: (open: boolean) => void;
+}) {
+  useEffect(() => () => onTooltipOpenChange(false), [onTooltipOpenChange]);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -722,20 +1251,26 @@ function TaskFlowPanel() {
       <div className="mb-4 rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.07] px-4 py-3 shadow-[0_0_30px_rgba(6,182,212,0.12)]">
         <p className="flex items-center gap-3 text-sm font-medium leading-relaxed text-white/90 md:text-base lg:whitespace-nowrap">
           <span className="h-2 w-2 shrink-0 rounded-full bg-cyan-300 shadow-[0_0_16px_rgba(103,232,249,0.85)]" aria-hidden="true" />
-          <span>New member walked in — Greg, wants to lose 20 lbs in 12 weeks</span>
+          <span>{data.subhead}</span>
         </p>
       </div>
 
       <div className="hidden lg:block">
-        <TaskFlowGraph />
+        <TaskFlowGraph data={data} onTooltipOpenChange={onTooltipOpenChange} />
       </div>
 
-      <MobileTaskFlowFallback />
+      <MobileTaskFlowFallback data={data} onTooltipOpenChange={onTooltipOpenChange} />
     </motion.div>
   );
 }
 
-function TaskFlowGraph() {
+function TaskFlowGraph({
+  data,
+  onTooltipOpenChange,
+}: {
+  data: TaskFlowData;
+  onTooltipOpenChange: (open: boolean) => void;
+}) {
   return (
     <div
       className="relative h-[392px] overflow-hidden rounded-3xl border border-white/10 bg-[#0E1118]"
@@ -782,8 +1317,8 @@ function TaskFlowGraph() {
             </filter>
           </defs>
 
-          {taskEdges.map((edge, index) => {
-            const source = getTaskNode(edge.from);
+          {data.edges.map((edge, index) => {
+            const source = getTaskNode(edge.from, data.nodes);
             const lane = getTaskLane(source.lane);
             const edgeId = `task-edge-${index}`;
 
@@ -791,7 +1326,7 @@ function TaskFlowGraph() {
               <g key={edgeId}>
                 <motion.path
                   id={edgeId}
-                  d={buildTaskEdgePath(edge)}
+                  d={buildTaskEdgePath(edge, data.nodes)}
                   fill="none"
                   stroke="rgba(255,255,255,0.15)"
                   strokeWidth="1.5"
@@ -821,15 +1356,21 @@ function TaskFlowGraph() {
           })}
         </svg>
 
-        {taskNodes.map((node, index) => (
-          <TaskNodeCard key={node.id} node={node} index={index} />
+        {data.nodes.map((node, index) => (
+          <TaskNodeCard key={node.id} node={node} index={index} onTooltipOpenChange={onTooltipOpenChange} />
         ))}
       </div>
     </div>
   );
 }
 
-function MobileTaskFlowFallback() {
+function MobileTaskFlowFallback({
+  data,
+  onTooltipOpenChange,
+}: {
+  data: TaskFlowData;
+  onTooltipOpenChange: (open: boolean) => void;
+}) {
   return (
     <div className="rounded-2xl border border-white/10 bg-[#10131B]/90 p-5 lg:hidden">
       <p className="mb-5 text-sm leading-relaxed text-white/65">
@@ -842,10 +1383,10 @@ function MobileTaskFlowFallback() {
               {lane.label}
             </span>
             <div className="mt-3 grid gap-2">
-              {taskNodes
+              {data.nodes
                 .filter((node) => node.lane === lane.id)
                 .map((node) => (
-                  <MobileTaskNodeChip key={node.id} node={node} />
+                  <MobileTaskNodeChip key={node.id} node={node} onTooltipOpenChange={onTooltipOpenChange} />
                 ))}
             </div>
           </div>
@@ -855,10 +1396,21 @@ function MobileTaskFlowFallback() {
   );
 }
 
-function MobileTaskNodeChip({ node }: { node: TaskNode }) {
+function MobileTaskNodeChip({
+  node,
+  onTooltipOpenChange,
+}: {
+  node: TaskNode;
+  onTooltipOpenChange: (open: boolean) => void;
+}) {
   const lane = getTaskLane(node.lane);
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    onTooltipOpenChange(tooltipOpen);
+    return () => onTooltipOpenChange(false);
+  }, [onTooltipOpenChange, tooltipOpen]);
 
   useEffect(() => {
     if (!tooltipOpen) return;
@@ -893,7 +1445,15 @@ function MobileTaskNodeChip({ node }: { node: TaskNode }) {
   );
 }
 
-function TaskNodeCard({ node, index }: { node: TaskNode; index: number }) {
+function TaskNodeCard({
+  node,
+  index,
+  onTooltipOpenChange,
+}: {
+  node: TaskNode;
+  index: number;
+  onTooltipOpenChange: (open: boolean) => void;
+}) {
   const lane = getTaskLane(node.lane);
   const isDiamond = node.shape === 'diamond';
   const height = isDiamond ? 92 : 40;
@@ -902,6 +1462,11 @@ function TaskNodeCard({ node, index }: { node: TaskNode; index: number }) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const showTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    onTooltipOpenChange(tooltipOpen);
+    return () => onTooltipOpenChange(false);
+  }, [onTooltipOpenChange, tooltipOpen]);
 
   useEffect(() => {
     if (!tooltipOpen) return;
@@ -1028,8 +1593,8 @@ function TaskNodeTooltip({
   );
 }
 
-function getTaskNode(id: string): TaskNode {
-  const node = taskNodes.find((item) => item.id === id);
+function getTaskNode(id: string, nodes: TaskNode[]): TaskNode {
+  const node = nodes.find((item) => item.id === id);
   if (!node) throw new Error(`Missing task node: ${id}`);
   return node;
 }
@@ -1038,9 +1603,9 @@ function getTaskLane(id: TaskLaneId): TaskLane {
   return taskLanes.find((lane) => lane.id === id) || taskLanes[0];
 }
 
-function buildTaskEdgePath(edge: TaskEdge) {
-  const source = getTaskNode(edge.from);
-  const target = getTaskNode(edge.to);
+function buildTaskEdgePath(edge: TaskEdge, nodes: TaskNode[]) {
+  const source = getTaskNode(edge.from, nodes);
+  const target = getTaskNode(edge.to, nodes);
   const sourceOffset = source.shape === 'diamond' ? 46 : Math.min(source.width / 2, 92);
   const targetOffset = target.shape === 'diamond' ? 46 : Math.min(target.width / 2, 92);
   let startX = source.x + sourceOffset;
@@ -1059,6 +1624,160 @@ function buildTaskEdgePath(edge: TaskEdge) {
   const curve = Math.max(52, distance * 0.42);
 
   return `M ${startX} ${startY} C ${startX + curve} ${startY}, ${endX - curve} ${endY}, ${endX} ${endY}`;
+}
+
+function ServiceArchitecturePanel({
+  layers,
+  onTooltipOpenChange,
+}: {
+  layers: ArchitectureLayer[];
+  onTooltipOpenChange: (open: boolean) => void;
+}) {
+  useEffect(() => () => onTooltipOpenChange(false), [onTooltipOpenChange]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -8 }}
+      transition={{ duration: 0.28, ease: 'easeOut' }}
+      className="flex h-full flex-col justify-start"
+    >
+      <div className="space-y-2">
+        {layers.map((layer, index) => (
+          <ArchitectureLayerCard
+            key={layer.name}
+            layer={layer}
+            index={index}
+            onTooltipOpenChange={onTooltipOpenChange}
+          />
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+
+function ArchitectureLayerCard({
+  layer,
+  index,
+  onTooltipOpenChange,
+}: {
+  layer: ArchitectureLayer;
+  index: number;
+  onTooltipOpenChange: (open: boolean) => void;
+}) {
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const showTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    onTooltipOpenChange(tooltipOpen);
+    return () => onTooltipOpenChange(false);
+  }, [onTooltipOpenChange, tooltipOpen]);
+
+  useEffect(() => {
+    if (!tooltipOpen) return;
+
+    const onPointerDown = (event: PointerEvent) => {
+      if (!wrapperRef.current?.contains(event.target as Node)) {
+        setTooltipOpen(false);
+      }
+    };
+
+    document.addEventListener('pointerdown', onPointerDown);
+    return () => document.removeEventListener('pointerdown', onPointerDown);
+  }, [tooltipOpen]);
+
+  useEffect(() => {
+    return () => {
+      if (showTimerRef.current) clearTimeout(showTimerRef.current);
+      if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+    };
+  }, []);
+
+  const showTooltip = () => {
+    if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+    showTimerRef.current = setTimeout(() => setTooltipOpen(true), 200);
+  };
+
+  const hideTooltip = () => {
+    if (showTimerRef.current) clearTimeout(showTimerRef.current);
+    hideTimerRef.current = setTimeout(() => setTooltipOpen(false), 100);
+  };
+
+  return (
+    <motion.div
+      ref={wrapperRef}
+      className="relative rounded-2xl border border-violet-400/40 bg-[#11121A]/90 px-4 py-2.5 transition-all duration-200 hover:border-violet-400/70"
+      style={{ boxShadow: '0 0 22px rgba(139,92,246,0.11)' }}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -8 }}
+      transition={{ delay: index * 0.1, duration: 0.32, ease: 'easeOut' }}
+      whileHover={{ scale: 1.005 }}
+      onMouseEnter={showTooltip}
+      onMouseLeave={hideTooltip}
+      onPointerDown={(event) => {
+        if (event.pointerType !== 'mouse') {
+          event.preventDefault();
+          event.stopPropagation();
+          setTooltipOpen((open) => !open);
+        }
+      }}
+    >
+      <div className="flex items-center justify-between gap-6">
+        <div className="min-w-0">
+          <p className="mb-1 text-[0.65rem] font-medium uppercase tracking-[0.2em] text-white/40">
+            Layer {String(index + 1).padStart(2, '0')}
+          </p>
+          <h3 className="text-sm font-medium text-white/90 md:text-base">{layer.name}</h3>
+          <p className="mt-0.5 text-xs leading-relaxed text-white/70 md:text-sm">{layer.plain}</p>
+        </div>
+
+        <div className="hidden shrink-0 items-center gap-1.5 md:flex" aria-hidden="true">
+          {[0, 1, 2, 3, 4, 5].map((dot) => (
+            <motion.span
+              key={dot}
+              className="h-1.5 w-1.5 rounded-full bg-violet-400/40"
+              animate={{ opacity: [0.35, dot % 3 === index % 3 ? 1 : 0.55, 0.35], scale: [1, 1.25, 1] }}
+              transition={{ duration: 1.8, repeat: Infinity, delay: dot * 0.16 + index * 0.08, ease: 'easeInOut' }}
+            />
+          ))}
+        </div>
+      </div>
+
+      <AnimatePresence>
+        {tooltipOpen && (
+          <ArchitectureLayerTooltip layer={layer} placement={index === 0 ? 'bottom' : 'top'} />
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
+
+function ArchitectureLayerTooltip({
+  layer,
+  placement,
+}: {
+  layer: ArchitectureLayer;
+  placement: 'top' | 'bottom';
+}) {
+  const placementClass = placement === 'bottom' ? 'top-full mt-3' : 'bottom-full mb-3';
+
+  return (
+    <motion.div
+      className={`pointer-events-none absolute left-4 ${placementClass} z-50 w-[320px] max-w-[calc(100vw-4rem)] rounded-lg border border-violet-400/60 bg-[#0B0D13]/95 p-3 text-left shadow-2xl backdrop-blur-md`}
+      style={{ boxShadow: '0 18px 42px rgba(0,0,0,0.42), 0 0 22px rgba(139,92,246,0.25)' }}
+      initial={{ opacity: 0, scale: 0.96, y: placement === 'bottom' ? -4 : 4 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.96, y: placement === 'bottom' ? -4 : 4 }}
+      transition={{ duration: 0.2, ease: 'easeOut' }}
+    >
+      <p className="font-mono text-[11px] leading-snug text-white/60">{layer.technical}</p>
+      <p className="mt-3 text-[13px] leading-snug text-white/90">{layer.plain}</p>
+    </motion.div>
+  );
 }
 
 function HeadlineKpiTile({ kpi, active }: { kpi: HeadlineKpi; active: boolean }) {
