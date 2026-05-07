@@ -10,6 +10,7 @@ import {
   useMotionValue,
   useMotionValueEvent,
 } from 'framer-motion';
+import { Brain, FileText, Link2, Lock, Mail, MessageSquare, Phone, Search } from 'lucide-react';
 
 type Industry = 'training' | 'dental' | 'homebuilder';
 type Panel = 'findings' | 'taskflow' | 'architecture';
@@ -79,6 +80,17 @@ interface ArchitectureLayer {
   name: string;
   plain: string;
   technical: string;
+}
+
+type ArchitectureIconHint = 'form' | 'sms' | 'phone' | 'email' | 'claude' | 'search' | 'link' | 'lock';
+
+interface ArchitectureActivityEntry {
+  timestamp: string;
+  id: string;
+  description: string;
+  source: string;
+  metrics: string;
+  iconHint: ArchitectureIconHint;
 }
 
 interface IndustryData {
@@ -735,6 +747,144 @@ const serviceArchitectures: Record<Industry, ArchitectureLayer[]> = {
   ],
 };
 
+const architectureActivity = (
+  timestamp: string,
+  id: string,
+  description: string,
+  source: string,
+  metrics: string,
+  iconHint: ArchitectureIconHint
+): ArchitectureActivityEntry => ({ timestamp, id, description, source, metrics, iconHint });
+
+const serviceArchitectureActivities: Record<Industry, ArchitectureActivityEntry[][]> = {
+  training: [
+    [
+      architectureActivity('14:23:11', 'MBR-A4291', 'Greg booked trial · gym tour requested', 'Web form', '250ms response', 'form'),
+      architectureActivity('14:22:48', 'MBR-A4187', 'Sara texted: can I bring a friend?', 'SMS', '180ms response', 'sms'),
+      architectureActivity('14:22:22', 'MBR-A4156', "Marcus called: cancel today's session", 'Phone', '320ms response', 'phone'),
+      architectureActivity('14:21:55', 'MBR-A3982', 'Patricia opened email, clicked confirm', 'Email', 'tracked', 'email'),
+      architectureActivity('14:21:12', 'MBR-A4288', 'Coach booking page · 3 slots available', 'Web form', '95ms response', 'form'),
+      architectureActivity('14:20:48', 'MBR-A4145', 'Jen rescheduled · Tuesday 6pm', 'SMS', '210ms response', 'sms'),
+    ],
+    [
+      architectureActivity('14:23:08', '—', 'Greg → 12-week strength program · 91% confidence', 'Claude', 'structured · 247ms', 'claude'),
+      architectureActivity('14:22:51', '—', 'Sara → premium tier recommended · 88%', 'Claude', 'tier eval · 189ms', 'claude'),
+      architectureActivity('14:22:30', '—', 'Marcus → comeback offer drafted · 84%', 'Claude', 'retention · 312ms', 'claude'),
+      architectureActivity('14:22:01', '—', 'Patricia → tier upgrade qualified · 92%', 'Claude', 'revenue · 156ms', 'claude'),
+      architectureActivity('14:21:40', '—', 'Coach assignment · Marcus paired with Greg', 'Claude', 'skill match · 98ms', 'claude'),
+      architectureActivity('14:21:15', '—', 'Jen retention check · low risk · no action', 'Claude', 'health scan · 124ms', 'claude'),
+    ],
+    [
+      architectureActivity('14:23:07', '—', 'members like Greg with 20lb goals', 'Vector search', '1,247 idx · 247ms · 5 matches', 'search'),
+      architectureActivity('14:22:50', '—', 'premium tier conversion patterns', 'Vector search', '1,247 idx · 198ms · 8 matches', 'search'),
+      architectureActivity('14:22:28', '—', 'lapsed members reactivated last quarter', 'Vector search', '1,247 idx · 312ms · 12 matches', 'search'),
+      architectureActivity('14:22:00', '—', 'tier upgrade triggers · last 90 days', 'Vector search', '1,247 idx · 156ms · 7 matches', 'search'),
+      architectureActivity('14:21:39', '—', 'coach specialty match · strength + beginner', 'Vector search', '1,247 idx · 98ms · 4 matches', 'search'),
+      architectureActivity('14:21:14', '—', 'high-risk retention patterns', 'Vector search', '1,247 idx · 124ms · 3 matches', 'search'),
+    ],
+    [
+      architectureActivity('14:23:09', '—', 'Calendar · slot reserved Tue 6pm · Coach Marcus', 'Member management', 'synced', 'link'),
+      architectureActivity('14:22:53', '—', 'Payment · Sara charged $89 monthly · approved', 'Point-of-sale', 'processed', 'link'),
+      architectureActivity('14:22:33', '—', 'Schedule update · Marcus 12-week plan loaded', 'Scheduling', '14 sessions queued', 'link'),
+      architectureActivity('14:22:04', '—', 'Invoice · Patricia upgrade · $40 prorated charge', 'Accounting', 'ledger updated', 'link'),
+      architectureActivity('14:21:42', '—', "Calendar update · Greg's trial confirmed", 'Scheduling', 'synced', 'link'),
+      architectureActivity('14:21:18', '—', 'Session attendance · Jen checked in · 6:00pm', 'Member management', 'logged', 'link'),
+    ],
+    [
+      architectureActivity('14:23:10', '—', "Greg's program decision · 247-token reasoning saved", 'AUDIT', 'Encrypted · 7-year retention', 'lock'),
+      architectureActivity('14:22:55', '—', "Sara's tier change · approval chain logged", 'AUDIT', 'Encrypted · 7-year retention', 'lock'),
+      architectureActivity('14:22:35', '—', 'Marcus comeback offer · sent + received states', 'AUDIT', 'Encrypted · 7-year retention', 'lock'),
+      architectureActivity('14:22:08', '—', 'Patricia upgrade decision · revenue scoring saved', 'AUDIT', 'Encrypted · 7-year retention', 'lock'),
+      architectureActivity('14:21:45', '—', 'Coach assignment reasoning · skill match saved', 'AUDIT', 'Encrypted · 7-year retention', 'lock'),
+      architectureActivity('14:21:21', '—', 'Jen check-in · attendance + retention markers', 'AUDIT', 'Encrypted · 7-year retention', 'lock'),
+    ],
+  ],
+  dental: [
+    [
+      architectureActivity('14:23:11', 'PT-44912', 'Sarah texted: tooth pain on left side, urgent?', 'SMS', '180ms response', 'sms'),
+      architectureActivity('14:22:48', 'PT-44887', 'Insurance pre-auth question · PPO plan', 'Web form', '250ms response', 'form'),
+      architectureActivity('14:22:22', 'PT-44856', 'John called: cancel cleaning, reschedule', 'Phone', '320ms response', 'phone'),
+      architectureActivity('14:21:55', 'PT-44782', 'Maya confirmed appointment via SMS', 'SMS', '210ms response', 'sms'),
+      architectureActivity('14:21:12', 'PT-44918', 'Insurance verification request submitted', 'Web form', '95ms response', 'form'),
+      architectureActivity('14:20:48', 'PT-44845', 'Kevin requested same-day emergency slot', 'Phone', '280ms response', 'phone'),
+    ],
+    [
+      architectureActivity('14:23:08', '—', 'Sarah → urgent triage · same-day slot · 94%', 'Claude', 'clinical guardrails · 247ms', 'claude'),
+      architectureActivity('14:22:51', '—', 'John → cancellation flagged · retention contact', 'Claude', 'patient retention · 189ms', 'claude'),
+      architectureActivity('14:22:30', '—', 'Maya appointment confirmed · provider matched', 'Claude', 'provider routing · 156ms', 'claude'),
+      architectureActivity('14:22:01', '—', 'Kevin → emergency slot allocated · Dr. Chen', 'Claude', 'triage logic · 124ms', 'claude'),
+      architectureActivity('14:21:40', '—', 'Insurance pre-auth → eligibility verified · 96%', 'Claude', 'verification · 198ms', 'claude'),
+      architectureActivity('14:21:15', '—', 'Treatment plan drafted · 3-visit sequence', 'Claude', 'plan generation · 312ms', 'claude'),
+    ],
+    [
+      architectureActivity('14:23:07', '—', 'tooth pain triage protocols', 'Vector search', '1,847 idx · 198ms · 6 matches', 'search'),
+      architectureActivity('14:22:50', '—', 'PPO coverage rules · cleanings', 'Vector search', '1,847 idx · 156ms · 4 matches', 'search'),
+      architectureActivity('14:22:28', '—', 'cancellation patterns · last 90 days', 'Vector search', '1,847 idx · 312ms · 9 matches', 'search'),
+      architectureActivity('14:22:00', '—', 'emergency slot allocation history', 'Vector search', '1,847 idx · 124ms · 5 matches', 'search'),
+      architectureActivity('14:21:39', '—', 'provider availability · Dr. Chen · this week', 'Vector search', '1,847 idx · 98ms · 7 matches', 'search'),
+      architectureActivity('14:21:14', '—', 'treatment plan templates · molar restoration', 'Vector search', '1,847 idx · 247ms · 8 matches', 'search'),
+    ],
+    [
+      architectureActivity('14:23:09', '—', 'Calendar · Sarah 4pm slot · Dr. Chen confirmed', 'Practice management', 'synced', 'link'),
+      architectureActivity('14:22:53', '—', "Patient chart · Sarah's history loaded", 'Charting', 'synced', 'link'),
+      architectureActivity('14:22:33', '—', 'Insurance · pre-auth approved · $340', 'Insurance verification', 'processed', 'link'),
+      architectureActivity('14:22:04', '—', 'Billing · John cancellation fee waived', 'Accounting', 'adjusted', 'link'),
+      architectureActivity('14:21:42', '—', 'Provider schedule · Dr. Chen Tuesday 2pm', 'Scheduling', 'synced', 'link'),
+      architectureActivity('14:21:18', '—', 'Treatment plan · uploaded to patient portal', 'Practice management', 'synced', 'link'),
+    ],
+    [
+      architectureActivity('14:23:10', '—', "Sarah's triage decision · 312-token reasoning", 'AUDIT', 'HIPAA · 7-year retention', 'lock'),
+      architectureActivity('14:22:55', '—', 'John cancellation · retention path saved', 'AUDIT', 'HIPAA · 7-year retention', 'lock'),
+      architectureActivity('14:22:35', '—', 'Maya appointment · provider match logged', 'AUDIT', 'HIPAA · 7-year retention', 'lock'),
+      architectureActivity('14:22:08', '—', 'Kevin emergency · clinical justification saved', 'AUDIT', 'HIPAA · 7-year retention', 'lock'),
+      architectureActivity('14:21:45', '—', 'Insurance pre-auth · eligibility chain saved', 'AUDIT', 'HIPAA · 7-year retention', 'lock'),
+      architectureActivity('14:21:21', '—', 'Treatment plan · 3-visit sequence saved', 'AUDIT', 'HIPAA · 7-year retention', 'lock'),
+    ],
+  ],
+  homebuilder: [
+    [
+      architectureActivity('14:23:11', 'LD-7702', 'Mike submitted form: 3-car garage with workshop', 'Web form', '250ms response', 'form'),
+      architectureActivity('14:22:48', 'LD-7689', 'Laura texted: timeline for kitchen remodel?', 'SMS', '180ms response', 'sms'),
+      architectureActivity('14:22:22', 'LD-7654', 'Dave called: site visit Thursday or Friday?', 'Phone', '320ms response', 'phone'),
+      architectureActivity('14:21:55', 'LD-7611', 'Pam confirmed quote acceptance via email', 'Email', 'tracked', 'email'),
+      architectureActivity('14:21:12', 'LD-7698', 'Rachel uploaded site photos · 8 images', 'Web form', '95ms response', 'form'),
+      architectureActivity('14:20:48', 'LD-7672', 'Tom requested same-day estimate revision', 'Phone', '280ms response', 'phone'),
+    ],
+    [
+      architectureActivity('14:23:08', '—', 'Mike → garage specialist crew matched · 87%', 'Claude', 'crew routing · 247ms', 'claude'),
+      architectureActivity('14:22:51', '—', 'Laura → kitchen remodel timeline · 6 weeks', 'Claude', 'project sizing · 189ms', 'claude'),
+      architectureActivity('14:22:30', '—', 'Dave site visit · Thursday 10am · Project Mgr', 'Claude', 'schedule logic · 156ms', 'claude'),
+      architectureActivity('14:22:01', '—', 'Pam quote accepted · contract drafted', 'Claude', 'contract generation · 124ms', 'claude'),
+      architectureActivity('14:21:40', '—', 'Rachel site analysis · scope confirmed', 'Claude', 'specs extraction · 198ms', 'claude'),
+      architectureActivity('14:21:15', '—', 'Tom estimate revision · materials adjustment', 'Claude', 'pricing logic · 312ms', 'claude'),
+    ],
+    [
+      architectureActivity('14:23:07', '—', '3-car garage projects · last 24 months', 'Vector search', '800 idx · 247ms · 12 matches', 'search'),
+      architectureActivity('14:22:50', '—', 'kitchen remodel timelines · similar scope', 'Vector search', '800 idx · 198ms · 8 matches', 'search'),
+      architectureActivity('14:22:28', '—', 'site visit protocols · custom builds', 'Vector search', '800 idx · 156ms · 5 matches', 'search'),
+      architectureActivity('14:22:00', '—', 'garage crew specialty · workshop builds', 'Vector search', '800 idx · 124ms · 6 matches', 'search'),
+      architectureActivity('14:21:39', '—', 'supplier delays · last 30 days', 'Vector search', '800 idx · 98ms · 3 matches', 'search'),
+      architectureActivity('14:21:14', '—', 'estimate revision patterns · materials', 'Vector search', '800 idx · 312ms · 9 matches', 'search'),
+    ],
+    [
+      architectureActivity('14:23:09', '—', 'Calendar · Mike site visit Thu 10am · PM Sarah', 'Project management', 'synced', 'link'),
+      architectureActivity('14:22:53', '—', 'Estimate · Laura kitchen remodel · $87,400', 'Estimating', 'processed', 'link'),
+      architectureActivity('14:22:33', '—', 'Crew schedule · garage specialist · Mon-Fri', 'Scheduling', 'synced', 'link'),
+      architectureActivity('14:22:04', '—', 'Invoice · Pam contract deposit · $8,500', 'Accounting', 'ledger updated', 'link'),
+      architectureActivity('14:21:42', '—', 'Project file · Rachel site photos · uploaded', 'Project management', 'synced', 'link'),
+      architectureActivity('14:21:18', '—', 'Payment · Tom revision approved · $2,300 adjustment', 'Payments', 'processed', 'link'),
+    ],
+    [
+      architectureActivity('14:23:10', '—', 'Mike crew assignment · skill match saved', 'AUDIT', 'Encrypted · 7-year retention', 'lock'),
+      architectureActivity('14:22:55', '—', 'Laura timeline estimate · scope reasoning saved', 'AUDIT', 'Encrypted · 7-year retention', 'lock'),
+      architectureActivity('14:22:35', '—', 'Dave site visit decision · routing saved', 'AUDIT', 'Encrypted · 7-year retention', 'lock'),
+      architectureActivity('14:22:08', '—', 'Pam contract acceptance · approval chain saved', 'AUDIT', 'Encrypted · 7-year retention', 'lock'),
+      architectureActivity('14:21:45', '—', 'Rachel scope confirmation · spec analysis saved', 'AUDIT', 'Encrypted · 7-year retention', 'lock'),
+      architectureActivity('14:21:21', '—', 'Tom estimate revision · pricing rationale saved', 'AUDIT', 'Encrypted · 7-year retention', 'lock'),
+    ],
+  ],
+};
+
 const industries: IndustryData[] = [
   {
     id: 'training',
@@ -952,6 +1102,8 @@ export default function ScrollDeviceShowcase() {
                   <ServiceArchitecturePanel
                     key={`architecture-${activeIndustry.id}`}
                     layers={activeIndustry.serviceArchitecture}
+                    activities={serviceArchitectureActivities[activeIndustry.id]}
+                    paused={isPaused}
                   />
                 )}
               </AnimatePresence>
@@ -1717,7 +1869,66 @@ function buildTaskEdgePath(edge: TaskEdge, nodes: TaskNode[]) {
   return `M ${startX} ${startY} C ${startX + curve} ${startY}, ${endX - curve} ${endY}, ${endX} ${endY}`;
 }
 
-function ServiceArchitecturePanel({ layers }: { layers: ArchitectureLayer[] }) {
+const architectureActivityStyles = [
+  { text: 'text-cyan-300', border: 'border-cyan-400/30', bg: 'bg-cyan-400/[0.08]', dot: 'bg-cyan-300', glow: 'shadow-[0_0_14px_rgba(34,211,238,0.65)]' },
+  { text: 'text-emerald-300', border: 'border-emerald-400/30', bg: 'bg-emerald-400/[0.08]', dot: 'bg-emerald-300', glow: 'shadow-[0_0_14px_rgba(52,211,153,0.65)]' },
+  { text: 'text-violet-300', border: 'border-violet-400/35', bg: 'bg-violet-400/[0.08]', dot: 'bg-violet-300', glow: 'shadow-[0_0_14px_rgba(167,139,250,0.65)]' },
+  { text: 'text-amber-300', border: 'border-amber-400/30', bg: 'bg-amber-400/[0.08]', dot: 'bg-amber-300', glow: 'shadow-[0_0_14px_rgba(251,191,36,0.65)]' },
+  { text: 'text-white/65', border: 'border-white/15', bg: 'bg-white/[0.055]', dot: 'bg-white/70', glow: 'shadow-[0_0_14px_rgba(255,255,255,0.35)]' },
+];
+
+const architectureActivityIcons: Record<ArchitectureIconHint, typeof FileText> = {
+  form: FileText,
+  sms: MessageSquare,
+  phone: Phone,
+  email: Mail,
+  claude: Brain,
+  search: Search,
+  link: Link2,
+  lock: Lock,
+};
+
+function ServiceArchitecturePanel({
+  layers,
+  activities,
+  paused,
+}: {
+  layers: ArchitectureLayer[];
+  activities: ArchitectureActivityEntry[][];
+  paused: boolean;
+}) {
+  const [activityIndices, setActivityIndices] = useState(() => layers.map(() => 0));
+
+  useEffect(() => {
+    setActivityIndices(layers.map(() => 0));
+  }, [layers]);
+
+  useEffect(() => {
+    if (paused) return;
+
+    const intervals: ReturnType<typeof setInterval>[] = [];
+    const timers = activities.map((entries, layerIndex) =>
+      setTimeout(() => {
+        if (!entries.length) return;
+
+        setActivityIndices((current) =>
+          current.map((value, index) => (index === layerIndex ? (value + 1) % entries.length : value))
+        );
+
+        intervals[layerIndex] = setInterval(() => {
+          setActivityIndices((current) =>
+            current.map((value, index) => (index === layerIndex ? (value + 1) % entries.length : value))
+          );
+        }, 4000);
+      }, layerIndex * 800)
+    );
+
+    return () => {
+      timers.forEach(clearTimeout);
+      intervals.forEach(clearInterval);
+    };
+  }, [activities, paused]);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -1739,7 +1950,11 @@ function ServiceArchitecturePanel({ layers }: { layers: ArchitectureLayer[] }) {
 
         {layers.map((layer, index) => (
           <div key={layer.name} className="flex w-full flex-col items-center">
-            <ArchitectureFlowNode layer={layer} index={index} />
+            <ArchitectureFlowNode
+              layer={layer}
+              index={index}
+              activity={activities[index]?.[activityIndices[index] || 0] || activities[index]?.[0]}
+            />
             <ArchitectureConnector
               id={`layer-${index}`}
               index={index + 1}
@@ -1771,13 +1986,17 @@ function ArchitectureEndpoint({ label, delay }: { label: string; delay: number }
 function ArchitectureFlowNode({
   layer,
   index,
+  activity,
 }: {
   layer: ArchitectureLayer;
   index: number;
+  activity?: ArchitectureActivityEntry;
 }) {
+  const style = architectureActivityStyles[index] || architectureActivityStyles[0];
+
   return (
     <motion.div
-      className="relative w-full max-w-[860px] rounded-xl border border-violet-400/40 bg-[#11121A]/95 px-4 py-1.5 transition-all duration-200 hover:border-violet-400/70 lg:h-[68px] lg:overflow-hidden"
+      className="relative w-full max-w-[1060px] rounded-xl border border-violet-400/40 bg-[#11121A]/95 px-3 py-1 transition-all duration-200 hover:border-violet-400/70 lg:h-[72px] lg:overflow-hidden"
       style={{ boxShadow: '0 0 24px rgba(139,92,246,0.12)' }}
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
@@ -1785,31 +2004,82 @@ function ArchitectureFlowNode({
       transition={{ delay: 0.15 + index * 0.15, duration: 0.3, ease: 'easeOut' }}
       whileHover={{ scale: 1.005 }}
     >
-      <div className="grid gap-2 md:grid-cols-[220px_minmax(0,1fr)_90px] md:items-center">
-        <div className="min-w-0">
-          <p className="mb-1 text-[0.65rem] font-medium uppercase tracking-[0.2em] text-white/40">
-            Layer {String(index + 1).padStart(2, '0')}
-          </p>
-          <h3 className="text-sm font-medium leading-tight text-white/90">{layer.name}</h3>
+      <div className="grid h-full gap-2 md:grid-cols-[minmax(0,1.02fr)_1px_minmax(270px,0.82fr)] md:items-center">
+        <div className="grid min-w-0 gap-2 md:grid-cols-[180px_minmax(0,1fr)] md:items-center">
+          <div className="min-w-0">
+            <p className="mb-1 text-[0.65rem] font-medium uppercase tracking-[0.2em] text-white/40">
+              Layer {String(index + 1).padStart(2, '0')}
+            </p>
+            <h3 className="text-sm font-medium leading-tight text-white/90">{layer.name}</h3>
+          </div>
+
+          <div className="min-w-0">
+            <p className="mt-0.5 text-xs leading-tight text-white/70">{layer.plain}</p>
+            <p className="mt-0.5 font-mono text-[0.64rem] leading-tight text-white/50">{layer.technical}</p>
+          </div>
         </div>
 
-        <div className="min-w-0">
-          <p className="mt-0.5 text-xs leading-tight text-white/70">{layer.plain}</p>
-          <p className="mt-0.5 font-mono text-[0.64rem] leading-tight text-white/50">{layer.technical}</p>
-        </div>
+        <div className="hidden h-full w-px bg-white/10 md:block" aria-hidden="true" />
 
-        <div className="hidden shrink-0 items-center justify-end gap-1.5 md:flex" aria-hidden="true">
-          {[0, 1, 2, 3, 4, 5].map((dot) => (
-            <motion.span
-              key={dot}
-              className="h-1.5 w-1.5 rounded-full bg-violet-400/40"
-              animate={{ opacity: [0.35, dot % 3 === index % 3 ? 1 : 0.55, 0.35], scale: [1, 1.25, 1] }}
-              transition={{ duration: 1.8, repeat: Infinity, delay: dot * 0.16 + index * 0.08, ease: 'easeInOut' }}
-            />
-          ))}
-        </div>
+        {activity && <ArchitectureActivityPanel entry={activity} layerIndex={index} style={style} />}
       </div>
     </motion.div>
+  );
+}
+
+function ArchitectureActivityPanel({
+  entry,
+  layerIndex,
+  style,
+}: {
+  entry: ArchitectureActivityEntry;
+  layerIndex: number;
+  style: (typeof architectureActivityStyles)[number];
+}) {
+  const Icon = architectureActivityIcons[entry.iconHint] || FileText;
+
+  return (
+    <div data-architecture-active-panel className={`min-w-0 rounded-lg border ${style.border} ${style.bg} px-2.5 py-1`}>
+      <div className="mb-0.5 flex items-center gap-2">
+        <span className={`h-1.5 w-1.5 animate-pulse rounded-full ${style.dot} ${style.glow}`} aria-hidden="true" />
+        <span className={`text-[0.56rem] font-semibold uppercase tracking-[0.2em] ${style.text}`}>Active</span>
+      </div>
+
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={`${entry.timestamp}-${entry.description}`}
+          initial={{ opacity: 0.38, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0.38, y: -6 }}
+          transition={{ duration: 0.22, ease: 'easeInOut' }}
+          className="min-w-0"
+        >
+          <p className="truncate font-mono text-[0.58rem] leading-tight text-white/45">
+            {entry.timestamp} <span className="text-white/20">·</span> <span className="text-white/70">{entry.id}</span>
+          </p>
+          <p
+            data-architecture-active-description
+            className="mt-px text-[0.68rem] italic leading-tight text-white/85"
+            style={{
+              display: '-webkit-box',
+              WebkitBoxOrient: 'vertical',
+              WebkitLineClamp: 2,
+              overflow: 'hidden',
+            }}
+          >
+            {entry.description}
+          </p>
+          <p className={`mt-px flex min-w-0 items-center gap-1.5 truncate font-mono text-[0.56rem] leading-tight ${style.text}`}>
+            <Icon size={11} strokeWidth={1.8} className="shrink-0" aria-hidden="true" />
+            <span className="truncate">{entry.source}</span>
+            <span className="text-white/25">·</span>
+            <span className="truncate text-white/55">{entry.metrics}</span>
+          </p>
+        </motion.div>
+      </AnimatePresence>
+
+      <span className="sr-only">Layer {layerIndex + 1} active activity</span>
+    </div>
   );
 }
 
@@ -1832,7 +2102,7 @@ function ArchitectureConnector({
 
   return (
     <div
-      className={`relative flex h-2 w-full max-w-[860px] items-center justify-center ${bidirectional ? 'my-px' : ''}`}
+      className={`relative flex h-1.5 w-full max-w-[860px] items-center justify-center ${bidirectional ? 'my-px' : ''}`}
       aria-hidden="true"
     >
       <svg className="h-full w-32 overflow-visible" viewBox="0 0 128 20" fill="none">
