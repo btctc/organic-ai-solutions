@@ -34,7 +34,7 @@ function createParticles(): Particle[] {
     const x = CENTER + Math.cos(angle) * radius;
     const y = CENTER + Math.sin(angle) * radius;
 
-    const tangentSpeed = 0.04 + Math.random() * 0.07;
+    const tangentSpeed = 0.025 + Math.random() * 0.045;
     const tangentDir = Math.random() < 0.5 ? 1 : -1;
     const vx = -Math.sin(angle) * tangentSpeed * tangentDir + (Math.random() - 0.5) * 0.04;
     const vy = Math.cos(angle) * tangentSpeed * tangentDir + (Math.random() - 0.5) * 0.04;
