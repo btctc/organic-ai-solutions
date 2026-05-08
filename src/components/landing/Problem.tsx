@@ -1,27 +1,26 @@
 "use client";
 
-import Link from "next/link";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 
 const steps = [
   {
     number: "01",
-    title: "Talk to us, or talk to our agent",
+    title: "Calls go to voicemail at 6:01 PM",
     description:
-      "Book a 30-minute call to scope the problem. Or, if you're short on time, use our custom-built assessment agent — built by us, runs 24/7.",
+      "Your phones forward to nowhere after hours. The leads who finally called back today end up on someone else's calendar tomorrow.",
   },
   {
     number: "02",
-    title: "We build",
+    title: "Leads sit in inboxes until Monday",
     description:
-      "Working software in your environment, on your data, integrated into the systems you already use.",
+      "By the time someone sees the form submission from Friday night, two competitors have already called them back.",
   },
   {
     number: "03",
-    title: "It runs alongside you",
+    title: "The same questions, 40 times a week",
     description:
-      "Your agents handle the work that gets lost, misplaced, or never happens. You stay running the business.",
+      "Pricing. Hours. Service area. Your team answers the same five questions every day instead of doing the work that pays.",
   },
 ];
 
@@ -47,14 +46,14 @@ export default function Problem() {
             {...rise(inView)}
             className="font-[family-name:var(--font-montserrat)] text-[#E8420A] text-xs font-semibold tracking-widest uppercase mb-4"
           >
-            How it works
+            Where the money leaks
           </motion.p>
           <motion.h2
             {...rise(inView, 0.08)}
             className="font-[family-name:var(--font-montserrat)] text-4xl md:text-5xl font-bold text-neutral-900 leading-tight xl:whitespace-nowrap"
             style={{ fontWeight: 700 }}
           >
-            Three steps to working software
+            Most operators are losing revenue they could keep.
           </motion.h2>
         </div>
 
@@ -77,34 +76,11 @@ export default function Problem() {
                   <p className="font-[family-name:var(--font-dm-sans)] text-neutral-500 leading-relaxed text-base max-w-sm">
                     {step.description}
                   </p>
-                  {step.number === "01" && (
-                    <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-                      <Link
-                        href="#contact"
-                        className="inline-flex items-center justify-center rounded-full bg-[#E8420A] px-5 py-2.5 font-[family-name:var(--font-montserrat)] text-sm font-semibold text-white transition-all hover:bg-[#c93508] hover:-translate-y-0.5"
-                      >
-                        Book a call →
-                      </Link>
-                      <Link
-                        href="/assessment"
-                        className="inline-flex items-center justify-center rounded-full border border-[#E8420A]/30 px-5 py-2.5 font-[family-name:var(--font-montserrat)] text-sm font-semibold text-[#E8420A] transition-all hover:border-[#E8420A]/60 hover:bg-orange-50 hover:-translate-y-0.5"
-                      >
-                        Try the agent →
-                      </Link>
-                    </div>
-                  )}
                 </div>
               </motion.div>
             ))}
           </div>
         </div>
-
-        <motion.p
-          {...rise(inView, 0.48)}
-          className="mt-16 text-center font-[family-name:var(--font-dm-sans)] text-neutral-600 text-base md:text-lg leading-relaxed"
-        >
-          Once scoped, working software in 30 days. 60+ for complex builds.
-        </motion.p>
 
         <motion.div
           {...rise(inView, 0.58, 18)}
