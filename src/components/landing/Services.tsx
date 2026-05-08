@@ -1,66 +1,140 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { motion, useInView, AnimatePresence } from "framer-motion";
-import { Zap, GitBranch, Lightbulb, BarChart3, Map, GraduationCap } from "lucide-react";
+import { useRef } from "react";
+import { motion, useInView, useReducedMotion } from "framer-motion";
+
+const FLOW_LOOP_SECONDS = 1.8;
+const FLOW_SEGMENT_SECONDS = 0.42;
 
 const services = [
   {
-    icon: Zap,
-    title: "AI Automation",
-    description:
-      "Eliminate repetitive manual work with intelligent automation pipelines that handle data entry, reporting, and scheduling.",
-    useCase:
-      "A dump truck operator stops re-typing job requests from Gmail into their dispatch board — saves 8 hours a week.",
+    eyebrow: "Audit",
+    title: "Where most start",
+    body: "We look at what's costing you. Score every category 1–100. Tell you the fix in plain language.",
+    detail: "Free conversational assessment. Full audit deliverable.",
   },
   {
-    icon: GitBranch,
-    title: "Process Redesign",
-    description:
-      "Audit current processes, identify bottlenecks, and rebuild them with AI inside the steps that actually move work.",
-    useCase:
-      "A dental practice cuts no-shows 40% by mapping the booking-to-confirmation flow and adding AI follow-up.",
+    eyebrow: "Website Build & Repair",
+    title: "Foundation",
+    body: "Build new or fix what's broken. Lead capture, fast page weight, AI-ready from day one.",
+    detail: "Ships in 30 days. 60+ for complex builds.",
   },
   {
-    icon: Lightbulb,
-    title: "AI Consulting",
-    description:
-      "We assess your operation, find the work AI should own first, and turn it into a build plan your team can actually run.",
-    useCase:
-      "A 12-person home services company gets a 90-day roadmap with three scoped builds, ranked by urgency and operational lift.",
+    eyebrow: "Simple AI Solutions",
+    title: "First wins",
+    body: "Plug AI into the work that already breaks. Single deliverables that prove value before you scale.",
+    detail: "Scoped, quoted, deployed.",
   },
   {
-    icon: BarChart3,
-    title: "Data Insights",
-    description:
-      "Turn raw business data into actionable intelligence with AI-driven analytics that surface trends and guide smarter decisions.",
-    useCase:
-      "A specialty contractor sees which job types actually make money — margin per crew-hour, not just gross revenue.",
+    eyebrow: "Custom Agents",
+    title: "Where it pays off",
+    body: "Production AI agents inside your operation. Built right. Deployed fast. Yours to run.",
+    detail: "Built on enterprise agent experience.",
+    featured: true,
   },
   {
-    icon: Map,
-    title: "Process Mapping",
-    description:
-      "Document and visualize your end-to-end operations so your team knows what happens, who owns it, and where AI can take work off the floor.",
-    useCase:
-      "A growing restaurant group documents every step from order to delivery — onboarding new managers in days, not months.",
-  },
-  {
-    icon: GraduationCap,
-    title: "AI Training",
-    description:
-      "Hands-on training programs designed for non-technical staff — practical, jargon-free, and immediately applicable.",
-    useCase:
-      "A real estate brokerage's 30 agents learn to write listings, follow up with leads, and respond to inquiries with AI in two half-day sessions.",
+    eyebrow: "Operational Systems",
+    title: "Long-term",
+    body: "Multi-agent systems your business runs on. Long-term partnership. Real software, not advisory.",
+    detail: "Ongoing build + maintain.",
   },
 ];
+
+const industries = [
+  {
+    name: "Professional Services",
+    examples: "Law firms, Accounting practices",
+    accent: "orange",
+  },
+  {
+    name: "Healthcare & Dental",
+    examples: "Dental practices, Specialty clinics",
+    accent: "cyan",
+  },
+  {
+    name: "Home Services",
+    examples: "Foundation repair, HVAC contractors",
+    accent: "emerald",
+  },
+  {
+    name: "Transportation & Logistics",
+    examples: "Trucking, Last-mile delivery",
+    accent: "violet",
+  },
+  {
+    name: "Training & Fitness",
+    examples: "Gyms, Studios",
+    accent: "amber",
+  },
+  {
+    name: "Hospitality",
+    examples: "Hotels, Restaurants",
+    accent: "orange",
+  },
+  {
+    name: "Real Estate",
+    examples: "Brokerages, Property management",
+    accent: "cyan",
+  },
+  {
+    name: "Financial Services",
+    examples: "Wealth management, Insurance",
+    accent: "emerald",
+  },
+  {
+    name: "Construction & Trades",
+    examples: "Builders, Specialty contractors",
+    accent: "violet",
+  },
+  {
+    name: "Education & Training",
+    examples: "Private schools, Online education",
+    accent: "amber",
+  },
+];
+
+const industryAccentStyles = {
+  orange: {
+    border: "border-[#E8420A]/20",
+    bg: "bg-[#E8420A]/[0.04]",
+    dot: "bg-[#E8420A]",
+    text: "text-[#E8420A]",
+  },
+  cyan: {
+    border: "border-cyan-400/25",
+    bg: "bg-cyan-400/[0.05]",
+    dot: "bg-cyan-400",
+    text: "text-cyan-700",
+  },
+  emerald: {
+    border: "border-emerald-400/25",
+    bg: "bg-emerald-400/[0.05]",
+    dot: "bg-emerald-500",
+    text: "text-emerald-700",
+  },
+  violet: {
+    border: "border-violet-400/25",
+    bg: "bg-violet-400/[0.05]",
+    dot: "bg-violet-500",
+    text: "text-violet-700",
+  },
+  amber: {
+    border: "border-amber-400/30",
+    bg: "bg-amber-400/[0.08]",
+    dot: "bg-amber-500",
+    text: "text-amber-700",
+  },
+};
 
 export default function Services() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
+  const flowInView = useInView(ref, { margin: "-80px" });
+  const shouldReduceMotion = useReducedMotion();
+  const flowActive = flowInView && !shouldReduceMotion;
 
   return (
-    <section className="bg-white py-28 px-6 lg:px-10" id="services">
+    <section className="bg-white px-6 py-28 md:pt-20 lg:px-10" id="services">
       <div className="max-w-7xl mx-auto" ref={ref}>
         <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-16 gap-6">
           <div>
@@ -76,10 +150,10 @@ export default function Services() {
               initial={{ opacity: 0, y: 16 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.45, delay: 0.08 }}
-              className="font-[family-name:var(--font-montserrat)] text-4xl md:max-w-none md:whitespace-nowrap md:text-4xl xl:text-5xl font-bold text-neutral-900 max-w-xl leading-tight"
+              className="max-w-3xl font-[family-name:var(--font-montserrat)] text-4xl font-bold leading-tight text-neutral-900 md:text-4xl xl:text-5xl"
               style={{ fontWeight: 700 }}
             >
-              Services Built for Your Scale
+              Built for the industries operators actually run.
             </motion.h2>
           </div>
           <motion.p
@@ -88,23 +162,44 @@ export default function Services() {
             transition={{ duration: 0.45, delay: 0.14 }}
             className="font-[family-name:var(--font-dm-sans)] text-neutral-400 max-w-sm leading-relaxed text-sm md:text-right"
           >
-            Built for operators running 5-200 person customer-facing teams.
+            Operator-built AI for 5–200 person customer-facing teams. We start where the work starts.
           </motion.p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {services.map((svc, i) => {
-            const Icon = svc.icon;
-            return (
-              <ServiceCard
-                key={svc.title}
-                svc={svc}
-                Icon={Icon}
-                inView={inView}
-                index={i}
-              />
-            );
-          })}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.45, delay: 0.18 }}
+          className="mb-10 rounded-[28px] border border-neutral-200 bg-neutral-50 p-4"
+        >
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-5">
+            {industries.map((industry) => {
+              const accent = industryAccentStyles[industry.accent as keyof typeof industryAccentStyles];
+
+              return (
+                <div
+                  key={industry.name}
+                  className={`rounded-2xl border ${accent.border} ${accent.bg} px-4 py-3`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className={`h-1.5 w-1.5 rounded-full ${accent.dot}`} />
+                    <p className={`font-[family-name:var(--font-montserrat)] text-[11px] font-semibold uppercase tracking-[0.14em] ${accent.text}`}>
+                      {industry.name}
+                    </p>
+                  </div>
+                  <p className="mt-2 font-[family-name:var(--font-dm-sans)] text-xs leading-relaxed text-neutral-500">
+                    {industry.examples}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </motion.div>
+
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-6">
+          {services.map((svc, i) => (
+            <ServiceCard key={svc.title} svc={svc} inView={inView} flowActive={flowActive} index={i} />
+          ))}
         </div>
       </div>
     </section>
@@ -112,55 +207,89 @@ export default function Services() {
 }
 
 interface ServiceCardProps {
-  svc: { title: string; description: string; useCase: string; icon: typeof Zap };
-  Icon: typeof Zap;
+  svc: { eyebrow: string; title: string; body: string; detail: string; featured?: boolean };
   inView: boolean;
+  flowActive: boolean;
   index: number;
 }
 
-function ServiceCard({ svc, Icon, inView, index }: ServiceCardProps) {
-  const [hovered, setHovered] = useState(false);
-
+function ServiceCard({ svc, inView, flowActive, index }: ServiceCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 28 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.45, delay: 0.08 + index * 0.06 }}
-      onHoverStart={() => setHovered(true)}
-      onHoverEnd={() => setHovered(false)}
-      className="group relative rounded-2xl border border-neutral-100 p-7 hover:border-[#E8420A]/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-white"
+      className={`group relative rounded-2xl border bg-white p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_48px_rgba(232,66,10,0.12)] md:min-h-[260px] lg:col-span-2 ${
+        svc.featured
+          ? "border-[#E8420A]/35 shadow-[0_18px_54px_rgba(232,66,10,0.10)]"
+          : "border-neutral-100"
+      } ${index >= 3 ? "lg:col-span-3" : ""}`}
     >
-      <div className="w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center mb-5 group-hover:bg-[#E8420A] transition-colors duration-200">
-        <Icon className="text-[#E8420A] group-hover:text-white transition-colors duration-200" size={19} />
-      </div>
-      <h3 className="font-[family-name:var(--font-montserrat)] text-base font-bold text-neutral-900 mb-2.5">
+      <p className="mb-4 font-[family-name:var(--font-montserrat)] text-[10px] font-semibold uppercase tracking-[0.18em] text-[#E8420A]">
+        {svc.eyebrow}
+      </p>
+      <h3 className="mb-3 font-[family-name:var(--font-montserrat)] text-xl font-bold text-neutral-900">
         {svc.title}
       </h3>
-      <p className="font-[family-name:var(--font-dm-sans)] text-neutral-500 text-sm leading-relaxed">
-        {svc.description}
+      <p className="font-[family-name:var(--font-dm-sans)] text-sm leading-relaxed text-neutral-500">
+        {svc.body}
       </p>
-
-      <AnimatePresence initial={false}>
-        {hovered && (
-          <motion.div
-            key="usecase"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
-            className="overflow-hidden"
-          >
-            <div className="mt-4 pt-4 border-t border-neutral-100">
-              <p className="font-[family-name:var(--font-montserrat)] text-[10px] font-semibold tracking-widest uppercase text-[#E8420A] mb-2">
-                For example
-              </p>
-              <p className="font-[family-name:var(--font-dm-sans)] text-neutral-700 text-sm leading-relaxed italic">
-                {svc.useCase}
-              </p>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <p className="mt-6 border-t border-neutral-100 pt-4 font-[family-name:var(--font-montserrat)] text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500">
+        {svc.detail}
+      </p>
+      {index < 4 && <ServiceFlowConnector active={flowActive} index={index} />}
     </motion.div>
+  );
+}
+
+function ServiceFlowConnector({ active, index }: { active: boolean; index: number }) {
+  return (
+    <>
+      {index < 2 && (
+        <div className="pointer-events-none absolute left-full top-1/2 z-10 hidden w-5 -translate-y-1/2 lg:block" aria-hidden="true">
+          <div className="h-px w-full bg-gradient-to-r from-[#E8420A]/25 via-[#E8420A]/55 to-[#E8420A]/20" />
+          {active && <ServiceFlowPulse axis="x" index={index} />}
+        </div>
+      )}
+      {index === 2 && (
+        <div className="pointer-events-none absolute left-1/2 top-full z-10 hidden h-5 -translate-x-1/2 lg:block" aria-hidden="true">
+          <div className="mx-auto h-full w-px bg-gradient-to-b from-[#E8420A]/25 via-[#E8420A]/50 to-[#E8420A]/15" />
+          {active && <ServiceFlowPulse axis="y" index={index} />}
+        </div>
+      )}
+      {index === 3 && (
+        <div className="pointer-events-none absolute left-full top-1/2 z-10 hidden w-5 -translate-y-1/2 lg:block" aria-hidden="true">
+          <div className="h-px w-full bg-gradient-to-r from-[#E8420A]/25 via-[#E8420A]/55 to-[#E8420A]/20" />
+          {active && <ServiceFlowPulse axis="x" index={index} />}
+        </div>
+      )}
+      <div className="pointer-events-none absolute left-1/2 top-full z-10 h-5 -translate-x-1/2 md:hidden" aria-hidden="true">
+        <div className="mx-auto h-full w-px bg-gradient-to-b from-[#E8420A]/25 via-[#E8420A]/50 to-[#E8420A]/15" />
+        {active && <ServiceFlowPulse axis="y" index={index} />}
+      </div>
+    </>
+  );
+}
+
+function ServiceFlowPulse({ axis, index }: { axis: "x" | "y"; index: number }) {
+  const animate =
+    axis === "x"
+      ? { left: ["0%", "100%"], opacity: [0, 1, 1, 0] }
+      : { top: ["0%", "100%"], opacity: [0, 1, 1, 0] };
+
+  return (
+    <motion.span
+      className={`absolute h-2 w-2 rounded-full bg-[#E8420A] shadow-[0_0_14px_rgba(232,66,10,0.7)] motion-reduce:hidden ${
+        axis === "x" ? "left-0 top-1/2 -translate-y-1/2" : "left-1/2 top-0 -translate-x-1/2"
+      }`}
+      animate={animate}
+      transition={{
+        duration: FLOW_SEGMENT_SECONDS,
+        repeat: Infinity,
+        repeatDelay: FLOW_LOOP_SECONDS - FLOW_SEGMENT_SECONDS,
+        delay: index * 0.36,
+        ease: "easeInOut",
+      }}
+    />
   );
 }

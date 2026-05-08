@@ -10,7 +10,7 @@ const links = [
   { label: "Services", href: "/#services" },
   { label: "About", href: "/about" },
   { label: "How It Works", href: "/#how-it-works" },
-  { label: "Get Started", href: "/#intake" },
+  { label: "See It Live", href: "https://templehealthcaredemo.netlify.app", external: true },
   { label: "Contact", href: "/#contact" },
 ];
 
@@ -49,6 +49,8 @@ export default function Navbar() {
             <Link
               key={l.href}
               href={l.href}
+              target={l.external ? "_blank" : undefined}
+              rel={l.external ? "noopener noreferrer" : undefined}
               className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-neutral-600 hover:text-neutral-900 transition-colors"
             >
               {l.label}
@@ -87,6 +89,8 @@ export default function Navbar() {
                 <Link
                   key={l.href}
                   href={l.href}
+                  target={l.external ? "_blank" : undefined}
+                  rel={l.external ? "noopener noreferrer" : undefined}
                   onClick={() => setMenuOpen(false)}
                   className="text-left font-[family-name:var(--font-dm-sans)] text-neutral-700 font-medium hover:text-neutral-900 transition-colors"
                 >
