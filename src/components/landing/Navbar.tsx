@@ -58,7 +58,7 @@ export default function Navbar() {
           ))}
           <Link
             href="/assessment"
-            className="ml-2 px-5 py-2 rounded-lg bg-[#E8420A] text-white text-sm font-semibold font-[family-name:var(--font-montserrat)] hover:bg-[#c93508] transition-colors"
+            className="ml-2 px-5 py-2 rounded-lg bg-tertiary text-white text-sm font-semibold font-[family-name:var(--font-montserrat)] hover:bg-tertiary-hover transition-colors"
           >
             Free AI Assessment
           </Link>
@@ -100,7 +100,7 @@ export default function Navbar() {
               <Link
                 href="/assessment"
                 onClick={() => setMenuOpen(false)}
-                className="mt-1 w-full px-5 py-3 rounded-lg bg-[#E8420A] text-white font-semibold font-[family-name:var(--font-montserrat)] text-sm hover:bg-[#c93508] transition-colors"
+                className="mt-1 w-full px-5 py-3 rounded-lg bg-tertiary text-white font-semibold font-[family-name:var(--font-montserrat)] text-sm hover:bg-tertiary-hover transition-colors"
               >
                 Free AI Assessment
               </Link>

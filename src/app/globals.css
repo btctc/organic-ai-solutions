@@ -45,8 +45,9 @@
 }
 
 @theme {
-  --color-tertiary: #B5421B;
-  --color-on-tertiary: #F5F2ED;
+  --color-tertiary: #E8420A;
+  --color-tertiary-hover: #c93508;
+  --color-on-tertiary: #FFFFFF;
   --color-neutral: #F5F2ED;
   --color-surface: #ffffff;
   --color-on-surface: #0F1310;

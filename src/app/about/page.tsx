@@ -99,8 +99,8 @@ export default function AboutPage() {
                 </nav>
 
                 <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-orange-100 bg-orange-50 px-3.5 py-1.5">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#E8420A]" />
-                  <span className="font-[family-name:var(--font-dm-sans)] text-xs font-semibold uppercase tracking-wide text-[#E8420A]">
+                  <span className="h-1.5 w-1.5 rounded-full bg-tertiary" />
+                  <span className="font-[family-name:var(--font-dm-sans)] text-xs font-semibold uppercase tracking-wide text-tertiary">
                     About Organic AI Solutions
                   </span>
                 </div>
@@ -234,7 +234,7 @@ export default function AboutPage() {
           className="bg-neutral px-6 py-24 lg:px-10 md:py-28"
         >
           <div className="mx-auto max-w-3xl text-center">
-            <p className="mb-4 font-[family-name:var(--font-montserrat)] text-xs font-semibold uppercase tracking-widest text-[#E8420A]">
+            <p className="mb-4 font-[family-name:var(--font-montserrat)] text-xs font-semibold uppercase tracking-widest text-tertiary">
               Start the conversation
             </p>
             <h2

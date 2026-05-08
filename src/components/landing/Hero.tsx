@@ -32,8 +32,8 @@ export default function Hero() {
               transition={{ duration: 0.5, ease: "easeOut" }}
               className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-50 border border-orange-100 mb-8"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-[#E8420A]" />
-              <span className="font-[family-name:var(--font-dm-sans)] text-xs text-[#E8420A] font-semibold tracking-wide uppercase">
+              <span className="w-1.5 h-1.5 rounded-full bg-tertiary" />
+              <span className="font-[family-name:var(--font-dm-sans)] text-xs text-tertiary font-semibold tracking-wide uppercase">
                 AI for operators
               </span>
             </motion.div>

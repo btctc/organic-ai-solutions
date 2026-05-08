@@ -145,7 +145,7 @@ const timelineOptions = [
 const sectionLabelClass =
   "mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500 font-[family-name:var(--font-montserrat)]";
 const inputClass =
-  "w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition focus:border-[#E8420A] focus:ring-4 focus:ring-[#E8420A]/10 placeholder:text-neutral-400";
+  "w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition focus:border-tertiary focus:ring-4 focus:ring-[#E8420A]/10 placeholder:text-neutral-400";
 const textareaClass = `${inputClass} min-h-[112px] resize-y`;
 
 function StepDot({
@@ -162,7 +162,7 @@ function StepDot({
       type="button"
       onClick={onClick}
       className={`h-2.5 rounded-full transition-all duration-300 ${
-        active ? "w-8 bg-[#E8420A]" : complete ? "w-3 bg-[#F26A3D]" : "w-3 bg-neutral-200"
+        active ? "w-8 bg-tertiary" : complete ? "w-3 bg-[#F26A3D]" : "w-3 bg-neutral-200"
       }`}
       aria-label="Go to step"
     />
@@ -184,7 +184,7 @@ function ChoiceChip({
       onClick={onClick}
       className={`rounded-xl border px-4 py-3 text-left text-sm transition ${
         selected
-          ? "border-[#E8420A]/30 bg-orange-50 text-[#A93A10] shadow-sm"
+          ? "border-[#E8420A]/30 bg-orange-50 text-tertiary shadow-sm"
           : "border-neutral-200 bg-white text-neutral-700 hover:border-neutral-300"
       }`}
     >
@@ -192,7 +192,7 @@ function ChoiceChip({
         <span
           className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border text-[10px] font-bold ${
             selected
-              ? "border-[#E8420A] bg-[#E8420A] text-white"
+              ? "border-tertiary bg-tertiary text-white"
               : "border-neutral-300 text-transparent"
           }`}
         >
@@ -228,12 +228,12 @@ function SelectCard({
       <div className="flex items-start gap-4">
         <div
           className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${
-            selected ? "border-[#E8420A]" : "border-neutral-300"
+            selected ? "border-tertiary" : "border-neutral-300"
           }`}
         >
           <div
             className={`h-2.5 w-2.5 rounded-full ${
-              selected ? "bg-[#E8420A]" : "bg-transparent"
+              selected ? "bg-tertiary" : "bg-transparent"
             }`}
           />
         </div>
@@ -335,9 +335,9 @@ export default function IntakeForm({ onSubmitted }: IntakeFormProps) {
             className="rounded-[28px] border border-neutral-200 bg-white px-8 py-14 text-center shadow-[0_24px_80px_rgba(23,23,23,0.08)] md:px-14"
           >
             <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-orange-50">
-              <CheckCircle className="text-[#E8420A]" size={32} />
+              <CheckCircle className="text-tertiary" size={32} />
             </div>
-            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-[#E8420A] font-[family-name:var(--font-montserrat)]">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-tertiary font-[family-name:var(--font-montserrat)]">
               Intake Received
             </p>
             <h2 className="font-[family-name:var(--font-montserrat)] text-3xl font-bold text-neutral-900 md:text-4xl">
@@ -364,7 +364,7 @@ export default function IntakeForm({ onSubmitted }: IntakeFormProps) {
               initial={{ opacity: 0, y: 16 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.45 }}
-              className="mb-4 text-center text-xs font-semibold uppercase tracking-[0.18em] text-[#E8420A] font-[family-name:var(--font-montserrat)]"
+              className="mb-4 text-center text-xs font-semibold uppercase tracking-[0.18em] text-tertiary font-[family-name:var(--font-montserrat)]"
             >
               Free AI Assessment
             </motion.p>
@@ -403,7 +403,7 @@ export default function IntakeForm({ onSubmitted }: IntakeFormProps) {
                 ].map((item) => (
                   <div key={item} className="flex items-start gap-3">
                     <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-orange-50">
-                      <CheckCircle className="text-[#E8420A]" size={13} />
+                      <CheckCircle className="text-tertiary" size={13} />
                     </div>
                     <p className="text-sm leading-6 text-neutral-600">{item}</p>
                   </div>
@@ -411,7 +411,7 @@ export default function IntakeForm({ onSubmitted }: IntakeFormProps) {
               </div>
               <a
                 href="/#contact"
-                className="mt-7 inline-flex w-full items-center justify-center rounded-lg bg-[#E8420A] px-5 py-3 text-sm font-semibold text-white shadow-md shadow-orange-100 transition-colors hover:bg-[#c93508] font-[family-name:var(--font-montserrat)]"
+                className="mt-7 inline-flex w-full items-center justify-center rounded-lg bg-tertiary px-5 py-3 text-sm font-semibold text-white shadow-md shadow-orange-100 transition-colors hover:bg-tertiary-hover font-[family-name:var(--font-montserrat)]"
               >
                 Start Your Free Discovery Call
               </a>
@@ -446,7 +446,7 @@ export default function IntakeForm({ onSubmitted }: IntakeFormProps) {
                     index < step
                       ? "bg-[#F26A3D]"
                       : index === step
-                        ? "bg-[#E8420A]"
+                        ? "bg-tertiary"
                         : "bg-neutral-200"
                   }`}
                 />
@@ -750,7 +750,7 @@ export default function IntakeForm({ onSubmitted }: IntakeFormProps) {
                   type="button"
                   onClick={() => canAdvance() && setStep((currentStep) => currentStep + 1)}
                   disabled={!canAdvance()}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#E8420A] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#c93508] disabled:cursor-not-allowed disabled:opacity-40"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-tertiary px-6 py-3 text-sm font-semibold text-white transition hover:bg-tertiary-hover disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   Continue
                   <ChevronRight size={16} />
@@ -766,7 +766,7 @@ export default function IntakeForm({ onSubmitted }: IntakeFormProps) {
                     type="button"
                     onClick={handleSubmit}
                     disabled={isSubmitting}
-                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#E8420A] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#c93508] disabled:cursor-not-allowed disabled:opacity-60"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-tertiary px-6 py-3 text-sm font-semibold text-white transition hover:bg-tertiary-hover disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {isSubmitting ? (
                       <>

@@ -63,7 +63,7 @@ export default function Footer() {
             </p>
             <Link
               href="/assessment"
-              className="px-5 py-2.5 rounded-lg bg-[#E8420A] text-white text-sm font-semibold font-[family-name:var(--font-montserrat)] hover:bg-[#c93508] transition-colors"
+              className="px-5 py-2.5 rounded-lg bg-tertiary text-white text-sm font-semibold font-[family-name:var(--font-montserrat)] hover:bg-tertiary-hover transition-colors"
             >
               Get Your Free AI Assessment
             </Link>

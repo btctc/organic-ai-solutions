@@ -97,8 +97,8 @@ const industryAccentStyles = {
   orange: {
     border: "border-[#E8420A]/20",
     bg: "bg-[#E8420A]/[0.04]",
-    dot: "bg-[#E8420A]",
-    text: "text-[#E8420A]",
+    dot: "bg-tertiary",
+    text: "text-tertiary",
   },
   cyan: {
     border: "border-cyan-400/25",
@@ -142,7 +142,7 @@ export default function Services() {
               initial={{ opacity: 0, y: 16 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.45 }}
-              className="font-[family-name:var(--font-montserrat)] text-[#E8420A] text-xs font-semibold tracking-widest uppercase mb-4"
+              className="font-[family-name:var(--font-montserrat)] text-tertiary text-xs font-semibold tracking-widest uppercase mb-4"
             >
               What We Do
             </motion.p>
@@ -225,7 +225,7 @@ function ServiceCard({ svc, inView, flowActive, index }: ServiceCardProps) {
           : "border-neutral-100"
       } ${index >= 3 ? "lg:col-span-3" : ""}`}
     >
-      <p className="mb-4 font-[family-name:var(--font-montserrat)] text-[10px] font-semibold uppercase tracking-[0.18em] text-[#E8420A]">
+      <p className="mb-4 font-[family-name:var(--font-montserrat)] text-[10px] font-semibold uppercase tracking-[0.18em] text-tertiary">
         {svc.eyebrow}
       </p>
       <h3 className="mb-3 font-[family-name:var(--font-montserrat)] text-xl font-bold text-neutral-900">
@@ -279,7 +279,7 @@ function ServiceFlowPulse({ axis, index }: { axis: "x" | "y"; index: number }) {
 
   return (
     <motion.span
-      className={`absolute h-2 w-2 rounded-full bg-[#E8420A] shadow-[0_0_14px_rgba(232,66,10,0.7)] motion-reduce:hidden ${
+      className={`absolute h-2 w-2 rounded-full bg-tertiary shadow-[0_0_14px_rgba(232,66,10,0.7)] motion-reduce:hidden ${
         axis === "x" ? "left-0 top-1/2 -translate-y-1/2" : "left-1/2 top-0 -translate-x-1/2"
       }`}
       animate={animate}

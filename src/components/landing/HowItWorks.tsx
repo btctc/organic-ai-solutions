@@ -47,7 +47,7 @@ export default function HowItWorks() {
           initial={{ opacity: 0, y: 16 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.45 }}
-          className="font-[family-name:var(--font-montserrat)] text-[#E8420A] text-xs font-semibold tracking-widest uppercase mb-4 text-center"
+          className="font-[family-name:var(--font-montserrat)] text-tertiary text-xs font-semibold tracking-widest uppercase mb-4 text-center"
         >
           Our Process
         </motion.p>
@@ -71,7 +71,7 @@ export default function HowItWorks() {
                 className="relative h-full rounded-2xl border border-neutral-100 bg-white p-7 shadow-sm"
               >
                 {/* Step number */}
-                <div className="mb-5 font-[family-name:var(--font-montserrat)] text-xs font-bold uppercase tracking-widest text-[#E8420A]">
+                <div className="mb-5 font-[family-name:var(--font-montserrat)] text-xs font-bold uppercase tracking-widest text-tertiary">
                   {step.number}
                 </div>
                 <h3 className="mb-3 font-[family-name:var(--font-montserrat)] text-base font-bold text-neutral-900">
@@ -116,7 +116,7 @@ function FlowPulse({ axis, index }: { axis: "x" | "y"; index: number }) {
 
   return (
     <motion.span
-      className={`absolute h-2 w-2 rounded-full bg-[#E8420A] shadow-[0_0_14px_rgba(232,66,10,0.7)] motion-reduce:hidden ${
+      className={`absolute h-2 w-2 rounded-full bg-tertiary shadow-[0_0_14px_rgba(232,66,10,0.7)] motion-reduce:hidden ${
         axis === "x" ? "left-0 top-1/2 -translate-y-1/2" : "left-1/2 top-0 -translate-x-1/2"
       }`}
       animate={animate}

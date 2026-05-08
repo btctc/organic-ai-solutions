@@ -62,7 +62,7 @@ export default function ContactForm() {
   };
 
   const inputClass =
-    "w-full px-4 py-3 rounded-lg border border-neutral-200 bg-white font-[family-name:var(--font-dm-sans)] text-neutral-900 text-sm placeholder-neutral-400 focus:outline-none focus:border-[#E8420A] focus:ring-2 focus:ring-[#E8420A]/10 transition-all";
+    "w-full px-4 py-3 rounded-lg border border-neutral-200 bg-white font-[family-name:var(--font-dm-sans)] text-neutral-900 text-sm placeholder-neutral-400 focus:outline-none focus:border-tertiary focus:ring-2 focus:ring-[#E8420A]/10 transition-all";
 
   return (
     <section className="bg-neutral-50 py-28 px-6 lg:px-10" id="contact">
@@ -74,7 +74,7 @@ export default function ContactForm() {
               initial={{ opacity: 0, y: 16 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.45 }}
-              className="font-[family-name:var(--font-montserrat)] text-[#E8420A] text-xs font-semibold tracking-widest uppercase mb-4"
+              className="font-[family-name:var(--font-montserrat)] text-tertiary text-xs font-semibold tracking-widest uppercase mb-4"
             >
               Get In Touch
             </motion.p>
@@ -111,7 +111,7 @@ export default function ContactForm() {
               ].map((item) => (
                 <div key={item} className="flex items-center gap-3">
                   <div className="w-5 h-5 rounded-full bg-orange-50 border border-orange-100 flex items-center justify-center shrink-0">
-                    <CheckCircle className="text-[#E8420A]" size={12} />
+                    <CheckCircle className="text-tertiary" size={12} />
                   </div>
                   <span className="font-[family-name:var(--font-dm-sans)] text-neutral-600 text-sm">
                     {item}
@@ -131,7 +131,7 @@ export default function ContactForm() {
             {status === "success" ? (
               <div className="flex flex-col items-center justify-center py-14 text-center gap-4">
                 <div className="w-14 h-14 rounded-full bg-orange-50 flex items-center justify-center">
-                  <CheckCircle className="text-[#E8420A]" size={28} />
+                  <CheckCircle className="text-tertiary" size={28} />
                 </div>
                 <h3 className="font-[family-name:var(--font-montserrat)] text-xl font-bold text-neutral-900">
                   Message Sent!
@@ -219,7 +219,7 @@ export default function ContactForm() {
                 <button
                   type="submit"
                   disabled={status === "loading"}
-                  className="w-full flex items-center justify-center gap-2 py-3.5 rounded-lg bg-[#E8420A] text-white font-semibold font-[family-name:var(--font-montserrat)] text-sm hover:bg-[#c93508] transition-colors disabled:opacity-60 disabled:cursor-not-allowed shadow-md shadow-orange-100"
+                  className="w-full flex items-center justify-center gap-2 py-3.5 rounded-lg bg-tertiary text-white font-semibold font-[family-name:var(--font-montserrat)] text-sm hover:bg-tertiary-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed shadow-md shadow-orange-100"
                 >
                   {status === "loading" ? (
                     <>
