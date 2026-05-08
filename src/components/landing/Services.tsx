@@ -1,7 +1,10 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, useReducedMotion } from "framer-motion";
+
+const FLOW_LOOP_SECONDS = 1.8;
+const FLOW_SEGMENT_SECONDS = 0.42;
 
 const services = [
   {
@@ -126,6 +129,9 @@ const industryAccentStyles = {
 export default function Services() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
+  const flowInView = useInView(ref, { margin: "-80px" });
+  const shouldReduceMotion = useReducedMotion();
+  const flowActive = flowInView && !shouldReduceMotion;
 
   return (
     <section className="bg-white px-6 py-28 md:pt-20 lg:px-10" id="services">
@@ -144,10 +150,10 @@ export default function Services() {
               initial={{ opacity: 0, y: 16 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.45, delay: 0.08 }}
-              className="font-[family-name:var(--font-montserrat)] text-4xl md:max-w-none md:whitespace-nowrap md:text-4xl xl:text-5xl font-bold text-neutral-900 max-w-xl leading-tight"
+              className="max-w-3xl font-[family-name:var(--font-montserrat)] text-4xl font-bold leading-tight text-neutral-900 md:text-4xl xl:text-5xl"
               style={{ fontWeight: 700 }}
             >
-              Services Built for Your Scale
+              Built for the industries operators actually run.
             </motion.h2>
           </div>
           <motion.p
@@ -156,7 +162,7 @@ export default function Services() {
             transition={{ duration: 0.45, delay: 0.14 }}
             className="font-[family-name:var(--font-dm-sans)] text-neutral-400 max-w-sm leading-relaxed text-sm md:text-right"
           >
-            Built for operators running 5-200 person customer-facing teams.
+            Operator-built AI for 5–200 person customer-facing teams. We start where the work starts.
           </motion.p>
         </div>
 
@@ -190,9 +196,9 @@ export default function Services() {
           </div>
         </motion.div>
 
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-6">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-6">
           {services.map((svc, i) => (
-            <ServiceCard key={svc.title} svc={svc} inView={inView} index={i} />
+            <ServiceCard key={svc.title} svc={svc} inView={inView} flowActive={flowActive} index={i} />
           ))}
         </div>
       </div>
@@ -203,20 +209,21 @@ export default function Services() {
 interface ServiceCardProps {
   svc: { eyebrow: string; title: string; body: string; detail: string; featured?: boolean };
   inView: boolean;
+  flowActive: boolean;
   index: number;
 }
 
-function ServiceCard({ svc, inView, index }: ServiceCardProps) {
+function ServiceCard({ svc, inView, flowActive, index }: ServiceCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 28 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.45, delay: 0.08 + index * 0.06 }}
-      className={`group relative rounded-2xl border bg-white p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_48px_rgba(232,66,10,0.12)] md:min-h-[260px] xl:col-span-2 ${
+      className={`group relative rounded-2xl border bg-white p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_48px_rgba(232,66,10,0.12)] md:min-h-[260px] lg:col-span-2 ${
         svc.featured
           ? "border-[#E8420A]/35 shadow-[0_18px_54px_rgba(232,66,10,0.10)]"
           : "border-neutral-100"
-      } ${index >= 3 ? "xl:col-span-3" : ""}`}
+      } ${index >= 3 ? "lg:col-span-3" : ""}`}
     >
       <p className="mb-4 font-[family-name:var(--font-montserrat)] text-[10px] font-semibold uppercase tracking-[0.18em] text-[#E8420A]">
         {svc.eyebrow}
@@ -230,6 +237,59 @@ function ServiceCard({ svc, inView, index }: ServiceCardProps) {
       <p className="mt-6 border-t border-neutral-100 pt-4 font-[family-name:var(--font-montserrat)] text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500">
         {svc.detail}
       </p>
+      {index < 4 && <ServiceFlowConnector active={flowActive} index={index} />}
     </motion.div>
+  );
+}
+
+function ServiceFlowConnector({ active, index }: { active: boolean; index: number }) {
+  return (
+    <>
+      {index < 2 && (
+        <div className="pointer-events-none absolute left-full top-1/2 z-10 hidden w-5 -translate-y-1/2 lg:block" aria-hidden="true">
+          <div className="h-px w-full bg-gradient-to-r from-[#E8420A]/25 via-[#E8420A]/55 to-[#E8420A]/20" />
+          {active && <ServiceFlowPulse axis="x" index={index} />}
+        </div>
+      )}
+      {index === 2 && (
+        <div className="pointer-events-none absolute left-1/2 top-full z-10 hidden h-5 -translate-x-1/2 lg:block" aria-hidden="true">
+          <div className="mx-auto h-full w-px bg-gradient-to-b from-[#E8420A]/25 via-[#E8420A]/50 to-[#E8420A]/15" />
+          {active && <ServiceFlowPulse axis="y" index={index} />}
+        </div>
+      )}
+      {index === 3 && (
+        <div className="pointer-events-none absolute left-full top-1/2 z-10 hidden w-5 -translate-y-1/2 lg:block" aria-hidden="true">
+          <div className="h-px w-full bg-gradient-to-r from-[#E8420A]/25 via-[#E8420A]/55 to-[#E8420A]/20" />
+          {active && <ServiceFlowPulse axis="x" index={index} />}
+        </div>
+      )}
+      <div className="pointer-events-none absolute left-1/2 top-full z-10 h-5 -translate-x-1/2 md:hidden" aria-hidden="true">
+        <div className="mx-auto h-full w-px bg-gradient-to-b from-[#E8420A]/25 via-[#E8420A]/50 to-[#E8420A]/15" />
+        {active && <ServiceFlowPulse axis="y" index={index} />}
+      </div>
+    </>
+  );
+}
+
+function ServiceFlowPulse({ axis, index }: { axis: "x" | "y"; index: number }) {
+  const animate =
+    axis === "x"
+      ? { left: ["0%", "100%"], opacity: [0, 1, 1, 0] }
+      : { top: ["0%", "100%"], opacity: [0, 1, 1, 0] };
+
+  return (
+    <motion.span
+      className={`absolute h-2 w-2 rounded-full bg-[#E8420A] shadow-[0_0_14px_rgba(232,66,10,0.7)] motion-reduce:hidden ${
+        axis === "x" ? "left-0 top-1/2 -translate-y-1/2" : "left-1/2 top-0 -translate-x-1/2"
+      }`}
+      animate={animate}
+      transition={{
+        duration: FLOW_SEGMENT_SECONDS,
+        repeat: Infinity,
+        repeatDelay: FLOW_LOOP_SECONDS - FLOW_SEGMENT_SECONDS,
+        delay: index * 0.36,
+        ease: "easeInOut",
+      }}
+    />
   );
 }
