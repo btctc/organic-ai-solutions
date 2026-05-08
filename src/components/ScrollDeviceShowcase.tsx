@@ -916,6 +916,7 @@ const industries: IndustryData[] = [
 
 const CYCLE_INTERVAL_MS = 30000;
 const CYCLE_TICK_MS = 100;
+const MANUAL_PAUSE_MS = 10000;
 const TASK_TOOLTIP_WIDTH = 380;
 const TASK_TOOLTIP_HEIGHT = 190;
 const MOBILE_TOOLTIP_MARGIN = 16;
@@ -1013,7 +1014,7 @@ export default function ScrollDeviceShowcase() {
   const pauseForManualInteraction = () => {
     if (manualPauseTimeoutRef.current) clearTimeout(manualPauseTimeoutRef.current);
     setManualPaused(true);
-    manualPauseTimeoutRef.current = setTimeout(() => setManualPaused(false), CYCLE_INTERVAL_MS);
+    manualPauseTimeoutRef.current = setTimeout(() => setManualPaused(false), MANUAL_PAUSE_MS);
   };
 
   const handlePanelChange = (panel: Panel) => {
@@ -1197,7 +1198,7 @@ function PanelButton({
       aria-controls="dashboard-content"
       aria-label={`Show ${children}`}
       onClick={() => onClick(id)}
-      className={`relative cursor-pointer whitespace-nowrap rounded-full border-b px-2.5 py-2 text-xs font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#11121A] sm:px-4 sm:py-3 sm:text-base ${
+      className={`relative cursor-pointer whitespace-nowrap rounded-full border-b px-2.5 py-2 text-xs font-medium transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#11121A] sm:px-4 sm:py-3 sm:text-base ${
         isActive
           ? 'border-transparent'
           : 'border-white/15 text-white/55 hover:-translate-y-0.5 hover:border-white/40 hover:bg-white/5 hover:text-white/90'
@@ -1233,7 +1234,7 @@ function PanelButton({
       {isActive && (
         <span
           aria-hidden="true"
-          className="absolute inset-x-3 bottom-1 h-px rounded-full"
+          className="absolute inset-x-3 bottom-1 h-[2px] rounded-full"
           style={{
             backgroundColor: `rgb(${tabRgb})`,
             boxShadow: `0 0 14px rgba(${tabRgb}, 0.62)`,
@@ -1308,7 +1309,7 @@ function IndustryButton({
       aria-controls="dashboard-content"
       onClick={() => onClick(index)}
       aria-label={ariaLabel}
-      className={`relative cursor-pointer whitespace-nowrap rounded-full border-b px-2.5 py-2 text-xs font-medium text-white transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#11121A] sm:px-4 sm:py-3 sm:text-base ${
+      className={`relative cursor-pointer whitespace-nowrap rounded-full border-b px-2.5 py-2 text-xs font-medium text-white transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#11121A] sm:px-4 sm:py-3 sm:text-base ${
         isActive
           ? 'border-emerald-400 bg-emerald-400/12 text-emerald-300 shadow-[0_8px_24px_rgba(16,185,129,0.18),inset_0_0_16px_rgba(16,185,129,0.08)]'
           : 'border-white/10 text-white/55 hover:-translate-y-0.5 hover:border-white/40 hover:bg-white/5 hover:text-white/80'
@@ -1330,7 +1331,7 @@ function IndustryButton({
       {isActive && (
         <span
           aria-hidden="true"
-          className="absolute inset-x-3 bottom-1 h-px rounded-full bg-emerald-300 shadow-[0_0_14px_rgba(16,185,129,0.72)]"
+          className="absolute inset-x-3 bottom-1 h-[2px] rounded-full bg-emerald-300 shadow-[0_0_14px_rgba(16,185,129,0.72)]"
         />
       )}
     </button>
@@ -1428,19 +1429,19 @@ function DashboardPanelShell({
           Pause industry rotation
         </button>
 
-        <div className="mb-3 flex flex-col items-center gap-3">
-          <div className="flex flex-col items-center gap-3">
-            <span className="mx-auto inline-flex items-center justify-center gap-2 text-center text-xs font-medium uppercase tracking-wide text-emerald-400">
+        <div className="mb-3 flex flex-col items-center gap-3 lg:flex-row lg:justify-center lg:gap-4">
+          <div className="order-1 flex flex-col items-center gap-3 lg:order-2 lg:flex-row lg:gap-4">
+            <span className="mx-auto inline-flex items-center justify-center gap-2 text-center text-xs font-medium uppercase tracking-wide text-emerald-400 lg:shrink-0 lg:rounded-full lg:border lg:border-emerald-400/25 lg:bg-emerald-400/10 lg:px-3 lg:py-2">
               <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500 shadow-[0_0_18px_rgba(16,185,129,0.85)]" />
               Live · {industryCode}
             </span>
 
-            <div className="relative flex w-full justify-center overflow-x-auto pb-1 after:pointer-events-none after:absolute after:inset-y-0 after:right-0 after:w-10 after:bg-gradient-to-l after:from-[#11121A] after:to-transparent lg:pb-0 lg:after:hidden">
+            <div className="relative flex w-full justify-center overflow-x-auto pb-1 after:pointer-events-none after:absolute after:inset-y-0 after:right-0 after:w-10 after:bg-gradient-to-l after:from-[#11121A] after:to-transparent lg:w-auto lg:pb-0 lg:after:hidden">
               <PanelTabs activePanel={activePanel} onPanelChange={onPanelChange} tabPulseActive={tabPulseActive} />
             </div>
           </div>
 
-          <div className="relative flex w-full justify-center overflow-x-auto pb-1 after:pointer-events-none after:absolute after:inset-y-0 after:right-0 after:w-10 after:bg-gradient-to-l after:from-[#11121A] after:to-transparent lg:pb-0 lg:after:hidden">
+          <div className="relative order-2 flex w-full justify-center overflow-x-auto pb-1 after:pointer-events-none after:absolute after:inset-y-0 after:right-0 after:w-10 after:bg-gradient-to-l after:from-[#11121A] after:to-transparent lg:order-1 lg:w-auto lg:pb-0 lg:after:hidden">
             <IndustryTabs
               industries={industries}
               activeIndustryIndex={activeIndustryIndex}
@@ -2069,10 +2070,12 @@ function ServiceArchitecturePanel({
 }) {
   const [activityIndices, setActivityIndices] = useState(() => layers.map(() => 0));
   const [openMobileHistoryLayer, setOpenMobileHistoryLayer] = useState<number | null>(null);
+  const [openDesktopHistoryLayer, setOpenDesktopHistoryLayer] = useState<number | null>(null);
 
   useEffect(() => {
     setActivityIndices(layers.map(() => 0));
     setOpenMobileHistoryLayer(null);
+    setOpenDesktopHistoryLayer(null);
   }, [layers]);
 
   useEffect(() => {
@@ -2128,8 +2131,13 @@ function ServiceArchitecturePanel({
               activity={activities[index]?.[activityIndices[index] || 0] || activities[index]?.[0]}
               activityHistory={activities[index] || []}
               openMobileHistoryLayer={openMobileHistoryLayer}
+              openDesktopHistoryLayer={openDesktopHistoryLayer}
               onToggleMobileHistory={(layerIndex) =>
                 setOpenMobileHistoryLayer((current) => (current === layerIndex ? null : layerIndex))
+              }
+              onOpenDesktopHistory={(layerIndex) => setOpenDesktopHistoryLayer(layerIndex)}
+              onCloseDesktopHistory={(layerIndex) =>
+                setOpenDesktopHistoryLayer((current) => (current === layerIndex ? null : current))
               }
             />
             <ArchitectureConnector
@@ -2166,22 +2174,35 @@ function ArchitectureFlowNode({
   activity,
   activityHistory,
   openMobileHistoryLayer,
+  openDesktopHistoryLayer,
   onToggleMobileHistory,
+  onOpenDesktopHistory,
+  onCloseDesktopHistory,
 }: {
   layer: ArchitectureLayer;
   index: number;
   activity?: ArchitectureActivityEntry;
   activityHistory: ArchitectureActivityEntry[];
   openMobileHistoryLayer: number | null;
+  openDesktopHistoryLayer: number | null;
   onToggleMobileHistory: (layerIndex: number) => void;
+  onOpenDesktopHistory: (layerIndex: number) => void;
+  onCloseDesktopHistory: (layerIndex: number) => void;
 }) {
   const style = architectureActivityStyles[index] || architectureActivityStyles[0];
+  const isMobileHistoryOpen = openMobileHistoryLayer === index;
+  const isDesktopHistoryOpen = openDesktopHistoryLayer === index;
+  const rowZIndexClass = isDesktopHistoryOpen
+    ? 'z-[180] hover:z-[180] focus-within:z-[180]'
+    : isMobileHistoryOpen
+      ? 'z-[100] hover:z-[100] focus-within:z-[100]'
+      : 'z-10 hover:z-[100] focus-within:z-[100]';
 
   return (
     <motion.div
       role="region"
       aria-label={`${layer.name} - ${layer.plain}`}
-      className={`relative mb-4 w-full max-w-[1160px] rounded-xl border border-violet-400/55 bg-[#11121A]/95 px-3 py-3 transition-all duration-200 hover:z-[100] hover:border-violet-400/75 focus-within:z-[100] md:mb-0 md:py-2 lg:h-[72px] lg:overflow-visible ${openMobileHistoryLayer === index ? 'z-[100]' : 'z-10'}`}
+      className={`relative mb-4 w-full max-w-[1160px] rounded-xl border border-violet-400/55 bg-[#11121A]/95 px-3 py-3 transition-all duration-200 hover:border-violet-400/75 md:mb-0 md:py-2 lg:h-[80px] lg:overflow-visible ${rowZIndexClass}`}
       style={{ boxShadow: '0 0 24px rgba(139,92,246,0.12)' }}
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
@@ -2212,8 +2233,11 @@ function ArchitectureFlowNode({
             history={activityHistory}
             layerIndex={index}
             style={style}
-            isHistoryOpenMobile={openMobileHistoryLayer === index}
+            isHistoryOpenMobile={isMobileHistoryOpen}
+            isHistoryOpenDesktop={isDesktopHistoryOpen}
             onToggleMobileHistory={onToggleMobileHistory}
+            onOpenDesktopHistory={onOpenDesktopHistory}
+            onCloseDesktopHistory={onCloseDesktopHistory}
           />
         )}
       </div>
@@ -2227,18 +2251,28 @@ function ArchitectureActivityPanel({
   layerIndex,
   style,
   isHistoryOpenMobile,
+  isHistoryOpenDesktop,
   onToggleMobileHistory,
+  onOpenDesktopHistory,
+  onCloseDesktopHistory,
 }: {
   entry: ArchitectureActivityEntry;
   history: ArchitectureActivityEntry[];
   layerIndex: number;
   style: (typeof architectureActivityStyles)[number];
   isHistoryOpenMobile: boolean;
+  isHistoryOpenDesktop: boolean;
   onToggleMobileHistory: (layerIndex: number) => void;
+  onOpenDesktopHistory: (layerIndex: number) => void;
+  onCloseDesktopHistory: (layerIndex: number) => void;
 }) {
   const Icon = architectureActivityIcons[entry.iconHint] || FileText;
   const [canRenderDesktopHistory, setCanRenderDesktopHistory] = useState(false);
+  const [liveLogIndex, setLiveLogIndex] = useState(0);
   const mobileHistory = history.slice(0, 3);
+  const desktopHistoryRows = history.length
+    ? Array.from({ length: Math.min(6, history.length) }, (_, rowIndex) => history[(liveLogIndex + rowIndex) % history.length])
+    : [];
   const historyPlacement =
     layerIndex <= 1
       ? 'right-0 top-full mt-2 lg:left-auto lg:right-full lg:top-0 lg:mt-0 lg:mr-3'
@@ -2256,6 +2290,20 @@ function ArchitectureActivityPanel({
     return () => mediaQuery.removeEventListener('change', syncDesktopHistory);
   }, []);
 
+  useEffect(() => {
+    setLiveLogIndex(0);
+  }, [history]);
+
+  useEffect(() => {
+    if (!canRenderDesktopHistory || history.length <= 1) return;
+
+    const interval = setInterval(() => {
+      setLiveLogIndex((current) => (current + 1) % history.length);
+    }, 900);
+
+    return () => clearInterval(interval);
+  }, [canRenderDesktopHistory, history.length]);
+
   const handleActiveClick = (event: React.MouseEvent<HTMLDivElement>) => {
     if (typeof window === 'undefined') return;
 
@@ -2265,6 +2313,18 @@ function ArchitectureActivityPanel({
     event.preventDefault();
     event.stopPropagation();
     onToggleMobileHistory(layerIndex);
+  };
+  const isDesktopGraphViewport = () =>
+    typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches;
+  const handleDesktopHistoryOpen = () => {
+    if (isDesktopGraphViewport()) onOpenDesktopHistory(layerIndex);
+  };
+  const handleDesktopHistoryClose = () => {
+    if (isHistoryOpenDesktop) onCloseDesktopHistory(layerIndex);
+  };
+  const handleDesktopHistoryBlur = (event: React.FocusEvent<HTMLDivElement>) => {
+    if (event.currentTarget.contains(event.relatedTarget as Node | null)) return;
+    handleDesktopHistoryClose();
   };
 
   return (
@@ -2276,9 +2336,13 @@ function ArchitectureActivityPanel({
       aria-atomic="false"
       aria-label={`Layer ${layerIndex + 1} active log. Tap on mobile or hover on desktop to reveal recent history.`}
       className="group relative flex h-full min-w-0 flex-col justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#11121A]"
+      onMouseEnter={handleDesktopHistoryOpen}
+      onMouseLeave={handleDesktopHistoryClose}
+      onFocus={handleDesktopHistoryOpen}
+      onBlur={handleDesktopHistoryBlur}
     >
       <div
-        className={`min-h-[56px] w-full cursor-pointer overflow-hidden rounded-lg border ${style.border} ${style.bg} px-2 py-1 transition-shadow duration-200 md:h-[56px] lg:cursor-default ${isHistoryOpenMobile ? 'ring-1 ring-white/25 shadow-[0_0_18px_rgba(255,255,255,0.10)]' : ''}`}
+        className={`min-h-[56px] w-full cursor-pointer overflow-hidden rounded-lg border ${style.border} ${style.bg} px-2 py-1 transition-shadow duration-200 md:h-[56px] lg:h-[64px] lg:cursor-default ${isHistoryOpenMobile ? 'ring-1 ring-white/25 shadow-[0_0_18px_rgba(255,255,255,0.10)]' : ''}`}
         onClick={handleActiveClick}
       >
         <div className="flex items-center justify-between gap-2">
@@ -2377,13 +2441,19 @@ function ArchitectureActivityPanel({
             <span className="font-mono text-xs text-white/45">Last {history.length} events</span>
           </div>
           <div className="grid gap-1.5">
-            {history.map((item) => {
+            {desktopHistoryRows.map((item, rowIndex) => {
               const HistoryIcon = architectureActivityIcons[item.iconHint] || FileText;
+              const isEnteringRow = rowIndex === desktopHistoryRows.length - 1;
 
               return (
-                <div
-                  key={`${item.timestamp}-${item.description}`}
-                  className="grid gap-2 rounded-lg border border-white/10 bg-white/[0.035] px-3 py-1.5 md:grid-cols-[120px_minmax(0,1fr)_minmax(0,160px)]"
+                <motion.div
+                  key={`${item.timestamp}-${item.description}-${isEnteringRow ? liveLogIndex : 'row'}`}
+                  initial={isEnteringRow ? { opacity: 0.35, y: 8 } : false}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.34, ease: 'easeOut' }}
+                  className={`grid gap-2 rounded-lg border px-3 py-1.5 transition-colors duration-300 md:grid-cols-[120px_minmax(0,1fr)_minmax(0,160px)] ${
+                    isEnteringRow ? 'border-white/20 bg-white/[0.06]' : 'border-white/10 bg-white/[0.035]'
+                  }`}
                 >
                   <p className="font-mono text-xs leading-snug text-white/60">
                     {item.timestamp}
@@ -2399,7 +2469,7 @@ function ArchitectureActivityPanel({
                     <span className="text-white/25">·</span>
                     <span className="break-words text-white/65">{item.metrics}</span>
                   </p>
-                </div>
+                </motion.div>
               );
             })}
           </div>
