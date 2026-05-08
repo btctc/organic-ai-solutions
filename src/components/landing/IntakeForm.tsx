@@ -382,9 +382,9 @@ export default function IntakeForm({ onSubmitted }: IntakeFormProps) {
               transition={{ duration: 0.45, delay: 0.14 }}
               className="mx-auto mt-6 max-w-lg text-center text-sm leading-7 text-neutral-600 md:text-base"
             >
-              This intake helps us understand your current workflows, website
-              position, and where AI can create the fastest measurable value. It
-              takes about two minutes, and only the first step is required.
+              This intake helps us understand how work moves through your operation,
+              where the website fits, and which handoffs are getting missed. It takes
+              about two minutes, and only the first step is required.
             </motion.p>
 
             <motion.div
@@ -394,13 +394,12 @@ export default function IntakeForm({ onSubmitted }: IntakeFormProps) {
               className="mt-10 rounded-[28px] border border-neutral-200 bg-white p-7 shadow-sm"
             >
               <p className="font-[family-name:var(--font-montserrat)] text-sm font-semibold uppercase tracking-[0.14em] text-neutral-900">
-                What you can expect
+                What happens next
               </p>
               <div className="mt-6 space-y-4">
                 {[
-                  "A tailored review of your website, workflows, and AI opportunities.",
-                  "Recommendations grounded in the tools your team already uses today.",
-                  "Clear next-step guidance, not a generic sales pitch.",
+                  "30 minutes. No prep needed. We come ready.",
+                  "We come back with the work, not a sales pitch.",
                 ].map((item) => (
                   <div key={item} className="flex items-start gap-3">
                     <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-orange-50">
@@ -410,6 +409,12 @@ export default function IntakeForm({ onSubmitted }: IntakeFormProps) {
                   </div>
                 ))}
               </div>
+              <a
+                href="/#contact"
+                className="mt-7 inline-flex w-full items-center justify-center rounded-lg bg-[#E8420A] px-5 py-3 text-sm font-semibold text-white shadow-md shadow-orange-100 transition-colors hover:bg-[#c93508] font-[family-name:var(--font-montserrat)]"
+              >
+                Start Your Free Discovery Call
+              </a>
             </motion.div>
           </div>
 

@@ -6,27 +6,27 @@ import { motion, useInView } from "framer-motion";
 const steps = [
   {
     number: "01",
-    title: "Discovery Call",
+    title: "Free Assessment",
     description:
-      "A free 30-minute consultation to understand your business, biggest pain points, and where AI can deliver the fastest wins.",
+      "Conversational AI sizes the work. 5–10 minutes. No prep. We come back with your score and the fix order.",
   },
   {
     number: "02",
-    title: "Process Audit & Roadmap",
+    title: "Audit & Scope",
     description:
-      "We map your current workflows, identify automation opportunities, and deliver a prioritized roadmap with projected savings.",
+      "We score every category 1–100. Identify the highest-impact AI work. Quote the build before you commit.",
   },
   {
     number: "03",
-    title: "Build & Integrate",
+    title: "Build & Deploy",
     description:
-      "We build and integrate AI solutions directly into the tools you already use — no rip-and-replace, no steep learning curves.",
+      "We build inside the tools you already use. Ships in 30 days. 60+ for complex builds. No rip-out, no retraining.",
   },
   {
     number: "04",
-    title: "Launch & Optimize",
+    title: "Run & Iterate",
     description:
-      "We go live together, train your team, and monitor performance — then iterate, because great AI systems get smarter over time.",
+      "Software goes live. We watch metrics, tune what's working, expand when you're ready. Real software, not a one-time deliverable.",
   },
 ];
 
@@ -52,7 +52,7 @@ export default function HowItWorks() {
           className="font-[family-name:var(--font-montserrat)] text-3xl sm:text-4xl md:text-5xl font-bold text-neutral-900 leading-tight mb-16 text-center md:whitespace-nowrap"
           style={{ fontWeight: 700 }}
         >
-          From Idea to Impact in 4 Steps
+          From Audit to Live AI in 4 Steps
         </motion.h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -80,24 +80,6 @@ export default function HowItWorks() {
             </motion.div>
           ))}
         </div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.45, delay: 0.55 }}
-          className="mt-14 flex justify-center"
-        >
-          <a
-            href="#contact"
-            onClick={(e) => {
-              e.preventDefault();
-              document.querySelector("#contact")?.scrollIntoView({ behavior: "smooth" });
-            }}
-            className="inline-flex items-center justify-center px-8 py-3.5 rounded-lg bg-[#E8420A] text-white font-semibold font-[family-name:var(--font-montserrat)] text-sm hover:bg-[#c93508] transition-colors shadow-md shadow-orange-100"
-          >
-            Start Your Free Discovery Call
-          </a>
-        </motion.div>
       </div>
     </section>
   );
