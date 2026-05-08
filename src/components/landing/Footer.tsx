@@ -59,7 +59,7 @@ export default function Footer() {
               Get Started
             </h4>
             <p className="font-[family-name:var(--font-dm-sans)] text-neutral-500 text-sm mb-5 leading-relaxed">
-              Ready to unlock your business potential with AI?
+              Ready to find out what AI should run inside your business?
             </p>
             <Link
               href="/assessment"
@@ -71,7 +71,7 @@ export default function Footer() {
         </div>
 
         <p className="mb-4 font-[family-name:var(--font-dm-sans)] text-neutral-600 text-xs">
-          Industries we serve: Healthcare & Dental · Home Services · Professional Services · Retail & Hospitality · and more
+          Industries we serve: Professional Services · Healthcare & Dental · Home Services · Transportation & Logistics · Training & Gyms · Hospitality
         </p>
 
         <div className="border-t border-white/5 pt-8 flex flex-col sm:flex-row items-center justify-between gap-3">

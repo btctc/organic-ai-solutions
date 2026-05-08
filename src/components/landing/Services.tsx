@@ -15,9 +15,9 @@ const services = [
   },
   {
     icon: GitBranch,
-    title: "Workflow Optimization",
+    title: "Process Redesign",
     description:
-      "Audit your current processes, identify bottlenecks, and redesign them with AI-enhanced workflows that cut costs and scale.",
+      "Audit current processes, identify bottlenecks, and rebuild them with AI inside the steps that actually move work.",
     useCase:
       "A dental practice cuts no-shows 40% by mapping the booking-to-confirmation flow and adding AI follow-up.",
   },
@@ -25,9 +25,9 @@ const services = [
     icon: Lightbulb,
     title: "AI Consulting",
     description:
-      "Our consultants assess your business, identify the highest-ROI AI opportunities, and build a clear roadmap for your goals.",
+      "We assess your operation, find the work AI should own first, and turn it into a build plan your team can actually run.",
     useCase:
-      "A 12-person home services company gets a 90-day roadmap with three scoped builds, ranked by ROI.",
+      "A 12-person home services company gets a 90-day roadmap with three scoped builds, ranked by urgency and operational lift.",
   },
   {
     icon: BarChart3,
@@ -41,7 +41,7 @@ const services = [
     icon: Map,
     title: "Process Mapping",
     description:
-      "Document and visualize your end-to-end operations — creating a shared language for your team and a blueprint for transformation.",
+      "Document and visualize your end-to-end operations so your team knows what happens, who owns it, and where AI can take work off the floor.",
     useCase:
       "A growing restaurant group documents every step from order to delivery — onboarding new managers in days, not months.",
   },
@@ -88,7 +88,7 @@ export default function Services() {
             transition={{ duration: 0.45, delay: 0.14 }}
             className="font-[family-name:var(--font-dm-sans)] text-neutral-400 max-w-sm leading-relaxed text-sm md:text-right"
           >
-            Measurable ROI for businesses with 5 to 500 employees — no bloat, no fluff.
+            Built for operators running 5-200 person customer-facing teams.
           </motion.p>
         </div>
 

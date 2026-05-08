@@ -25,7 +25,7 @@ const steps = [
   },
 ];
 
-const stack = ["Anthropic", "OpenAI", "Supabase", "Vercel", "Inngest", "Resend"];
+const stack = ["Anthropic", "Vercel", "Supabase", "Stripe"];
 
 function rise(inView: boolean, delay = 0, y = 16) {
   return {
