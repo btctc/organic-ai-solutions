@@ -1484,6 +1484,25 @@ function FindingsPanel({
   data: LiveFindingsData;
   panelInView: boolean;
 }) {
+  const [liveFindingIndex, setLiveFindingIndex] = useState(0);
+  const liveFindings = data.findings.length
+    ? data.findings.map((_, index) => data.findings[(liveFindingIndex + index) % data.findings.length])
+    : [];
+
+  useEffect(() => {
+    setLiveFindingIndex(0);
+  }, [data]);
+
+  useEffect(() => {
+    if (!panelInView || data.findings.length <= 1) return;
+
+    const interval = setInterval(() => {
+      setLiveFindingIndex((current) => (current + 1) % data.findings.length);
+    }, 1800);
+
+    return () => clearInterval(interval);
+  }, [data.findings.length, panelInView]);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -1509,12 +1528,12 @@ function FindingsPanel({
           </p>
           <div className="relative rounded-2xl border border-white/10 bg-[#11121A]/80">
             <div aria-live="polite" aria-atomic="false" className="max-h-[300px] overflow-y-auto pb-8 lg:max-h-[420px] lg:pb-0">
-              {data.findings.map((finding, index) => (
+              {liveFindings.map((finding, index) => (
                 <motion.div
-                  key={finding.id}
-                  initial={{ opacity: 0, x: 28 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1, duration: 0.36, ease: 'easeOut' }}
+                  key={`${finding.id}-${index === liveFindings.length - 1 ? liveFindingIndex : 'slot'}`}
+                  initial={index === liveFindings.length - 1 ? { opacity: 0.35, y: 12 } : { opacity: 0, x: 28 }}
+                  animate={{ opacity: 1, x: 0, y: 0 }}
+                  transition={{ delay: index === liveFindings.length - 1 ? 0 : index * 0.1, duration: 0.36, ease: 'easeOut' }}
                   className={`grid gap-2 border-b border-white/10 px-4 py-5 last:border-b-0 md:grid-cols-[120px_1fr] md:px-5 lg:grid-cols-1 lg:px-4 lg:py-4 ${
                     index >= 4 ? 'lg:hidden' : ''
                   }`}
