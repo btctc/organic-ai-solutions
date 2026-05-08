@@ -1159,11 +1159,11 @@ function PanelTabs({
       <PanelButton id="findings" active={activePanel} onClick={onPanelChange} pulse={tabPulseActive}>
         Live Findings
       </PanelButton>
-      <span className="mx-1 self-center rounded-full bg-white/25 p-0.5" aria-hidden="true" />
+      <span className="mx-0.5 self-center rounded-full bg-white/25 p-0.5 sm:mx-1" aria-hidden="true" />
       <PanelButton id="taskflow" active={activePanel} onClick={onPanelChange} pulse={tabPulseActive}>
         Task Flow
       </PanelButton>
-      <span className="mx-1 self-center rounded-full bg-white/25 p-0.5" aria-hidden="true" />
+      <span className="mx-0.5 self-center rounded-full bg-white/25 p-0.5 sm:mx-1" aria-hidden="true" />
       <PanelButton id="architecture" active={activePanel} onClick={onPanelChange} pulse={tabPulseActive}>
         Service Architecture
       </PanelButton>
@@ -1197,7 +1197,7 @@ function PanelButton({
       aria-controls="dashboard-content"
       aria-label={`Show ${children}`}
       onClick={() => onClick(id)}
-      className={`relative cursor-pointer whitespace-nowrap rounded-full border-b px-3 py-2.5 text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#11121A] sm:px-4 sm:py-3 sm:text-base ${
+      className={`relative cursor-pointer whitespace-nowrap rounded-full border-b px-2.5 py-2 text-xs font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#11121A] sm:px-4 sm:py-3 sm:text-base ${
         isActive
           ? 'border-transparent'
           : 'border-white/15 text-white/55 hover:-translate-y-0.5 hover:border-white/40 hover:bg-white/5 hover:text-white/90'
@@ -1266,7 +1266,7 @@ function IndustryTabs({
     >
       {industries.map((industry, index) => (
         <div key={industry.id} className="flex items-center">
-          {index > 0 && <span className="mx-1 rounded-full bg-white/25 p-0.5" aria-hidden="true" />}
+          {index > 0 && <span className="mx-0.5 rounded-full bg-white/25 p-0.5 sm:mx-1" aria-hidden="true" />}
           <IndustryButton
             index={index}
             activeIndex={activeIndustryIndex}
@@ -1308,7 +1308,7 @@ function IndustryButton({
       aria-controls="dashboard-content"
       onClick={() => onClick(index)}
       aria-label={ariaLabel}
-      className={`relative cursor-pointer whitespace-nowrap rounded-full border-b px-3 py-2.5 text-sm font-medium text-white transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#11121A] sm:px-4 sm:py-3 sm:text-base ${
+      className={`relative cursor-pointer whitespace-nowrap rounded-full border-b px-2.5 py-2 text-xs font-medium text-white transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#11121A] sm:px-4 sm:py-3 sm:text-base ${
         isActive
           ? 'border-emerald-400 bg-emerald-400/12 text-emerald-300 shadow-[0_8px_24px_rgba(16,185,129,0.18),inset_0_0_16px_rgba(16,185,129,0.08)]'
           : 'border-white/10 text-white/55 hover:-translate-y-0.5 hover:border-white/40 hover:bg-white/5 hover:text-white/80'
@@ -2526,12 +2526,12 @@ function HeadlineKpiTile({ kpi, active }: { kpi: HeadlineKpi; active: boolean })
         transition={{ duration: 1.4, repeat: Infinity, repeatDelay: 6.6, ease: 'easeInOut' }}
       />
       <div className="relative">
-        <div className="flex items-baseline justify-center gap-1 text-center text-6xl leading-none md:text-8xl">
-          {kpi.prefix && <span className="font-display text-4xl text-emerald-300 md:text-6xl">{kpi.prefix}</span>}
+        <div className="flex items-baseline justify-center gap-1 text-center text-5xl leading-none md:text-8xl">
+          {kpi.prefix && <span className="font-display text-3xl text-emerald-300 md:text-6xl">{kpi.prefix}</span>}
           <span className="font-display text-white">
             <CountUp value={kpi.value} duration={1.5} active={active} />
           </span>
-          {kpi.suffix && <span className="font-display text-4xl text-emerald-300 md:text-6xl">{kpi.suffix}</span>}
+          {kpi.suffix && <span className="font-display text-3xl text-emerald-300 md:text-6xl">{kpi.suffix}</span>}
         </div>
         <p className="mt-4 text-center text-[0.7rem] font-medium uppercase tracking-[0.22em] text-white/45">
           {kpi.label}
