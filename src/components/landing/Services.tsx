@@ -49,80 +49,62 @@ const industries = [
   {
     name: "Healthcare & Dental",
     examples: "Dental practices, Specialty clinics",
-    accent: "cyan",
+    accent: "orange",
   },
   {
     name: "Home Services",
     examples: "Foundation repair, HVAC contractors",
-    accent: "emerald",
+    accent: "slate",
   },
   {
     name: "Transportation & Logistics",
     examples: "Trucking, Last-mile delivery",
-    accent: "violet",
+    accent: "orange",
   },
   {
     name: "Training & Fitness",
     examples: "Gyms, Studios",
-    accent: "amber",
+    accent: "orange",
   },
   {
     name: "Hospitality",
     examples: "Hotels, Restaurants",
-    accent: "orange",
+    accent: "slate",
   },
   {
     name: "Real Estate",
     examples: "Brokerages, Property management",
-    accent: "cyan",
+    accent: "orange",
   },
   {
     name: "Financial Services",
     examples: "Wealth management, Insurance",
-    accent: "emerald",
+    accent: "slate",
   },
   {
     name: "Construction & Trades",
     examples: "Builders, Specialty contractors",
-    accent: "violet",
+    accent: "orange",
   },
   {
     name: "Education & Training",
     examples: "Private schools, Online education",
-    accent: "amber",
+    accent: "slate",
   },
 ];
 
 const industryAccentStyles = {
   orange: {
-    border: "border-[#E8420A]/20",
-    bg: "bg-[#E8420A]/[0.04]",
+    border: "border-tertiary/30",
+    bg: "bg-tertiary/8",
     dot: "bg-tertiary",
     text: "text-tertiary",
   },
-  cyan: {
-    border: "border-cyan-400/25",
-    bg: "bg-cyan-400/[0.05]",
-    dot: "bg-cyan-400",
-    text: "text-cyan-700",
-  },
-  emerald: {
-    border: "border-emerald-400/25",
-    bg: "bg-emerald-400/[0.05]",
-    dot: "bg-emerald-500",
-    text: "text-emerald-700",
-  },
-  violet: {
-    border: "border-violet-400/25",
-    bg: "bg-violet-400/[0.05]",
-    dot: "bg-violet-500",
-    text: "text-violet-700",
-  },
-  amber: {
-    border: "border-amber-400/30",
-    bg: "bg-amber-400/[0.08]",
-    dot: "bg-amber-500",
-    text: "text-amber-700",
+  slate: {
+    border: "border-on-surface-muted/25",
+    bg: "bg-surface-muted/70",
+    dot: "bg-on-surface-muted",
+    text: "text-on-surface-muted",
   },
 };
 
@@ -187,7 +169,7 @@ export default function Services() {
                       {industry.name}
                     </p>
                   </div>
-                  <p className="mt-2 font-[family-name:var(--font-dm-sans)] text-xs leading-relaxed text-neutral-500">
+                  <p className="mt-2 font-[family-name:var(--font-dm-sans)] text-xs leading-relaxed text-on-surface-muted">
                     {industry.examples}
                   </p>
                 </div>
