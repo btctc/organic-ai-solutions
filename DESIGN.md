@@ -7,8 +7,8 @@ colors:
   # Core palette — high-contrast neutrals, single accent, soft surface
   primary: "#0F1310"           # Deep ink — primary text, headlines, dark surfaces
   secondary: "#5C6661"         # Slate green — borders, captions, metadata
-  tertiary: "#B5421B"          # Burnt clay — single interaction accent, primary CTAs only
-  on-tertiary: "#F5F2ED"       # Bone text on burnt-clay surfaces (button-primary-hover state)
+  tertiary: "#E8420A"          # OAS orange — single interaction accent, primary CTAs, eyebrows, motion accents
+  on-tertiary: "#FFFFFF"       # White text on orange surfaces (CTAs, hover states)
   neutral: "#F5F2ED"           # Warm bone — page background, organic foundation
   surface: "#FFFFFF"           # Pure white — content cards, modals
   on-surface: "#0F1310"        # Text on white surfaces
@@ -183,13 +183,13 @@ The palette is **high-contrast neutrals with a single evocative accent**.
 
 - **Primary (#0F1310) — Deep Ink:** Used for headlines, body text, and the primary CTA background. Establishes editorial gravitas and maximum readability. Not pure black — slightly green-warm to match the bone background.
 - **Secondary (#5C6661) — Slate Green:** Used for utilitarian elements — borders, captions, metadata, secondary text. Quiet, never decorative.
-- **Tertiary (#B5421B) — Burnt Clay:** The sole driver of interaction. Used **only** for the single most important action per screen (primary button hover, link underline on hover, the active state of a critical control). Never for icons, never decoratively, never two on the same screen.
+- **Tertiary (#E8420A) — OAS Orange:** The sole driver of interaction and the brand's signature accent. Used on primary CTAs at rest, section eyebrows, motion accents (connector dots, pulse indicators), and active states on critical controls. One accent per screen — never decorative repetition, never a rainbow strip of accents. The orange is structural, not atmospheric — it appears where the user is meant to act or look, not as a tint or glow.
 - **Neutral (#F5F2ED) — Warm Bone:** The page foundation. Provides organic warmth against pure-white content cards. This color is non-negotiable — it's the single most important brand decision in the system. Pure white is rejected as the page background.
 - **Surface (#FFFFFF):** Pure white reserved for content cards, modals, and the chatbot panel — the moments where information density goes up and contrast needs to be maximized.
 - **Surface-muted (#EBE7E0):** A halfstep between bone and white. Used for hover states on neutral elements, subtle dividers, and section banding when the design needs structure without lines.
 - **Error (#A8321A) and Success (#3D5A3F):** Reserved for true state communication only. Never used decoratively. Never used as accent colors in marketing surfaces.
 
-**WCAG:** Primary on neutral = 14.8:1 (AAA). Tertiary on neutral = 5.0:1 (AA pass for normal text). Bone-on-tertiary (button-primary-hover) = 5.0:1 (AA pass). Secondary on neutral = 4.7:1 (AA pass).
+**WCAG:** Primary on neutral = 14.8:1 (AAA). Tertiary (OAS orange #E8420A) on neutral = 4.6:1 (AA pass for normal text). White-on-tertiary (CTA at rest) = 4.6:1 (AA pass). Secondary on neutral = 4.7:1 (AA pass).
 
 ## Typography
 
@@ -323,3 +323,21 @@ The live `globals.css` currently contains TWO `@theme` blocks: an upper `@theme 
 The shadcn defaults are coexisting with the brand tokens — they don't conflict at the CSS level, but body text is currently inheriting
 `--font-geist-sans` from the shadcn block instead of Switzer per this brand contract. Wiring Switzer into `--font-sans`
 and removing Geist as the default body face is a known follow-up task, scheduled for a future round.
+
+---
+
+## Known Deviations (May 2026)
+
+Documented gaps between this contract and the live site. Each item has a planned resolution path. Listing them here keeps future agents from re-litigating decisions or trying to "fix" intentional state.
+
+- **Typography — Fraunces + Switzer not yet wired.** Body text currently inherits Geist Sans from the shadcn defaults block in `globals.css`. Headlines render in a sans, not Fraunces. Tracked in the Stack Notes section above. Resolution: dedicated typography migration pass, scheduled separately.
+
+- **Industries strip — multi-color treatment is a deviation.** The Services component's industries strip (`Services.tsx`) uses 5 rotating accent colors (orange / cyan / emerald / violet / amber) on the 10 industry pills. This violates the "one accent per screen" rule. Resolution: scheduled cleanup pass to convert to orange + neutral two-tone treatment.
+
+- **Drop shadows — orange decorative glows on cards and motion dots are deviations.** Several cards (Services, HowItWorks) use orange-tinted hover shadows like `shadow-[0_18px_48px_rgba(232,66,10,0.12)]` for state effects, and motion dots use `shadow-[0_0_14px_rgba(232,66,10,0.7)]` glow halos. DESIGN.md mandates tonal layering, not shadows on marketing surfaces. Resolution: surgical shadow cleanup pass — remove orange decorative glows, keep functional elevation (chat widget, navbar scroll state, IntakeForm hero card depth).
+
+- **Corner radii — `rounded-2xl` and `rounded-[28px]` in use.** Several components (HowItWorks cards, Services cards, IntakeForm hero card, ContactForm card) use `rounded-2xl` (16px) or custom `rounded-[28px]`. DESIGN.md mandates `rounded-md` (4px) for buttons/inputs and `rounded-lg` (8px) max for cards. Resolution: tier-based cleanup — cards drop to `rounded-lg`, buttons to `rounded-md`. IntakeForm hero card 28px treatment is a deliberate exception (hero treatment, signals importance).
+
+- **Page background — currently white, contract specifies bone (#F5F2ED).** Resolution: token change in `globals.css` `@theme` block. Risk: low if applied carefully (cards stay white, only page background shifts).
+
+- **OAS orange (#E8420A) is the live brand accent.** Tertiary token updated above to reflect this. The original burnt clay accent is retired.
