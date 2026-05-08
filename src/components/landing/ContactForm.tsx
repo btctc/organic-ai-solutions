@@ -85,7 +85,7 @@ export default function ContactForm() {
               className="font-[family-name:var(--font-montserrat)] text-4xl md:text-5xl font-bold text-neutral-900 leading-tight mb-6"
               style={{ fontWeight: 700 }}
             >
-              Ready to Unlock Your Business Potential?
+              Tell us what&apos;s breaking. We&apos;ll tell you what to build.
             </motion.h2>
             <motion.p
               initial={{ opacity: 0, y: 16 }}
@@ -93,8 +93,8 @@ export default function ContactForm() {
               transition={{ duration: 0.45, delay: 0.14 }}
               className="font-[family-name:var(--font-dm-sans)] text-neutral-500 leading-relaxed mb-10 text-sm"
             >
-              Tell us about your business and biggest challenges. We&apos;ll
-              respond within one business day with ideas on how we can help — no
+              Tell us where work is getting missed, repeated, or delayed. We&apos;ll
+              respond within one business day with a practical next step — no
               sales pressure, just honest advice.
             </motion.p>
 

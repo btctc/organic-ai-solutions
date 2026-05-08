@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   },
   description:
     "Production AI agents and AI-native websites for operators. Working software, not strategy decks.",
-  keywords: ["AI consulting", "AI agents", "Dallas AI", "AI deployment", "small business AI"],
+  keywords: ["AI consulting", "AI agents", "Dallas AI", "AI deployment", "operator AI"],
   authors: [{ name: "Terrence Crawford" }, { name: "Diego Kennedy Templeton" }],
   openGraph: {
     type: "website",
