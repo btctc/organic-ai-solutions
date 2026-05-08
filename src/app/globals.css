@@ -48,7 +48,7 @@
   --color-tertiary: #E8420A;
   --color-tertiary-hover: #c93508;
   --color-on-tertiary: #FFFFFF;
-  --color-neutral: #F5F3EE;
+  --color-neutral: #EBE7E0;
   --color-surface: #ffffff;
   --color-on-surface: #0F1310;
   --color-surface-muted: #EBE7E0;
@@ -58,7 +58,7 @@
 
 :root {
   --radius: 0.5rem;
-  --background: #F5F3EE;
+  --background: #EBE7E0;
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);

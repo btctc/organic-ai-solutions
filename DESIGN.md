@@ -9,7 +9,7 @@ colors:
   secondary: "#5C6661"         # Slate green — borders, captions, metadata
   tertiary: "#E8420A"          # OAS orange — single interaction accent, primary CTAs, eyebrows, motion accents
   on-tertiary: "#FFFFFF"       # White text on orange surfaces (CTAs, hover states)
-  neutral: "#F5F3EE"           # Modern studio warm gray — page background, organic foundation
+  neutral: "#EBE7E0"           # Modern studio warm gray — page background, organic foundation
   surface: "#FFFFFF"           # Pure white — content cards, modals
   on-surface: "#0F1310"        # Text on white surfaces
   surface-muted: "#EBE7E0"     # Subtle backgrounds, dividers, hover states
@@ -184,9 +184,9 @@ The palette is **high-contrast neutrals with a single evocative accent**.
 - **Primary (#0F1310) — Deep Ink:** Used for headlines, body text, and the primary CTA background. Establishes editorial gravitas and maximum readability. Not pure black — slightly green-warm to match the bone background.
 - **Secondary (#5C6661) — Slate Green:** Used for utilitarian elements — borders, captions, metadata, secondary text. Quiet, never decorative.
 - **Tertiary (#E8420A) — OAS Orange:** The sole driver of interaction and the brand's signature accent. Used on primary CTAs at rest, section eyebrows, motion accents (connector dots, pulse indicators), and active states on critical controls. One accent per screen — never decorative repetition, never a rainbow strip of accents. The orange is structural, not atmospheric — it appears where the user is meant to act or look, not as a tint or glow.
-- **Neutral (#F5F3EE) — Modern Studio:** The page foundation. Provides modern warmth against pure-white content cards — the contrast IS the visible structure (tonal layering, no shadows needed). This color is non-negotiable — it's the single most important brand decision in the system. Pure white is rejected as the page background. Per founder decision (May 8, 2026), shifted 1 hex digit cooler than original spec (#F5F2ED → #F5F3EE) for a slightly more contemporary read; visually indistinguishable from original bone.
+- **Neutral (#EBE7E0) — Modern Studio:** The page foundation. Provides modern warmth against pure-white content cards — the contrast IS the visible structure (tonal layering, no shadows needed). This color is non-negotiable — it's the single most important brand decision in the system. Pure white is rejected as the page background. Per founder review (May 8, 2026), deepened from #F5F3EE to match the existing surface-muted token for a clearer "not white" read against white cards.
 - **Surface (#FFFFFF):** Pure white reserved for content cards, modals, and the chatbot panel — the moments where information density goes up and contrast needs to be maximized.
-- **Surface-muted (#EBE7E0):** A halfstep between bone and white. Used for hover states on neutral elements, subtle dividers, and section banding when the design needs structure without lines.
+- **Surface-muted (#EBE7E0):** The shared warm-gray support tone. Used for hover states on neutral elements, subtle dividers, section banding, and the page foundation through the neutral token.
 - **Error (#A8321A) and Success (#3D5A3F):** Reserved for true state communication only. Never used decoratively. Never used as accent colors in marketing surfaces.
 
 **WCAG:** Primary on neutral = 14.8:1 (AAA). Tertiary (OAS orange #E8420A) on neutral = 4.6:1 (AA pass for normal text). White-on-tertiary (CTA at rest) = 4.6:1 (AA pass). Secondary on neutral = 4.7:1 (AA pass).
@@ -223,7 +223,7 @@ OAS uses a **Fixed-Max-Width Editorial Grid**:
 
 Depth is achieved through **tonal layering**, never through drop shadows.
 
-- The page background is modern studio warm gray (`#F5F3EE`).
+- The page background is modern studio warm gray (`#EBE7E0`).
 - Cards sit on top in pure white (`#FFFFFF`) — the contrast alone communicates elevation.
 - Modals and overlays use the same white-on-bone tonal shift, plus a low-opacity (8–12%) deep-ink scrim.
 - The single exception: the chatbot panel uses a **1px hairline border in slate green at 20% opacity** to detach from the page edge. Never a shadow.
@@ -287,7 +287,7 @@ What this means concretely:
 ## Do's and Don'ts
 
 - **Do** use the burnt clay accent only on the single most important action per screen. One per screen. Never two.
-- **Do** use modern studio warm gray (`#F5F3EE`) as the page background everywhere except the admin dashboard. Pure white as a page background is rejected.
+- **Do** use modern studio warm gray (`#EBE7E0`) as the page background everywhere except the admin dashboard. Pure white as a page background is rejected.
 - **Do** maintain WCAG AA contrast on every text/background pair. The deep-ink-on-bone combination passes AAA — keep it that way.
 - **Do** use Fraunces only for headlines. Switzer only for body and labels. The line is hard.
 - **Do** keep section vertical rhythm at 96px desktop / 64px mobile. Don't compress.
@@ -338,6 +338,6 @@ Documented gaps between this contract and the live site. Each item has a planned
 
 - **Corner radii — `rounded-2xl` and `rounded-[28px]` in use.** Several components (HowItWorks cards, Services cards, IntakeForm hero card, ContactForm card) use `rounded-2xl` (16px) or custom `rounded-[28px]`. DESIGN.md mandates `rounded-md` (4px) for buttons/inputs and `rounded-lg` (8px) max for cards. Resolution: tier-based cleanup — cards drop to `rounded-lg`, buttons to `rounded-md`. IntakeForm hero card 28px treatment is a deliberate exception (hero treatment, signals importance).
 
-- **Page background — RESOLVED (May 8, 2026).** The page background was migrated from pure white to modern studio warm gray (#F5F3EE) via the --color-neutral token in globals.css. Cards remain pure white (#FFFFFF) — the contrast creates visible structural layering, satisfying DESIGN.md's "tonal layering, not shadows" principle. The exact hex (#F5F3EE) is 1 digit cooler than the original spec (#F5F2ED) per founder decision; visually indistinguishable, contract-aligned.
+- **Page background — RESOLVED (May 8, 2026).** The page background was migrated from pure white to modern studio warm gray (#EBE7E0) via the --color-neutral token in globals.css. Cards remain pure white (#FFFFFF) — the contrast creates visible structural layering, satisfying DESIGN.md's "tonal layering, not shadows" principle. Founder review deepened the prior #F5F3EE value to #EBE7E0 for a clearer "not white" read. Neutral and surface-muted now share one hex as two semantic tokens with one visual color.
 
 - **OAS orange (#E8420A) is the live brand accent.** Tertiary token updated above to reflect this. The original burnt clay accent is retired.
