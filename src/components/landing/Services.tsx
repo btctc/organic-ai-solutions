@@ -76,7 +76,7 @@ export default function Services() {
               initial={{ opacity: 0, y: 16 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.45, delay: 0.08 }}
-              className="font-[family-name:var(--font-montserrat)] text-4xl md:text-5xl font-bold text-neutral-900 max-w-xl leading-tight"
+              className="font-[family-name:var(--font-montserrat)] text-4xl md:max-w-none md:whitespace-nowrap md:text-4xl xl:text-5xl font-bold text-neutral-900 max-w-xl leading-tight"
               style={{ fontWeight: 700 }}
             >
               Services Built for Your Scale

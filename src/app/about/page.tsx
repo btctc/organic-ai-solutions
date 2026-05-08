@@ -1,18 +1,21 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
+import CursorGlow from "@/components/CursorGlow";
+import HeroParticles from "@/components/HeroParticles";
 
-const SITE_URL = "https://organic-ai-solutions.vercel.app";
+const SITE_URL = "https://organicaisolutions.ai";
 
 export const metadata: Metadata = {
-  title: "Our Team — Organic AI Solutions",
+  title: "About Organic AI Solutions — Operator-Built AI Systems",
   description:
-    "Grow Organically. Scale Intelligently. Learn about Organic AI Solutions — AI built for every business, from solo operators to growing teams, across every industry.",
+    "Learn how Organic AI Solutions builds production AI agents and AI-native websites for operators who need working software, not strategy decks.",
   openGraph: {
-    title: "Our Team — Organic AI Solutions",
+    title: "About Organic AI Solutions — Operator-Built AI Systems",
     description:
-      "Meet the team behind Organic AI Solutions. AI built for every business, from solo operators to growing teams.",
+      "Meet the team building production AI systems for operators who need software that runs inside the business.",
     url: `${SITE_URL}/about`,
     siteName: "Organic AI Solutions",
     images: [
@@ -20,7 +23,7 @@ export const metadata: Metadata = {
         url: `${SITE_URL}/og-image.png`,
         width: 1200,
         height: 630,
-        alt: "Organic AI Solutions — Grow Organically. Scale Intelligently.",
+        alt: "Organic AI Solutions",
       },
     ],
     locale: "en_US",
@@ -28,9 +31,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Our Team — Organic AI Solutions",
+    title: "About Organic AI Solutions",
     description:
-      "Meet the team behind Organic AI Solutions. AI built for every business, from solo operators to growing teams.",
+      "Operator-built AI systems. Working software, not strategy decks.",
     images: [`${SITE_URL}/og-image.png`],
   },
 };
@@ -63,132 +66,158 @@ As CTO of Organic AI Solutions, Diego leads all technical development and AI arc
 export default function AboutPage() {
   return (
     <>
+      <CursorGlow />
       <Navbar />
 
-      <main id="main-content" tabIndex={-1}>
-
-        {/* ── Mission ──────────────────────────────────────────────── */}
+      <main id="main-content" tabIndex={-1} className="overflow-x-hidden bg-white">
         <section
           aria-labelledby="mission-heading"
-          className="bg-white pt-32 pb-20 px-6 lg:px-10"
+          className="relative overflow-hidden bg-white px-6 pb-24 pt-32 lg:px-10 md:py-32"
         >
-          <div className="max-w-7xl mx-auto">
-            {/* Breadcrumb */}
-            <nav aria-label="Breadcrumb" className="mb-10">
-              <ol className="flex items-center gap-2 text-sm font-[family-name:var(--font-dm-sans)] text-neutral-500">
-                <li>
-                  <Link href="/" className="hover:text-neutral-800 transition-colors underline underline-offset-2">
-                    Home
-                  </Link>
-                </li>
-                <li aria-hidden="true" className="text-neutral-300">›</li>
-                <li aria-current="page" className="text-neutral-800 font-medium">About</li>
-              </ol>
-            </nav>
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute right-0 top-0 h-[700px] w-[700px] translate-x-1/4 -translate-y-1/4 rounded-full bg-gradient-to-bl from-orange-50 via-white to-white"
+          />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute bottom-0 left-0 h-[420px] w-[420px] -translate-x-1/3 translate-y-1/3 rounded-full bg-gradient-to-tr from-orange-50 to-white"
+          />
 
-            <p
-              className="font-[family-name:var(--font-montserrat)] text-[#C73D09] text-xs font-semibold tracking-widest uppercase mb-4"
-              aria-hidden="true"
-            >
-              About Us
-            </p>
+          <div className="relative mx-auto max-w-7xl">
+            <div className="grid items-center gap-10 lg:grid-cols-[1.3fr_1fr]">
+              <div className="max-w-3xl">
+                <nav aria-label="Breadcrumb" className="mb-8">
+                  <ol className="flex items-center gap-2 text-sm font-[family-name:var(--font-dm-sans)] text-neutral-500">
+                    <li>
+                      <Link href="/" className="underline underline-offset-2 transition-colors hover:text-neutral-800">
+                        Home
+                      </Link>
+                    </li>
+                    <li aria-hidden="true" className="text-neutral-300">/</li>
+                    <li aria-current="page" className="font-medium text-neutral-800">About</li>
+                  </ol>
+                </nav>
 
-            <h1
-              id="mission-heading"
-              className="font-[family-name:var(--font-montserrat)] text-4xl md:text-5xl lg:text-6xl font-extrabold text-neutral-900 leading-tight max-w-4xl mb-4"
-            >
-              We Believe Every Business Deserves Powerful AI
-            </h1>
-            <p className="font-[family-name:var(--font-montserrat)] font-bold text-[#E8420A] text-2xl md:text-[32px] leading-tight mb-10">
-              Grow Organically. Scale Intelligently.
-            </p>
+                <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-orange-100 bg-orange-50 px-3.5 py-1.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#E8420A]" />
+                  <span className="font-[family-name:var(--font-dm-sans)] text-xs font-semibold uppercase tracking-wide text-[#E8420A]">
+                    About Organic AI Solutions
+                  </span>
+                </div>
 
-            <div className="max-w-3xl">
-              <p className="font-[family-name:var(--font-dm-sans)] text-lg text-neutral-700 leading-relaxed">
-                At Organic AI Solutions our mission is simple. We believe every business deserves access to powerful AI technology — regardless of size, industry, or budget. Whether you have a single great idea or a growing operation, we build practical intelligent solutions that help you{" "}
-                <strong className="text-[#E8420A]">Grow Organically and Scale Intelligently.</strong>
-              </p>
-            </div>
-
-            {/* Mission stats */}
-            <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-5 max-w-2xl">
-              {[
-                { value: "5–500", label: "Employees — our sweet spot" },
-                { value: "6", label: "Core AI service areas" },
-                { value: "24 hrs", label: "Audit response turnaround" },
-              ].map((s) => (
-                <div
-                  key={s.label}
-                  className="bg-neutral-50 border border-neutral-100 rounded-2xl px-6 py-6"
+                <h1
+                  id="mission-heading"
+                  className="font-display text-5xl leading-[1.05] tracking-tight md:text-7xl"
                 >
-                  <div className="font-[family-name:var(--font-montserrat)] text-3xl font-extrabold text-neutral-900">
-                    {s.value}
-                  </div>
-                  <div className="font-[family-name:var(--font-dm-sans)] text-neutral-600 mt-1 text-sm leading-snug">
-                    {s.label}
-                  </div>
+                  AI systems built by operators, for operators.
+                </h1>
+
+                <p className="mt-5 font-[family-name:var(--font-dm-sans)] text-xl leading-snug text-neutral-400 md:text-2xl">
+                  Grow Organically. Scale Intelligently.
+                </p>
+
+                <p className="mt-4 max-w-2xl text-lg leading-relaxed text-on-surface-muted md:text-xl">
+                  Organic AI Solutions builds production agents and AI-native websites that take work off the floor and put it into software operators can trust.
+                </p>
+              </div>
+
+              <div className="relative hidden aspect-square min-h-[420px] max-h-[560px] items-center justify-center lg:flex">
+                <HeroParticles />
+                <div className="relative z-10">
+                  <Image
+                    src="/oas-logo-3d.png"
+                    alt="Organic AI Solutions logo"
+                    width={500}
+                    height={470}
+                    priority
+                    className="h-auto w-full max-w-[440px] select-none animate-hero-logo-pulse"
+                    draggable={false}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-white px-6 py-20 lg:px-10">
+          <div className="mx-auto max-w-6xl">
+            <div className="grid gap-10 md:grid-cols-3 md:gap-8">
+              {[
+                {
+                  heading: "Builder-led",
+                  body: "The work is scoped by people who have run businesses and built systems, not by a strategy deck passed between meetings.",
+                },
+                {
+                  heading: "Software first",
+                  body: "The outcome is a working agent, website, or operational tool in the environment where the work already happens.",
+                },
+                {
+                  heading: "Scoped before quoted",
+                  body: "Every build starts with the work itself: what breaks, what repeats, what gets missed, and what should run without being chased.",
+                },
+              ].map((pillar) => (
+                <div key={pillar.heading} className="border-t border-neutral-200 pt-6">
+                  <div className="mb-5 h-px w-12 bg-tertiary" />
+                  <h2 className="font-display text-2xl text-on-surface md:text-3xl">{pillar.heading}</h2>
+                  <p className="mt-3 text-base leading-relaxed text-on-surface-muted">{pillar.body}</p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* ── Divider ──────────────────────────────────────────────── */}
-        <div className="bg-neutral-100 h-px max-w-7xl mx-auto" aria-hidden="true" />
-
-        {/* ── Team ─────────────────────────────────────────────────── */}
         <section
           aria-labelledby="team-heading"
-          className="bg-white py-20 px-6 lg:px-10"
+          className="relative overflow-hidden bg-[#0A0A0F] px-6 py-24 text-white lg:px-10 md:py-32"
         >
-          <div className="max-w-7xl mx-auto">
-            <p
-              className="font-[family-name:var(--font-montserrat)] text-[#C73D09] text-xs font-semibold tracking-widest uppercase mb-4"
-              aria-hidden="true"
-            >
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute left-1/2 top-0 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-tertiary/10 blur-3xl"
+          />
+
+          <div className="relative mx-auto max-w-7xl">
+            <p className="mb-4 font-[family-name:var(--font-montserrat)] text-xs font-semibold uppercase tracking-widest text-tertiary">
               The Team
             </p>
             <h2
               id="team-heading"
-              className="font-[family-name:var(--font-montserrat)] text-3xl md:text-4xl lg:text-5xl font-bold text-neutral-900 leading-tight mb-16"
+              className="mb-16 font-display text-4xl leading-[1.05] tracking-tight md:text-6xl"
             >
               Meet the Founders
             </h2>
 
-            <div className="space-y-16">
+            <div className="space-y-8">
               {team.map((member) => (
                 <article
                   key={member.name}
                   aria-labelledby={`team-${member.initials}`}
-                  className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-10 items-start pb-16 border-b border-neutral-100 last:border-0 last:pb-0"
+                  className="grid grid-cols-1 items-start gap-10 rounded-3xl border border-white/10 bg-white/[0.04] p-6 shadow-[0_24px_80px_rgba(0,0,0,0.24)] backdrop-blur lg:grid-cols-[280px_1fr] lg:p-8"
                 >
-                  {/* Avatar + name card */}
-                  <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
+                  <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
                     <div
-                      className="w-28 h-28 rounded-2xl bg-[#C73D09] flex items-center justify-center mb-5 shrink-0"
+                      className="mb-5 flex h-28 w-28 shrink-0 items-center justify-center rounded-2xl border border-tertiary/40 bg-tertiary/20 shadow-[0_0_32px_rgba(181,66,27,0.22)]"
                       aria-hidden="true"
                     >
-                      <span className="font-[family-name:var(--font-montserrat)] text-white font-extrabold text-3xl">
+                      <span className="font-display text-3xl text-white">
                         {member.initials}
                       </span>
                     </div>
                     <h3
                       id={`team-${member.initials}`}
-                      className="font-[family-name:var(--font-montserrat)] text-xl font-bold text-neutral-900"
+                      className="font-[family-name:var(--font-montserrat)] text-xl font-bold text-white"
                     >
                       {member.name}
                     </h3>
-                    <p className="font-[family-name:var(--font-dm-sans)] text-[#C73D09] font-semibold text-sm mt-1">
+                    <p className="mt-1 font-[family-name:var(--font-dm-sans)] text-sm font-semibold text-tertiary">
                       {member.title}
                     </p>
                   </div>
 
-                  {/* Bio */}
                   <div className="space-y-4">
                     {member.bio.split("\n\n").map((paragraph, i) => (
                       <p
                         key={i}
-                        className="font-[family-name:var(--font-dm-sans)] text-neutral-700 leading-relaxed text-base"
+                        className="font-[family-name:var(--font-dm-sans)] text-base leading-relaxed text-white/72"
                       >
                         {paragraph}
                       </p>
@@ -200,38 +229,40 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* ── Work With Us ─────────────────────────────────────────── */}
         <section
           aria-labelledby="work-with-us-heading"
-          className="bg-neutral-50 py-20 px-6 lg:px-10"
+          className="bg-neutral px-6 py-24 lg:px-10 md:py-28"
         >
-          <div className="max-w-7xl mx-auto text-center">
-            <p
-              className="font-[family-name:var(--font-montserrat)] text-[#C73D09] text-xs font-semibold tracking-widest uppercase mb-4"
-              aria-hidden="true"
-            >
-              Let&rsquo;s Build Together
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="mb-4 font-[family-name:var(--font-montserrat)] text-xs font-semibold uppercase tracking-widest text-[#E8420A]">
+              Start the conversation
             </p>
             <h2
               id="work-with-us-heading"
-              className="font-[family-name:var(--font-montserrat)] text-3xl md:text-4xl lg:text-5xl font-bold text-neutral-900 leading-tight mb-6"
+              className="font-display text-4xl leading-[1.05] tracking-tight text-on-surface md:text-6xl"
             >
-              Work With Us
+              Find the work your AI system should own first.
             </h2>
-            <p className="font-[family-name:var(--font-dm-sans)] text-neutral-600 text-lg max-w-xl mx-auto mb-10 leading-relaxed">
-              Ready to unlock the power of AI for your business? We&rsquo;d love to hear from you.
-              Book a free discovery call and let&rsquo;s explore what&rsquo;s possible together.
+            <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-on-surface-muted">
+              Start with a free assessment. We will map the missed work, the repeated work, and the first system worth building.
             </p>
-            <Link
-              href="/#contact"
-              className="inline-flex items-center justify-center px-8 py-4 rounded-lg bg-[#C73D09] text-white font-semibold font-[family-name:var(--font-montserrat)] text-base hover:bg-[#a32d07] transition-colors shadow-md shadow-orange-200 min-h-[44px]"
-              aria-label="Contact us — go to the contact form on the homepage"
-            >
-              Get in Touch
-            </Link>
+            <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row">
+              <Link
+                href="/assessment"
+                className="group relative inline-flex items-center justify-center rounded-full bg-tertiary px-8 py-4 text-base font-medium text-on-tertiary transition-all hover:-translate-y-0.5 hover:opacity-90 hover:shadow-lg"
+              >
+                <span>Get a free AI Operations Assessment</span>
+                <span className="ml-2 transition-transform duration-200 group-hover:translate-x-1">→</span>
+              </Link>
+              <Link
+                href="/#contact"
+                className="inline-flex items-center justify-center rounded-full border border-on-surface/30 px-8 py-4 text-base font-medium text-on-surface transition-all hover:border-on-surface/50 hover:bg-on-surface/5"
+              >
+                Talk to us
+              </Link>
+            </div>
           </div>
         </section>
-
       </main>
 
       <Footer />
