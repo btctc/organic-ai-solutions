@@ -1,58 +1,49 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { motion, useInView, AnimatePresence } from "framer-motion";
-import { Zap, GitBranch, Lightbulb, BarChart3, Map, GraduationCap } from "lucide-react";
+import { useRef } from "react";
+import { motion, useInView } from "framer-motion";
 
 const services = [
   {
-    icon: Zap,
-    title: "AI Automation",
-    description:
-      "Eliminate repetitive manual work with intelligent automation pipelines that handle data entry, reporting, and scheduling.",
-    useCase:
-      "A dump truck operator stops re-typing job requests from Gmail into their dispatch board — saves 8 hours a week.",
+    eyebrow: "Audit",
+    title: "Where most start",
+    body: "We look at what's costing you. Score every category 1–100. Tell you the fix in plain language.",
+    detail: "Free conversational assessment. Full audit deliverable.",
   },
   {
-    icon: GitBranch,
-    title: "Process Redesign",
-    description:
-      "Audit current processes, identify bottlenecks, and rebuild them with AI inside the steps that actually move work.",
-    useCase:
-      "A dental practice cuts no-shows 40% by mapping the booking-to-confirmation flow and adding AI follow-up.",
+    eyebrow: "Website Build & Repair",
+    title: "Foundation",
+    body: "Build new or fix what's broken. Lead capture, fast page weight, AI-ready from day one.",
+    detail: "Ships in 30 days. 60+ for complex builds.",
   },
   {
-    icon: Lightbulb,
-    title: "AI Consulting",
-    description:
-      "We assess your operation, find the work AI should own first, and turn it into a build plan your team can actually run.",
-    useCase:
-      "A 12-person home services company gets a 90-day roadmap with three scoped builds, ranked by urgency and operational lift.",
+    eyebrow: "Simple AI Solutions",
+    title: "First wins",
+    body: "Plug AI into the work that already breaks. Single deliverables that prove value before you scale.",
+    detail: "Scoped, quoted, deployed.",
   },
   {
-    icon: BarChart3,
-    title: "Data Insights",
-    description:
-      "Turn raw business data into actionable intelligence with AI-driven analytics that surface trends and guide smarter decisions.",
-    useCase:
-      "A specialty contractor sees which job types actually make money — margin per crew-hour, not just gross revenue.",
+    eyebrow: "Custom Agents",
+    title: "Where it pays off",
+    body: "Production AI agents inside your operation. Built right. Deployed fast. Yours to run.",
+    detail: "Built on enterprise agent experience.",
+    featured: true,
   },
   {
-    icon: Map,
-    title: "Process Mapping",
-    description:
-      "Document and visualize your end-to-end operations so your team knows what happens, who owns it, and where AI can take work off the floor.",
-    useCase:
-      "A growing restaurant group documents every step from order to delivery — onboarding new managers in days, not months.",
+    eyebrow: "Operational Systems",
+    title: "Long-term",
+    body: "Multi-agent systems your business runs on. Long-term partnership. Real software, not advisory.",
+    detail: "Ongoing build + maintain.",
   },
-  {
-    icon: GraduationCap,
-    title: "AI Training",
-    description:
-      "Hands-on training programs designed for non-technical staff — practical, jargon-free, and immediately applicable.",
-    useCase:
-      "A real estate brokerage's 30 agents learn to write listings, follow up with leads, and respond to inquiries with AI in two half-day sessions.",
-  },
+];
+
+const industries = [
+  "Professional Services",
+  "Healthcare & Dental",
+  "Home Services",
+  "Transportation & Logistics",
+  "Training & Gyms",
+  "Hospitality",
 ];
 
 export default function Services() {
@@ -92,19 +83,26 @@ export default function Services() {
           </motion.p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {services.map((svc, i) => {
-            const Icon = svc.icon;
-            return (
-              <ServiceCard
-                key={svc.title}
-                svc={svc}
-                Icon={Icon}
-                inView={inView}
-                index={i}
-              />
-            );
-          })}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.45, delay: 0.18 }}
+          className="mb-10 rounded-full border border-neutral-200 bg-neutral-50 px-5 py-3"
+        >
+          <p className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-center font-[family-name:var(--font-dm-sans)] text-xs font-medium text-neutral-500">
+            {industries.map((industry, index) => (
+              <span key={industry} className="inline-flex items-center gap-x-3">
+                <span>{industry}</span>
+                {index < industries.length - 1 && <span className="text-neutral-300">·</span>}
+              </span>
+            ))}
+          </p>
+        </motion.div>
+
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-6">
+          {services.map((svc, i) => (
+            <ServiceCard key={svc.title} svc={svc} inView={inView} index={i} />
+          ))}
         </div>
       </div>
     </section>
@@ -112,55 +110,35 @@ export default function Services() {
 }
 
 interface ServiceCardProps {
-  svc: { title: string; description: string; useCase: string; icon: typeof Zap };
-  Icon: typeof Zap;
+  svc: { eyebrow: string; title: string; body: string; detail: string; featured?: boolean };
   inView: boolean;
   index: number;
 }
 
-function ServiceCard({ svc, Icon, inView, index }: ServiceCardProps) {
-  const [hovered, setHovered] = useState(false);
-
+function ServiceCard({ svc, inView, index }: ServiceCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 28 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.45, delay: 0.08 + index * 0.06 }}
-      onHoverStart={() => setHovered(true)}
-      onHoverEnd={() => setHovered(false)}
-      className="group relative rounded-2xl border border-neutral-100 p-7 hover:border-[#E8420A]/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-white"
+      className={`group relative rounded-2xl border bg-white p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_48px_rgba(232,66,10,0.12)] md:min-h-[260px] xl:col-span-2 ${
+        svc.featured
+          ? "border-[#E8420A]/35 shadow-[0_18px_54px_rgba(232,66,10,0.10)]"
+          : "border-neutral-100"
+      } ${index >= 3 ? "xl:col-span-3" : ""}`}
     >
-      <div className="w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center mb-5 group-hover:bg-[#E8420A] transition-colors duration-200">
-        <Icon className="text-[#E8420A] group-hover:text-white transition-colors duration-200" size={19} />
-      </div>
-      <h3 className="font-[family-name:var(--font-montserrat)] text-base font-bold text-neutral-900 mb-2.5">
+      <p className="mb-4 font-[family-name:var(--font-montserrat)] text-[10px] font-semibold uppercase tracking-[0.18em] text-[#E8420A]">
+        {svc.eyebrow}
+      </p>
+      <h3 className="mb-3 font-[family-name:var(--font-montserrat)] text-xl font-bold text-neutral-900">
         {svc.title}
       </h3>
-      <p className="font-[family-name:var(--font-dm-sans)] text-neutral-500 text-sm leading-relaxed">
-        {svc.description}
+      <p className="font-[family-name:var(--font-dm-sans)] text-sm leading-relaxed text-neutral-500">
+        {svc.body}
       </p>
-
-      <AnimatePresence initial={false}>
-        {hovered && (
-          <motion.div
-            key="usecase"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
-            className="overflow-hidden"
-          >
-            <div className="mt-4 pt-4 border-t border-neutral-100">
-              <p className="font-[family-name:var(--font-montserrat)] text-[10px] font-semibold tracking-widest uppercase text-[#E8420A] mb-2">
-                For example
-              </p>
-              <p className="font-[family-name:var(--font-dm-sans)] text-neutral-700 text-sm leading-relaxed italic">
-                {svc.useCase}
-              </p>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <p className="mt-6 border-t border-neutral-100 pt-4 font-[family-name:var(--font-montserrat)] text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500">
+        {svc.detail}
+      </p>
     </motion.div>
   );
 }
