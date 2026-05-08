@@ -411,7 +411,7 @@ export default function IntakeForm({ onSubmitted }: IntakeFormProps) {
               </div>
               <a
                 href="/#contact"
-                className="mt-7 inline-flex w-full items-center justify-center rounded-lg bg-tertiary px-5 py-3 text-sm font-semibold text-white shadow-md shadow-orange-100 transition-colors hover:bg-tertiary-hover font-[family-name:var(--font-montserrat)]"
+                className="mt-7 inline-flex w-full items-center justify-center rounded-lg bg-tertiary px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-tertiary-hover font-[family-name:var(--font-montserrat)]"
               >
                 Start Your Free Discovery Call
               </a>

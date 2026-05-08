@@ -219,9 +219,9 @@ function ServiceCard({ svc, inView, flowActive, index }: ServiceCardProps) {
       initial={{ opacity: 0, y: 28 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.45, delay: 0.08 + index * 0.06 }}
-      className={`group relative rounded-2xl border bg-white p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_48px_rgba(232,66,10,0.12)] md:min-h-[260px] lg:col-span-2 ${
+      className={`group relative rounded-2xl border bg-white p-7 transition-all duration-300 hover:-translate-y-1 md:min-h-[260px] lg:col-span-2 ${
         svc.featured
-          ? "border-[#E8420A]/35 shadow-[0_18px_54px_rgba(232,66,10,0.10)]"
+          ? "border-[#E8420A]/35"
           : "border-neutral-100"
       } ${index >= 3 ? "lg:col-span-3" : ""}`}
     >
@@ -279,7 +279,7 @@ function ServiceFlowPulse({ axis, index }: { axis: "x" | "y"; index: number }) {
 
   return (
     <motion.span
-      className={`absolute h-2 w-2 rounded-full bg-tertiary shadow-[0_0_14px_rgba(232,66,10,0.7)] motion-reduce:hidden ${
+      className={`absolute h-2 w-2 rounded-full bg-tertiary motion-reduce:hidden ${
         axis === "x" ? "left-0 top-1/2 -translate-y-1/2" : "left-1/2 top-0 -translate-x-1/2"
       }`}
       animate={animate}

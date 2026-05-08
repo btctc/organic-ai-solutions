@@ -116,7 +116,7 @@ function FlowPulse({ axis, index }: { axis: "x" | "y"; index: number }) {
 
   return (
     <motion.span
-      className={`absolute h-2 w-2 rounded-full bg-tertiary shadow-[0_0_14px_rgba(232,66,10,0.7)] motion-reduce:hidden ${
+      className={`absolute h-2 w-2 rounded-full bg-tertiary motion-reduce:hidden ${
         axis === "x" ? "left-0 top-1/2 -translate-y-1/2" : "left-1/2 top-0 -translate-x-1/2"
       }`}
       animate={animate}

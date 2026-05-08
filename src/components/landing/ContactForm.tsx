@@ -219,7 +219,7 @@ export default function ContactForm() {
                 <button
                   type="submit"
                   disabled={status === "loading"}
-                  className="w-full flex items-center justify-center gap-2 py-3.5 rounded-lg bg-tertiary text-white font-semibold font-[family-name:var(--font-montserrat)] text-sm hover:bg-tertiary-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed shadow-md shadow-orange-100"
+                  className="w-full flex items-center justify-center gap-2 py-3.5 rounded-lg bg-tertiary text-white font-semibold font-[family-name:var(--font-montserrat)] text-sm hover:bg-tertiary-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {status === "loading" ? (
                     <>

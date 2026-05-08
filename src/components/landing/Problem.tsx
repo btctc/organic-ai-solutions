@@ -66,7 +66,7 @@ export default function Problem() {
                 {...rise(inView, 0.12 + i * 0.1, 28)}
                 className="relative flex gap-5 md:block"
               >
-                <div className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-[#E8420A]/25 bg-white text-tertiary shadow-sm shadow-orange-100 font-[family-name:var(--font-montserrat)] text-xs font-bold tracking-widest md:h-16 md:w-16">
+                <div className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-[#E8420A]/25 bg-white text-tertiary shadow-sm font-[family-name:var(--font-montserrat)] text-xs font-bold tracking-widest md:h-16 md:w-16">
                   {step.number}
                 </div>
                 <div className="pt-1 md:pt-8">
