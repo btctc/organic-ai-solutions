@@ -364,7 +364,7 @@ export default function IntakeForm({ onSubmitted }: IntakeFormProps) {
               initial={{ opacity: 0, y: 16 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.45 }}
-              className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-[#E8420A] font-[family-name:var(--font-montserrat)]"
+              className="mb-4 text-center text-xs font-semibold uppercase tracking-[0.18em] text-[#E8420A] font-[family-name:var(--font-montserrat)]"
             >
               Free AI Assessment
             </motion.p>
@@ -372,7 +372,7 @@ export default function IntakeForm({ onSubmitted }: IntakeFormProps) {
               initial={{ opacity: 0, y: 16 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.45, delay: 0.08 }}
-              className="max-w-xl font-[family-name:var(--font-montserrat)] text-4xl font-bold leading-tight text-neutral-900 md:text-5xl"
+              className="font-[family-name:var(--font-montserrat)] text-3xl font-bold leading-tight text-neutral-900 text-center sm:text-4xl md:text-4xl lg:text-4xl"
             >
               Share how your business operates today.
             </motion.h2>
@@ -380,7 +380,7 @@ export default function IntakeForm({ onSubmitted }: IntakeFormProps) {
               initial={{ opacity: 0, y: 16 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.45, delay: 0.14 }}
-              className="mt-6 max-w-lg text-sm leading-7 text-neutral-600 md:text-base"
+              className="mx-auto mt-6 max-w-lg text-center text-sm leading-7 text-neutral-600 md:text-base"
             >
               This intake helps us understand your current workflows, website
               position, and where AI can create the fastest measurable value. It

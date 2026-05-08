@@ -41,7 +41,7 @@ export default function HowItWorks() {
           initial={{ opacity: 0, y: 16 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.45 }}
-          className="font-[family-name:var(--font-montserrat)] text-[#E8420A] text-xs font-semibold tracking-widest uppercase mb-4"
+          className="font-[family-name:var(--font-montserrat)] text-[#E8420A] text-xs font-semibold tracking-widest uppercase mb-4 text-center"
         >
           Our Process
         </motion.p>
@@ -49,7 +49,7 @@ export default function HowItWorks() {
           initial={{ opacity: 0, y: 16 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.45, delay: 0.08 }}
-          className="font-[family-name:var(--font-montserrat)] text-4xl md:text-5xl font-bold text-neutral-900 max-w-xl leading-tight mb-16"
+          className="font-[family-name:var(--font-montserrat)] text-3xl sm:text-4xl md:text-5xl font-bold text-neutral-900 leading-tight mb-16 text-center md:whitespace-nowrap"
           style={{ fontWeight: 700 }}
         >
           From Idea to Impact in 4 Steps
