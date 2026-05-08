@@ -103,22 +103,22 @@ const websiteOptions = [
 const packageOptions = [
   {
     label: "One-Time Project",
-    price: "$500+",
+    price: "Scoped before quoted",
     description: "Best for a focused deliverable or a specific business problem.",
   },
   {
     label: "Starter Engagement",
-    price: "$750 + $250/mo",
+    price: "Custom scope, custom quote",
     description: "Ideal for an AI audit, light automation, and website improvements.",
   },
   {
     label: "Growth Partnership",
-    price: "$2,500 + $750/mo",
+    price: "Custom scope, custom quote",
     description: "Best for deeper automation, AI agents, redesign, and ongoing support.",
   },
   {
     label: "Need Guidance",
-    price: "TBD",
+    price: "Scoped before quoted",
     description: "We would like help identifying the right scope and budget.",
   },
 ];
@@ -530,7 +530,7 @@ export default function IntakeForm({ onSubmitted }: IntakeFormProps) {
                         type="text"
                         value={formData.revenue}
                         onChange={(event) => updateField("revenue", event.target.value)}
-                        placeholder="For example: $500K or $2M-$5M"
+                        placeholder="For example: current annual range or estimate"
                         className={inputClass}
                       />
                     </div>
