@@ -138,12 +138,24 @@ export default function AssessmentChat() {
   const [isSubmittingReport, setIsSubmittingReport] = useState(false);
   const [reportStage, setReportStage] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const latestAssistantMessageRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const reportTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
-  }, [messages, thinking, stage]);
+    if (stage !== 'chat') {
+      scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    if (messages[messages.length - 1]?.role !== 'assistant') return;
+
+    const frame = requestAnimationFrame(() => {
+      latestAssistantMessageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    return () => cancelAnimationFrame(frame);
+  }, [messages, stage]);
 
   useEffect(() => {
     if (stage === 'chat' && !showEmailCapture && !thinking) {
@@ -419,9 +431,13 @@ export default function AssessmentChat() {
           </div>
         )}
 
-        {stage === 'chat' && messages.map((m, i) => (
+        {stage === 'chat' && messages.map((m, i) => {
+          const isLatestAssistantMessage = m.role === 'assistant' && i === messages.length - 1;
+
+          return (
           <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div
+              ref={isLatestAssistantMessage ? latestAssistantMessageRef : undefined}
               className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap ${
                 m.role === 'user'
                   ? 'bg-tertiary text-on-tertiary'
@@ -433,7 +449,8 @@ export default function AssessmentChat() {
                 : (thinking && i === messages.length - 1 ? <ThinkingDots /> : '')}
             </div>
           </div>
-        ))}
+          );
+        })}
 
         {stage === 'chat' && thinking && messages[messages.length - 1]?.role !== 'assistant' && (
           <div className="flex justify-start">

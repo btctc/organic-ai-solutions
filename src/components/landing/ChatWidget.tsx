@@ -317,7 +317,7 @@ function ChatWidgetInner() {
                     window.location.href = "/#contact";
                   }
                 }}
-                className="flex items-center gap-2 pl-4 pr-5 h-[60px] rounded-full bg-[#C73D09] text-white shadow-lg shadow-orange-300/40 hover:bg-[#a32d07] transition-colors"
+                className="flex items-center gap-2 pl-4 pr-5 h-[60px] rounded-full bg-[#C73D09] text-white shadow-lg shadow-orange-300/40 hover:bg-[#a32d07] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C73D09] focus-visible:ring-offset-2 focus-visible:ring-offset-white [-webkit-tap-highlight-color:transparent]"
                 aria-label="Open quick contact"
                 aria-expanded={false}
               >
